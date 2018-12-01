@@ -1,5 +1,5 @@
 <?php 
-namespace app\lib\helpers;
+namespace dicr\helper;
 
 use yii\base\Exception;
 use yii\helpers\ArrayHelper;
@@ -9,6 +9,7 @@ use yii\helpers\ArrayHelper;
  *  
  * @author Igor (Dicr) Tarasov <develop@dicr.org>
  * @version 180301
+ * @deprecated use \dicr\model\UrlInfo
  */
 class UrlHelper {
 	

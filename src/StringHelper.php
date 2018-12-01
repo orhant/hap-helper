@@ -1,5 +1,5 @@
 <?php 
-namespace app\lib\helpers;
+namespace dicr\helper;
 
 /**
  * {@inheritdoc}
