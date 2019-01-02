@@ -4,7 +4,6 @@ namespace dicr\helper;
 use yii\base\BaseObject;
 use yii\base\Exception;
 use yii\base\InvalidConfigException;
-use PharIo\Manifest\InvalidApplicationNameException;
 
 /**
  * Ссылка
@@ -591,7 +590,7 @@ class UrlInfo extends BaseObject {
 		}
 		
 		if (!$base->isAbsolute) {
-			throw new InvalidApplicationNameException('base not absolute');
+			throw new \InvalidArgumentException('base not absolute');
 		}
 		
 		/*
