@@ -1,6 +1,6 @@
 {
 	"name" : "dicr/yii2-helper",
-	"description" : "Полезные утилиты для yii2",
+	"description" : "Хелперы для yii2",
 	"type" : "library",
 	"authors" : [{
 			"name" : "Igor Tarasov",
@@ -11,7 +11,8 @@
 	],
 	"minimum-stability" : "stable",
 	"require" : {
-		"yiisoft/yii2" : "~2.0"
+		"yiisoft/yii2" : "~2.0",
+		"phpunit/phpunit" : "~6"
 	},
 	"autoload" : {
 		"psr-4" : {
@@ -26,8 +27,11 @@
 			"url" : "https://asset-packagist.org"
 		}
 	],
-	"homepage" : "https://gitlab.com/dicrtarasov/yii2-helper",
+	"homepage" : "https://gitlab.com/dicr/yii2-helper",
 	"support" : {
-		"source" : "https://gitlab.com/dicrtarasov/yii2-helper.git"
+		"source" : "https://gitlab.com/dicr/yii2-helper.git"
+	},
+	"scripts" : {
+		"test" : "./vendor/bin/phpunit --bootstrap ./tests/bootstrap.php"
 	}
 }

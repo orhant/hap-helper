@@ -17,7 +17,6 @@ class ArrayHelper extends \yii\helpers\ArrayHelper {
 	 *  @param $path string|array ключ для удаления. Может быть строкой с путем ключа, разделенным "." или массивом.
 	 */
 	public static function remove(&$array, $path, $default=null) {
-		
 		if (!is_array($path)) {
 			$path = explode('.', $path);
 		}
@@ -30,9 +29,9 @@ class ArrayHelper extends \yii\helpers\ArrayHelper {
 			$array = &$array[$key];
 		}
 		
+		$key = array_shift($path);
 		$ret = $array[$key] ?? $default;
 		unset($array[$key]);
-		
 		return $ret;
 	}
 }
