@@ -1,7 +1,7 @@
 {
 	"name" : "dicr/yii2-helper",
 	"description" : "Хелперы для yii2",
-	"type" : "library",
+	"type" : "yii2-extension",
 	"authors" : [{
 			"name" : "Igor Tarasov",
 			"email" : "develop@dicr.org",
@@ -19,7 +19,7 @@
 		}
 	},
 	"keywords" : [
-		"php yii2 helper"
+		"php yii2 helper utilites"
 	],
 	"repositories" : [{
 			"type" : "composer",
