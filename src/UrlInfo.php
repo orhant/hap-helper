@@ -63,6 +63,7 @@ class UrlInfo extends BaseObject {
 	 * Конструктор
 	 *
 	 * @param string|array $url
+	 * @throws \InvalidArgumentException
 	 */
 	public function __construct($url=[]) {
 	    if (is_array($url)) {
@@ -76,6 +77,22 @@ class UrlInfo extends BaseObject {
 	    } else {
 	        throw new \InvalidArgumentException('url');
 	    }
+	}
+
+	/**
+	 * Создает экземпляр из строки
+	 *
+	 * @param string $url адрес URL
+	 * @return \dicr\helper\UrlInfo|FALSE
+	 */
+	public static function fromString(string $url) {
+	    $urlInfo = null;
+	    try {
+	        $urlInfo = new static($url);
+	    } catch (\Exception $ex) {
+	        $urlInfo = false;
+	    }
+	    return $urlInfo;
 	}
 
 	/**
