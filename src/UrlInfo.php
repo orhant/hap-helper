@@ -80,22 +80,6 @@ class UrlInfo extends BaseObject {
 	}
 
 	/**
-	 * Создает экземпляр из строки
-	 *
-	 * @param string $url адрес URL
-	 * @return \dicr\helper\UrlInfo|FALSE
-	 */
-	public static function fromString(string $url) {
-	    $urlInfo = null;
-	    try {
-	        $urlInfo = new static($url);
-	    } catch (\Exception $ex) {
-	        $urlInfo = false;
-	    }
-	    return $urlInfo;
-	}
-
-	/**
 	 * {@inheritDoc}
 	 * @see \yii\base\BaseObject::init()
 	 */
@@ -116,7 +100,6 @@ class UrlInfo extends BaseObject {
 			}
 		}
 	}
-
 
 	/**
 	 * Возвращает схему
@@ -523,6 +506,22 @@ class UrlInfo extends BaseObject {
 		}
 
 		return $uri;
+	}
+
+	/**
+	 * Создает экземпляр из строки
+	 *
+	 * @param string $url адрес URL
+	 * @return \dicr\helper\UrlInfo|FALSE
+	 */
+	public static function fromString(string $url) {
+	    $urlInfo = null;
+	    try {
+	        $urlInfo = new static($url);
+	    } catch (\Exception $ex) {
+	        $urlInfo = false;
+	    }
+	    return $urlInfo;
 	}
 
 	/**
