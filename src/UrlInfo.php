@@ -330,21 +330,21 @@ class UrlInfo extends BaseObject {
 		// разбиваем путь на компоненты
 		$path = array_values(preg_split('~\/+~uism', $path, -1, PREG_SPLIT_NO_EMPTY) ?: []);
 
-		// если путь начинался с корня, то удаляем вначале все переходы на верхний путь
-		if ($startSlash) {
-			while (reset($path) == '..') {
-				array_shift($path);
-			}
-		}
+	    $newPath = [];
+        foreach ($path as $p) {
+            if ($p == '' || $p == '.') {
+                continue;
+            }
 
-		foreach ($path as $i => $p) {
-			// удаляем пустые компоненты "." в середине пути
-			if ($p == '.') {
-				unset($path[$i]);
-			}
-		}
+            if ($p == '..' && $startSlash) {
+                array_pop($newPath);
+            } else {
+                $newPath[] = $p;
+            }
+        }
 
-		$path = implode('/', $path);
+        $path = implode('/', $newPath);
+
 		if ($startSlash) {
 			$path = '/'.$path;
 		}
@@ -567,7 +567,7 @@ class UrlInfo extends BaseObject {
 	/**
 	 * Возвращает аттрибуты модели
 	 *
-	 * @return string[]
+	 * @return array
 	 */
 	public function getAttributes() {
 		return [
@@ -625,37 +625,14 @@ class UrlInfo extends BaseObject {
 						}
 					}
 				} else if (mb_substr($full->path, 0, 1) != '/') {
-					$baseSlash = (mb_substr($base->path, -1, 1) == '/');
-					$basePath = preg_split('~\/+~uism', $base->path, -1, PREG_SPLIT_NO_EMPTY);
-					if (!$baseSlash) {
-						array_pop($basePath);
-					}
+				    $basePath = $base->path;
+				    if (mb_substr($basePath, -1, 1) !== '/') {
+				        $basePath = preg_split('~\/+~uism', $basePath, -1, PREG_SPLIT_NO_EMPTY);
+				        array_pop($basePath);
+				        $basePath = '/' . implode('/', $basePath);
+				    }
 
-					$fullSlash = (mb_substr($full->path, -1, 1) == '/');
-					$fullPath = preg_split('~\/~uism', $full->path, -1, PREG_SPLIT_NO_EMPTY);
-
-					while (reset($fullPath) == '..') {
-						array_pop($basePath);
-						array_shift($fullPath);
-					}
-
-					$full->path = '';
-
-					if (!empty($basePath)) {
-						$full->path .= '/'.implode('/', $basePath);
-					}
-
-					if (!empty($fullPath)) {
-						$full->path .= '/'.implode('/', $fullPath);
-					}
-
-					if ($fullSlash) {
-						$full->path .= '/';
-					}
-
-					if ($full->path == '/') {
-						$full->path = '';
-					}
+				    $full->path = static::normalizePath($basePath . '/' . $full->path);
 				}
 			}
 		}
