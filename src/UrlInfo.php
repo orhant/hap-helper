@@ -68,7 +68,7 @@ class UrlInfo extends BaseObject {
 	public function __construct($url=[]) {
 	    if (is_array($url)) {
 	        parent::__construct($url);
-	    } else if (is_string($url)) {
+	    } elseif (is_string($url)) {
 			$config = parse_url($url);
 			if ($config === false) {
 			    throw new \InvalidArgumentException('url: '.$url);
@@ -328,7 +328,7 @@ class UrlInfo extends BaseObject {
 		$endSlash = (mb_substr($path, -1, 1) === '/');
 
 		// разбиваем путь на компоненты
-		$path = array_values(preg_split('~\/+~uism', $path, -1, PREG_SPLIT_NO_EMPTY));
+		$path = array_values(preg_split('~\/+~uism', $path, -1, PREG_SPLIT_NO_EMPTY) ?: []);
 
 		// если путь начинался с корня, то удаляем вначале все переходы на верхний путь
 		if ($startSlash) {
@@ -381,7 +381,7 @@ class UrlInfo extends BaseObject {
 	 * Возвращает параметры
 	 *
 	 * @param bool $toString преобразовать в строку
-	 * @return array параметры запроса
+	 * @return array|string параметры запроса
 	 */
 	public function getQuery(bool $toString=false) {
 		return $toString ? static::buildQuery($this->_query) : $this->_query;
@@ -398,8 +398,11 @@ class UrlInfo extends BaseObject {
 		if ($query == '') {
 			return [];
 		}
-		parse_str($query, $query);
-		return $query;
+
+		$parsed = null;
+		parse_str($query, $parsed);
+
+		return $parsed;
 	}
 
 	/**
@@ -512,22 +515,21 @@ class UrlInfo extends BaseObject {
 	 * Создает экземпляр из строки
 	 *
 	 * @param string $url адрес URL
-	 * @return \dicr\helper\UrlInfo|FALSE
+	 * @return \dicr\helper\UrlInfo|false
 	 */
 	public static function fromString(string $url) {
-	    $urlInfo = null;
 	    try {
-	        $urlInfo = new static($url);
+	        return new static($url);
 	    } catch (\Exception $ex) {
-	        $urlInfo = false;
+	        // none
 	    }
-	    return $urlInfo;
+	    return false;
 	}
 
 	/**
 	 * Возвращает строковое представление
 	 *
-	 * @param bool toIDN преобразовать домен в IDN
+	 * @param bool $toIDN преобразовать домен в IDN
 	 * @return string полный url
 	 */
 	public function toString(bool $toIDN=false) {
@@ -565,7 +567,7 @@ class UrlInfo extends BaseObject {
 	/**
 	 * Возвращает аттрибуты модели
 	 *
-	 * @return array[]
+	 * @return string[]
 	 */
 	public function getAttributes() {
 		return [
@@ -592,50 +594,13 @@ class UrlInfo extends BaseObject {
 	/**
 	 * Возвращает абсолютный URL по базовому
 	 *
-	 * @param self базовый абсолютный URL
+	 * @param self $base базовый абсолютный URL
 	 * @return self полный URL
 	 */
 	public function toAbsolute(self $base) {
 		if (empty($base)) {
 			throw new \InvalidArgumentException('base');
 		}
-
-		/*
-		if (!$base->isAbsolute) {
-			throw new \InvalidArgumentException('base not absolute');
-		}
-		*/
-
-		/*
-		 $full = clone $base;
-
-		 if ($this->getHostInfo() != '') {
-		 $full->user = $this->user;
-		 $full->pass = $this->pass;
-		 $full->host = $this->host;
-		 $full->port = $this->port;
-		 $full->path = $this->path;
-		 $full->query = $this->query;
-		 $full->fragment = $this->fragment;
-		 } else if ($this->path != '') {
-		 if (mb_substr($this->path, 0, 1) == '/') {	// абсолютный путь
-		 $full->path = $this->path;
-		 } else if (mb_substr($full->path, -1, 1) == '/') {	// относительный путь в директории
-		 $full->path = '/'.implode('/', $full->path).'/'.$this->path;
-		 } else { // относительный путь с заменой текущего файла
-		 $full->path = preg_split('~\/+~uism', $full->path, -1, PREG_SPLIT_NO_EMPTY);
-		 array_pop($full->path);
-		 $full->path = '/'.implode('/', $full->path).'/'.$this->path;
-		 }
-		 $full->query = $this->query;
-		 $full->fragment = $this->fragment;
-		 } else if (!empty($this->query)) {
-		 $full->query = $this->query;
-		 $full->fragment = $this->fragment;
-		 } else if ($this->fragment != '') {
-		 $full->fragment = $this->fragment;
-		 }
-		 */
 
 		/** @var self $full */
 		$full = clone $this;
@@ -857,6 +822,6 @@ class UrlInfo extends BaseObject {
 		}
 
 		$regex = '~^'.str_replace(['\*', '\$'], ['.*', '$'], preg_quote($mask, '~')).'~us';
-		return preg_match($regex, $this->getRequestUri());
+		return (bool)preg_match($regex, $this->getRequestUri());
 	}
 }
