@@ -75,11 +75,12 @@ class UrlInfo extends BaseObject
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      * @see \yii\base\BaseObject::init()
      */
     public function init()
     {
+
         parent::init();
 
         // хоста у ссылок mailto, tel нет (только путь)
