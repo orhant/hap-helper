@@ -31,9 +31,6 @@
 	"support" : {
 		"source" : "https://gitlab.com/dicr/yii2-helper.git"
 	},
-	"scripts" : {
-		"test" : "./vendor/bin/phpunit --bootstrap ./tests/bootstrap.php"
-	},
 	"require-dev" : {
 		"phpunit/phpunit" : "~6"
 	}

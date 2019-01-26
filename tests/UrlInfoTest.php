@@ -26,7 +26,7 @@ class UrlInfoTest extends TestCase {
 	/**
 	 * Test UrlInfo::normalizeHost
 	 */
-	public function testNormalizeDomain() {
+	public function testNormalizeHost() {
 		foreach (self::TEST_NORMALIZE_HOST as $dom => $res) {
 			self::assertEquals($res, UrlInfo::normalizeHost($dom));
 		}
@@ -201,5 +201,26 @@ class UrlInfoTest extends TestCase {
 				self::assertEquals($res, $resUrl->toString(), 'SRC: '.$src);
 			}
 		}
+	}
+
+	/** @var array non-http links */
+	const TEST_NONHTTP = [
+	    'javascript:' => 'javascript:',
+	    'javascript:void(0)' => 'javascript:void(0)',
+	    'mailto:' => 'mailto:',
+	    'mailto:test@mail.com' => 'mailto:test@mail.com',
+	    'tel:' => 'tel:',
+	    'tel:123-45-67' => 'tel:123-45-67'
+	];
+
+	public function testNonHttp() {
+	    foreach (self::TEST_NONHTTP as $src => $dst) {
+	        $url = UrlInfo::fromString($src);
+	        if ($dst === false) {
+	            self::assertFalse($url, $src);
+	        } else {
+	            self::assertSame($dst, (string)$url, $src);
+	        }
+	    }
 	}
 }

@@ -27,7 +27,18 @@ use yii\base\InvalidConfigException;
 class UrlInfo extends BaseObject
 {
     /** @var array стандартные сервисы и порты */
-    const SERVICES = ['http' => 80,'https' => 443,'ftp' => 21,'ssh' => 22,'smb' => 445];
+    const SERVICES = [
+        'http' => 80,
+        'https' => 443,
+        'ftp' => 21,
+        'ssh' => 22,
+        'smb' => 445
+    ];
+
+    /** @var array специальные схемы, которым не обязателен хост */
+    const SCHEME_NONHTTP = [
+        'javascript', 'mailto', 'tel'
+    ];
 
     /** @var string схема */
     private $_scheme = '';
@@ -83,11 +94,8 @@ class UrlInfo extends BaseObject
 
         parent::init();
 
-        // хоста у ссылок mailto, tel нет (только путь)
-        if ($this->_scheme != '') {
-            if ($this->_host == '' && ! in_array($this->_scheme, ['mailto','tel'])) {
-                throw new InvalidConfigException('host');
-            }
+        if ($this->host == '' && $this->_scheme != '' && !in_array($this->_scheme, self::SCHEME_NONHTTP)) {
+            throw new InvalidConfigException('host');
         }
 
         // если указан порт, то должен быть указан хост
