@@ -107,21 +107,39 @@ class UrlInfo extends BaseObject
     }
 
     /**
+     * Возвращает аттрибуты модели
+     *
+     * @return array
+     */
+    public function getAttributes()
+    {
+        return [
+            'scheme' => $this->scheme,
+            'user' => $this->user,
+            'pass' => $this->pass,
+            'host' => $this->host,
+            'port' => $this->port,
+            'path' => $this->path,
+            'query' => $this->query,
+            'fragment' => $this->fragment
+        ];
+    }
+
+    /**
      * Возвращает схему
      *
      * @return string
      */
     public function getScheme()
     {
-        if (empty($this->_scheme) && ! empty($this->_port)) {
-            foreach (self::SERVICES as $scheme => $port) {
-                if ($port == $this->_port) {
-                    return $scheme;
-                }
-            }
+        $scheme = $this->_scheme;
+
+        // угадываем схему по номеру порта
+        if (empty($scheme) && !empty($this->_port)) {
+            $scheme = self::getSchemeByPort($this->_port);
         }
 
-        return $this->_scheme;
+        return $scheme;
     }
 
     /**
@@ -181,47 +199,6 @@ class UrlInfo extends BaseObject
     }
 
     /**
-     * Конверирует домен в ASCII IDN
-     *
-     * @param string $domain
-     * @return string
-     */
-    public static function idnToAscii(string $domain)
-    {
-        $domain = trim($domain);
-        if ($domain == '') {
-            return '';
-        }
-        return idn_to_ascii($domain);
-    }
-
-    /**
-     * Конвертирует в IDN UTF-8
-     *
-     * @param string $domain
-     * @return string
-     */
-    public static function idnToUtf8(string $domain)
-    {
-        $domain = trim($domain);
-        if ($domain == '') {
-            return '';
-        }
-        return idn_to_utf8($domain);
-    }
-
-    /**
-     * Возвращает хост
-     *
-     * @param bool $toAscii преобразовать из UTF8 в IDN ASCII
-     * @return string хост
-     */
-    public function getHost(bool $toAscii = false)
-    {
-        return $toAscii ? static::idnToAscii($this->_host) : $this->_host;
-    }
-
-    /**
      * Нормализация имени домена, удаляет схему и путь
      * - удаляет пробелы
      * - преобразует в нижний регистр, IDN->UTF-8
@@ -265,6 +242,17 @@ class UrlInfo extends BaseObject
     }
 
     /**
+     * Возвращает хост
+     *
+     * @param bool $toAscii преобразовать из UTF-8 в ASCII IDN
+     * @return string хост
+     */
+    public function getHost(bool $toAscii=false)
+    {
+        return $toAscii ? static::idnToAscii($this->_host) : $this->_host;
+    }
+
+    /**
      * Устанавливает хост
      *
      * @param string $host
@@ -284,11 +272,13 @@ class UrlInfo extends BaseObject
      */
     public function getPort()
     {
-        if (empty($this->_port) && ! empty($this->_scheme)) {
-            return self::SERVICES[$this->_scheme] ?? 0;
+        $port = $this->_port;
+
+        if (empty($port) && !empty($this->_scheme)) {
+            $port = self::getPortByScheme($this->_scheme);
         }
 
-        return $this->_port;
+        return $port;
     }
 
     /**
@@ -304,6 +294,7 @@ class UrlInfo extends BaseObject
         if ($port < 0 || $port > 65535) {
             throw new \InvalidArgumentException('port');
         }
+
         return $port;
     }
 
@@ -491,10 +482,10 @@ class UrlInfo extends BaseObject
     /**
      * Возвращает hostinfo: user:pass@host:port часть URL
      *
-     * @param bool $toIDN преобразовать домен в IDN
+     * @param bool $toAscii преобразовать домен из UTF-8 в ASCII
      * @return string
      */
-    public function getHostInfo(bool $toIDN = false)
+    public function getHostInfo(bool $toAscii=false)
     {
         $hostInfo = '';
 
@@ -507,12 +498,21 @@ class UrlInfo extends BaseObject
         }
 
         if ($this->host != '') {
-            $hostInfo .= $this->getHost($toIDN);
+            $hostInfo .= $this->getHost($toAscii);
         }
+
 
         if (! empty($this->port) && ($this->scheme != 'http' || $this->port != 80) &&
             ($this->scheme != 'https' || $this->port != 443)) {
             $hostInfo .= ':' . $this->port;
+        }
+
+        if (!empty($this->_port)) {
+            // исключаем добавление стандартных портов
+            $port = static::getPortByScheme($this->_scheme);
+            if ($port != $this->_port) {
+                $hostInfo .= ':' . $this->port;
+            }
         }
 
         return $hostInfo;
@@ -557,10 +557,10 @@ class UrlInfo extends BaseObject
     /**
      * Возвращает строковое представление
      *
-     * @param bool $toIDN преобразовать домен в IDN
+     * @param bool $toAscii преобразовать домен из UTF в ASCII IDN
      * @return string полный url
      */
-    public function toString(bool $toIDN = false)
+    public function toString(bool $toAscii = false)
     {
         $url = '';
 
@@ -572,7 +572,7 @@ class UrlInfo extends BaseObject
             if ($this->scheme != '' && ! in_array($this->scheme, ['tel','mailto'])) {
                 $url .= '//';
             }
-            $url .= $this->getHostInfo($toIDN);
+            $url .= $this->getHostInfo($toAscii);
         }
 
         $url .= $this->getRequestUri();
@@ -592,17 +592,6 @@ class UrlInfo extends BaseObject
     public function __toString()
     {
         return $this->toString();
-    }
-
-    /**
-     * Возвращает аттрибуты модели
-     *
-     * @return array
-     */
-    public function getAttributes()
-    {
-        return ['scheme' => $this->scheme,'user' => $this->user,'pass' => $this->pass,'host' => $this->host,
-            'port' => $this->port,'path' => $this->path,'query' => $this->query,'fragment' => $this->fragment];
     }
 
     /**
@@ -827,5 +816,65 @@ class UrlInfo extends BaseObject
 
         $regex = '~^' . str_replace(['\*','\$'], ['.*','$'], preg_quote($mask, '~')) . '~us';
         return (bool) preg_match($regex, $this->getRequestUri());
+    }
+
+    /**
+     * Конверирует домен в ASCII IDN
+     *
+     * @param string $domain
+     * @return string
+     */
+    public static function idnToAscii(string $domain)
+    {
+        $domain = trim($domain);
+        if ($domain == '') {
+            return '';
+        }
+        return idn_to_ascii($domain);
+    }
+
+    /**
+     * Конвертирует в IDN UTF-8
+     *
+     * @param string $domain
+     * @return string
+     */
+    public static function idnToUtf8(string $domain)
+    {
+        $domain = trim($domain);
+        if ($domain == '') {
+            return '';
+        }
+        return idn_to_utf8($domain);
+    }
+
+    /**
+     * Возвращает схему по номеру порта
+     *
+     * @param int $port
+     * @return string
+     */
+    public static function getSchemeByPort(int $port) {
+        foreach (self::SERVICES as $scheme => $p) {
+            if ($p == $port) {
+                return $scheme;
+            }
+        }
+        return '';
+    }
+
+    /**
+     * Возвращает номер порта по схеме сервиса
+     *
+     * @param string $scheme
+     * @return int
+     */
+    public function getPortByScheme(string $scheme) {
+        foreach (self::SERVICES as $sch => $port) {
+            if ($sch == $scheme) {
+                return $port;
+            }
+        }
+        return 0;
     }
 }
