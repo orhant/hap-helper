@@ -31,6 +31,60 @@ class Html extends \yii\helpers\Html
      */
     public static function meta(array $options)
     {
-        return self::tag('meta', $options);
+        return self::tag('meta', '', $options);
+    }
+
+    /**
+     * Множесво HTML meta тегов.
+     *
+     * @param string $type тип контента: 'name', 'property', ...
+     * @param string[] $values значения key => content
+     *
+     * @return string
+     */
+    public static function metas(string $type, array $values)
+    {
+        ob_start();
+
+        foreach ($values as $key => $val) {
+            echo self::meta([
+                $type => $key,
+                'content' => $val
+            ]);
+        }
+
+        return ob_get_clean();
+    }
+
+    /**
+     * Html tag link
+     *
+     * @param string $rel
+     * @param string $href
+     * @return string
+     */
+    public static function link(string $rel, string $href)
+    {
+        return Html::tag('link', '', [
+            'rel' => $rel,
+            'href' => $href
+        ]);
+    }
+
+    /**
+     * Множество HTML link
+     *
+     * @param string[] $links ассоциативный массив rel => href
+     * @return string
+     */
+    public static function links(array $links)
+    {
+        ob_start();
+
+        foreach ($links as $rel => $href) {
+            echo self::link($rel, $href);
+        }
+
+        return ob_get_clean();
     }
 }
