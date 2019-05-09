@@ -10,16 +10,14 @@ namespace dicr\helper;
 class Html extends \yii\helpers\Html
 {
     /**
-     * @inheritdoc
+     * Синоним encode.
+     *
+     * @param string|null $str
+     * @return string
+     * @see self::encode
      */
     public static function esc($str)
     {
-
-
-        if ($str === null || $str === '') {
-            return '';
-        }
-
         return parent::encode((string) $str);
     }
 
@@ -59,16 +57,12 @@ class Html extends \yii\helpers\Html
     /**
      * Html tag link
      *
-     * @param string $rel
-     * @param string $href
+     * @param array $options
      * @return string
      */
-    public static function link(string $rel, string $href)
+    public static function link(array $options)
     {
-        return Html::tag('link', '', [
-            'rel' => $rel,
-            'href' => $href
-        ]);
+        return Html::tag('link', '', $options);
     }
 
     /**
@@ -82,7 +76,7 @@ class Html extends \yii\helpers\Html
         ob_start();
 
         foreach ($links as $rel => $href) {
-            echo self::link($rel, $href);
+            echo self::link(['rel' => $rel, 'href' => $href]);
         }
 
         return ob_get_clean();
