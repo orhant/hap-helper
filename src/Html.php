@@ -1,6 +1,8 @@
 <?php
 namespace dicr\helper;
 
+use yii\base\Model;
+
 /**
  * Html helper.
  *
@@ -80,5 +82,29 @@ class Html extends \yii\helpers\Html
         }
 
         return ob_get_clean();
+    }
+
+    /**
+     * Рендерит булевое значение флага.
+     *
+     * @param mixed $value
+     * @return string
+     */
+    public static function flag($value)
+    {
+        return Html::tag('i', '', [
+            'class' => [ $value ? 'fas' : 'far', 'fa-star']
+        ]);
+    }
+
+    /**
+     * Рендерит булевое значение.
+     * @param \yii\base\Model $model
+     * @param string $attribute
+     * @return string
+     */
+    public static function activeFlag(Model $model, string $attribute)
+    {
+        return static::flag($model->{$attribute});
     }
 }

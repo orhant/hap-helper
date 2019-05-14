@@ -46,10 +46,9 @@ class Filter
      * Фильтрует массив id
      *
      * @param mixed $ids
-     * @param bool $throw
      * @return int[]
      */
-    public static function ids($ids, bool $throw = false)
+    public static function ids($ids)
     {
         if ($ids === null) {
             return [];
