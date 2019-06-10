@@ -1,22 +1,22 @@
-<?php 
+<?php
 namespace dicr\tests;
 
 use PHPUnit\Framework\TestCase;
 use dicr\helper\ArrayHelper;
 
 /**
- * Test
- * 
+ * ArrayHelper test.
+ *
  * @author Igor (Dicr) Tarasov <develop@dicr.org>
  * @version 2019
  */
-class ArrayHelperTest extends TestCase {
-
+class ArrayHelperTest extends TestCase
+{
 	/**
 	 * Тест remove
 	 */
-	public function testRemove() {
-		
+	public function testRemove()
+	{
 		$arr = [
 			'a' => 1,
 			'b' => [
@@ -25,7 +25,7 @@ class ArrayHelperTest extends TestCase {
 				'e' => 4
 			]
 		];
-		
+
 		$res = ArrayHelper::remove($arr, ['b', 'd']);
 		self::assertSame(3, $res);
 		self::assertSame([
@@ -35,7 +35,7 @@ class ArrayHelperTest extends TestCase {
 				'e' => 4
 			]
 		], $arr);
-		
+
 		$res = ArrayHelper::remove($arr, 'b.e');
 		self::assertSame(4, $res);
 		self::assertSame([
@@ -44,11 +44,11 @@ class ArrayHelperTest extends TestCase {
 				'c' => 2
 			]
 		], $arr);
-		
+
 		$res = ArrayHelper::remove($arr, 'b');
 		self::assertSame(['c' => 2], $res);
 		self::assertSame(['a' => 1], $arr);
-		
+
 		$res = ArrayHelper::remove($arr, 'b', 123);
 		self::assertSame(123, $res);
 		self::assertSame(['a' => 1], $arr);

@@ -10,8 +10,8 @@ use dicr\helper\UrlInfo;
  * @author Igor (Dicr) Tarasov <develop@dicr.org>
  * @version 2019
  */
-class UrlInfoTest extends TestCase {
-
+class UrlInfoTest extends TestCase
+{
 	const TEST_NORMALIZE_HOST = [
 		''	=> '',
 		'site.ru' => 'site.ru',
@@ -26,7 +26,8 @@ class UrlInfoTest extends TestCase {
 	/**
 	 * Test UrlInfo::normalizeHost
 	 */
-	public function testNormalizeHost() {
+	public function testNormalizeHost()
+	{
 		foreach (self::TEST_NORMALIZE_HOST as $dom => $res) {
 			self::assertEquals($res, UrlInfo::normalizeHost($dom));
 		}
@@ -51,7 +52,8 @@ class UrlInfoTest extends TestCase {
 	/**
 	 * Test UrlInfo::normalizePath
 	 */
-	public function testNormalizePath() {
+	public function testNormalizePath()
+	{
 		foreach (self::TEST_NORMALIZE_PATH as $path => $res) {
 			self::assertEquals($res, UrlInfo::normalizePath($path));
 		}
@@ -73,23 +75,25 @@ class UrlInfoTest extends TestCase {
 	/**
 	 * Test UrlInfo::normalizeQuery
 	 */
-	public function testNormalizeQuery() {
+	public function testNormalizeQuery()
+	{
 		foreach (self::TEST_NORMALIZE_QUERY as $src => $res) {
 			self::assertEquals($res, UrlInfo::normalizeQuery($src), 'src: '.$src);
 		}
 	}
 
 	const TEST_SUBDOMAIN = [
-		['mail.ru', 'mail.ru', ''],
-		['mail.ru', 'test.mail.u', false],
-		['test.mail.ru', 'mail.ru', 'test'],
-		['test.mail.ru', 'yandex.ru', false],
+		['site.ru', 'site.ru', ''],
+		['site.ru', 'test.site.u', false],
+		['test.site.ru', 'site.ru', 'test'],
+		['test.site.ru', 'site2.ru', false],
 	];
 
 	/**
 	 * Тест определения поддомена
 	 */
-	public function testSubdomain() {
+	public function testSubdomain()
+	{
 		$urlInfo = new UrlInfo();
 		foreach (self::TEST_SUBDOMAIN as list($domain, $parent, $result)) {
 			$urlInfo->host = $domain;
@@ -98,36 +102,37 @@ class UrlInfoTest extends TestCase {
 	}
 
 	const TEST_SAMESITE = [
-	    ['mailto:test@dupad.ru', '//test@dupad.ru', false],
-        ['//test@dupad.ru', 'mailto:test@dupad.ru', false],
-        ['//test@dupad.ru', '//@dupad.ru', false],
+	    ['mailto:test@site.ru', '//test@site.ru', false],
+        ['//test@site.ru', 'mailto:test@site.ru', false],
+        ['//test@site.ru', '//@site.ru', false],
         ['/path', '/path/', true],
-        ['//dupad.ru/path', '/path/', true],
-	    ['//dupad.ru', '/', true],
-        ['//dupad.ru', '//dupad.ru:80', true],
-        ['//dupad.ru:443', 'https://dupad.ru', true],
-	    ['//dupad.ru:80', '//dupad.ru:81', false],
-        ['https://dupad.ru', '/', true],
-        ['https://dupad.ru', '//dupad.ru', true],
-        ['https://dupad.ru', 'http://dupad.ru', false],
-        ['//user@dupad.ru', '//dupad.ru', false],
-        ['//user@dupad.ru', '//user@dupad.ru', true],
-        ['//user:pass@dupad.ru', '//user@dupad.ru', false],
-        ['//user:pass@dupad.ru', '//user:pass@dupad.ru', true],
-        ['//user:pass@dupad.ru', '//user:pass@dupad.ru:80', true],
-        ['http://user:pass@dupad.ru', '//user:pass@dupad.ru:80', true],
-        ['https://user:pass@dupad.ru:83', '/page', true],
-        ['//dupad.ru', '//test.dupad.ru', true],
-        ['//dupad.ru', '//login@test.dupad.ru', false],
-        ['//dupad.ru', '//test.dupad.ru:23', false],
-        ['//test1.dupad.ru', '//test2.dupad.ru', false],
-        ['https://dupad.ru', '//test.dupad.ru', true],
+        ['//site.ru/path', '/path/', true],
+	    ['//site.ru', '/', true],
+        ['//site.ru', '//site.ru:80', true],
+        ['//site.ru:443', 'https://site.ru', true],
+	    ['//site.ru:80', '//site.ru:81', false],
+        ['https://site.ru', '/', true],
+        ['https://site.ru', '//site.ru', true],
+        ['https://site.ru', 'http://site.ru', false],
+        ['//user@site.ru', '//site.ru', false],
+        ['//user@site.ru', '//user@site.ru', true],
+        ['//user:pass@site.ru', '//user@site.ru', false],
+        ['//user:pass@site.ru', '//user:pass@site.ru', true],
+        ['//user:pass@site.ru', '//user:pass@site.ru:80', true],
+        ['http://user:pass@site.ru', '//user:pass@site.ru:80', true],
+        ['https://user:pass@site.ru:83', '/page', true],
+        ['//site.ru', '//test.site.ru', true],
+        ['//site.ru', '//login@test.site.ru', false],
+        ['//site.ru', '//test.site.ru:23', false],
+        ['//test1.site.ru', '//test2.site.ru', false],
+        ['https://site.ru', '//test.site.ru', true],
     ];
 
 	/**
 	 * Тестирование функции sameSite
 	 */
-	public function testSameSite() {
+	public function testSameSite()
+	{
         foreach (self::TEST_SAMESITE as list($url1, $url2, $res)) {
             $urlInfo1 = new UrlInfo($url1);
 			$urlInfo2 = new UrlInfo($url2);
@@ -157,9 +162,9 @@ class UrlInfoTest extends TestCase {
 			'?a=b' => 'http://site.ru/path/to.php?a=b',			// query
 			'/new/index' => 'http://site.ru/new/index',			// absolute path
 			'new/index#zzz' => 'http://site.ru/path/new/index#zzz',	// relative path
-			'//mail.ru?a=b' => 'http://mail.ru?a=b',			// host
-			'https://site.ru/' => 'https://site.ru',			// scheme
-			'//ok.ru' => 'http://ok.ru'							// other host with same scheme
+			'//site2.ru?a=b' => 'http://site2.ru?a=b',			// host
+			'https://site.ru/' => 'https://site.ru',  			// scheme
+			'//site2.ru' => 'http://site2.ru'					// other host with same scheme
 		],
 
 		// basepath с директорией в конце
@@ -175,24 +180,25 @@ class UrlInfoTest extends TestCase {
 			'..' => 'http://site.ru/path'
 		],
 
-	    'https://up-advert.ru/anketirovali/' => [
-			''	=> 'https://up-advert.ru/anketirovali/',
-			'/' => 'https://up-advert.ru',
-			'#' => 'https://up-advert.ru/anketirovali/',
-			'#a' => 'https://up-advert.ru/anketirovali/#a',
+	    'https://site.ru/anketirovali/' => [
+			''	=> 'https://site.ru/anketirovali/',
+			'/' => 'https://site.ru',
+			'#' => 'https://site.ru/anketirovali/',
+			'#a' => 'https://site.ru/anketirovali/#a',
 			'tel:+7 342 2 111 563' => 'tel:+7 342 2 111 563',
-			'mailto:info@up-advert.ru' => 'mailto:info@up-advert.ru',
+			'mailto:info@site.ru' => 'mailto:info@site.ru',
 			'//s.w.org' => 'https://s.w.org',
-			'https://up-advert.ru/wp-json/' => 'https://up-advert.ru/wp-json/',
-			'https://up-advert.ru/?p=136' => 'https://up-advert.ru?p=136',
-			'/seo/' => 'https://up-advert.ru/seo/'
+			'https://site.ru/wp-json/' => 'https://site.ru/wp-json/',
+			'https://site.ru/?p=136' => 'https://site.ru?p=136',
+			'/seo/' => 'https://site.ru/seo/'
 		]
 	];
 
 	/**
 	 * Test UrlInfo::toAbsolute
 	 */
-	public function testAbsolute() {
+	public function testAbsolute()
+	{
 		foreach (self::TEST_ABSOLUTE as $base => $tests) {
 			$baseUrl = new UrlInfo($base);
 			foreach ($tests as $src => $res) {
@@ -208,12 +214,16 @@ class UrlInfoTest extends TestCase {
 	    'javascript:' => 'javascript:',
 	    'javascript:void(0)' => 'javascript:void(0)',
 	    'mailto:' => 'mailto:',
-	    'mailto:test@mail.com' => 'mailto:test@mail.com',
+	    'mailto:test@site.ru' => 'mailto:test@site.ru',
 	    'tel:' => 'tel:',
 	    'tel:123-45-67' => 'tel:123-45-67'
 	];
 
-	public function testNonHttp() {
+	/**
+	 * Тесирует ссылки с не http-протоколом
+	 */
+	public function testNonHttp()
+	{
 	    foreach (self::TEST_NONHTTP as $src => $dst) {
 	        $url = UrlInfo::fromString($src);
 	        if ($dst === false) {

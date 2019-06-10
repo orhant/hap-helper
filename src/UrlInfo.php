@@ -5,7 +5,7 @@ use yii\base\BaseObject;
 use yii\base\InvalidConfigException;
 
 /**
- * Ссылка
+ * Модель ссылки.
  *
  * @property string $scheme
  * @property string $user
@@ -676,7 +676,7 @@ class UrlInfo extends BaseObject
             return false;
         }
 
-        $parent = mb_strtolower(idn_to_utf8($parent));
+        $parent = mb_strtolower(idn_to_utf8($parent, IDNA_DEFAULT, INTL_IDNA_VARIANT_UTS46));
 
         if ($this->host == '') {
             return false;
@@ -815,6 +815,7 @@ class UrlInfo extends BaseObject
         }
 
         $regex = '~^' . str_replace(['\*','\$'], ['.*','$'], preg_quote($mask, '~')) . '~us';
+
         return (bool) preg_match($regex, $this->getRequestUri());
     }
 
@@ -830,7 +831,8 @@ class UrlInfo extends BaseObject
         if ($domain == '') {
             return '';
         }
-        return idn_to_ascii($domain);
+
+        return idn_to_ascii($domain, IDNA_DEFAULT, INTL_IDNA_VARIANT_UTS46);
     }
 
     /**
@@ -845,7 +847,8 @@ class UrlInfo extends BaseObject
         if ($domain == '') {
             return '';
         }
-        return idn_to_utf8($domain);
+
+        return idn_to_utf8($domain, IDNA_DEFAULT, INTL_IDNA_VARIANT_UTS46);
     }
 
     /**
@@ -854,12 +857,14 @@ class UrlInfo extends BaseObject
      * @param int $port
      * @return string
      */
-    public static function getSchemeByPort(int $port) {
+    public static function getSchemeByPort(int $port)
+    {
         foreach (self::SERVICES as $scheme => $p) {
             if ($p == $port) {
                 return $scheme;
             }
         }
+
         return '';
     }
 
@@ -869,12 +874,14 @@ class UrlInfo extends BaseObject
      * @param string $scheme
      * @return int
      */
-    public function getPortByScheme(string $scheme) {
+    public function getPortByScheme(string $scheme)
+    {
         foreach (self::SERVICES as $sch => $port) {
             if ($sch == $scheme) {
                 return $port;
             }
         }
+
         return 0;
     }
 }
