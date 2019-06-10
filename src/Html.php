@@ -20,7 +20,7 @@ class Html extends \yii\helpers\Html
      */
     public static function esc($str)
     {
-        return parent::encode((string) $str);
+        return parent::encode((string)$str);
     }
 
     /**
@@ -93,7 +93,7 @@ class Html extends \yii\helpers\Html
     public static function flag($value)
     {
         return Html::tag('i', '', [
-            'class' => [ $value ? 'fas' : 'far', 'fa-star']
+            'class' => [$value ? 'fas' : 'far', 'fa-star']
         ]);
     }
 

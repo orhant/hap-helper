@@ -79,6 +79,7 @@ class UrlInfo extends BaseObject
             if ($config === false) {
                 throw new \InvalidArgumentException('url: ' . $url);
             }
+
             parent::__construct($config);
         } else {
             throw new \InvalidArgumentException('url');
@@ -874,7 +875,7 @@ class UrlInfo extends BaseObject
      * @param string $scheme
      * @return int
      */
-    public function getPortByScheme(string $scheme)
+    public static function getPortByScheme(string $scheme)
     {
         foreach (self::SERVICES as $sch => $port) {
             if ($sch == $scheme) {
