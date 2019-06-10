@@ -41,7 +41,7 @@ class PathInfo extends BaseObject
      */
     public function __construct(string $path)
     {
-        $this->_path = self::normalizePath($path);
+        $this->_path = self::normalize($path);
     }
 
     /**
@@ -50,7 +50,7 @@ class PathInfo extends BaseObject
      * @param string $path
      * @return string
      */
-    public static function normalizePath(string $path)
+    public static function normalize(string $path)
     {
         $path = trim($path);
         if ($path === '') {
