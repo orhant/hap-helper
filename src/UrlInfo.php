@@ -92,9 +92,9 @@ class UrlInfo extends BaseObject
      */
     public function init()
     {
-
         parent::init();
 
+        // если указана схема, то должен быть указан хост
         if ($this->host == '' && $this->_scheme != '' && !in_array($this->_scheme, self::SCHEME_NONHTTP)) {
             throw new InvalidConfigException('host');
         }
@@ -137,7 +137,7 @@ class UrlInfo extends BaseObject
 
         // угадываем схему по номеру порта
         if (empty($scheme) && !empty($this->_port)) {
-            $scheme = self::getSchemeByPort($this->_port);
+            $scheme = static::schemeByPort($this->_port);
         }
 
         return $scheme;
@@ -200,49 +200,6 @@ class UrlInfo extends BaseObject
     }
 
     /**
-     * Нормализация имени домена, удаляет схему и путь
-     * - удаляет пробелы
-     * - преобразует в нижний регистр, IDN->UTF-8
-     * - выделяет из ссылки, удаляя остальные компоненты
-     * - удаляет www, ftp поддомены
-     * - удаляет несколько разделителей "."
-     *
-     * @param string $name домен или ссылка
-     * @throws \InvalidArgumentException
-     * @return string
-     */
-    public static function normalizeHost(string $name)
-    {
-        // убираем все пробельные символы
-        $name = preg_replace('~[\s\h\t\v\r\n]+~uism', '', trim($name));
-        if ($name === '') {
-            return $name;
-        }
-
-        // для корректного распознавания строки как домена, парсеру необходимо наличие протокола
-        if (! preg_match('~^(\w+\:)?\/\/~uism', $name)) {
-            $name = '//' . $name;
-        }
-
-        // парсим имя домена
-        $name = trim(parse_url($name, PHP_URL_HOST));
-        if (empty($name)) {
-            throw new \InvalidArgumentException('domain name');
-        }
-
-        // преобразуем в нижний регистр и UTF-8
-        $name = mb_strtolower(static::idnToUtf8($name));
-
-        // разбиваем домен на компоненты
-        $parts = preg_split('~\.+~uism', $name, - 1, PREG_SPLIT_NO_EMPTY);
-        if (empty($parts)) {
-            throw new \InvalidArgumentException('domain name');
-        }
-
-        return implode('.', $parts);
-    }
-
-    /**
      * Возвращает хост
      *
      * @param bool $toAscii преобразовать из UTF-8 в ASCII IDN
@@ -250,7 +207,7 @@ class UrlInfo extends BaseObject
      */
     public function getHost(bool $toAscii=false)
     {
-        return $toAscii ? static::idnToAscii($this->_host) : $this->_host;
+        return $toAscii ? Url::idnToAscii($this->_host) : $this->_host;
     }
 
     /**
@@ -262,7 +219,7 @@ class UrlInfo extends BaseObject
      */
     public function setHost(string $host)
     {
-        $this->_host = static::normalizeHost($host);
+        $this->_host = Url::normalizeHost($host);
         return $this;
     }
 
@@ -276,24 +233,7 @@ class UrlInfo extends BaseObject
         $port = $this->_port;
 
         if (empty($port) && !empty($this->_scheme)) {
-            $port = self::getPortByScheme($this->_scheme);
-        }
-
-        return $port;
-    }
-
-    /**
-     * Нормализация порта.
-     * Проверяет на допустимый диапазон 0 .. 65535.
-     *
-     * @param int $port
-     * @throws \InvalidArgumentException
-     * @return int порт
-     */
-    public static function normalizePort(int $port)
-    {
-        if ($port < 0 || $port > 65535) {
-            throw new \InvalidArgumentException('port');
+            $port = static::portByScheme($this->_scheme);
         }
 
         return $port;
@@ -308,7 +248,12 @@ class UrlInfo extends BaseObject
      */
     public function setPort(int $port)
     {
-        $this->_port = static::normalizePort($port);
+        if ($port < 0 || $port > 65535) {
+            throw new \InvalidArgumentException('port');
+        }
+
+        $this->_port = $port;
+
         return $this;
     }
 
@@ -323,53 +268,6 @@ class UrlInfo extends BaseObject
     }
 
     /**
-     * Нормализация пути
-     * Удаляет лишние компоненты, заменяет корневой путь на пустой
-     *
-     * @param string $path
-     * @return string
-     */
-    public static function normalizePath(string $path)
-    {
-        $path = trim($path);
-        if ($path == '') {
-            return '';
-        }
-
-        // сохраняем начальный и конечный слэши
-        $startSlash = (mb_substr($path, 0, 1) === '/');
-        $endSlash = (mb_substr($path, - 1, 1) === '/');
-
-        // разбиваем путь на компоненты
-        $path = array_values(preg_split('~\/+~uism', $path, - 1, PREG_SPLIT_NO_EMPTY) ?: []);
-
-        $newPath = [];
-        foreach ($path as $p) {
-            if ($p == '' || $p == '.') {
-                continue;
-            }
-
-            if ($p == '..' && $startSlash) {
-                array_pop($newPath);
-            } else {
-                $newPath[] = $p;
-            }
-        }
-
-        $path = implode('/', $newPath);
-
-        if ($startSlash) {
-            $path = '/' . $path;
-        }
-
-        if ($endSlash && $path != '/') {
-            $path .= '/';
-        }
-
-        return $path;
-    }
-
-    /**
      * Устанавливает путь
      *
      * @param string $path
@@ -377,19 +275,8 @@ class UrlInfo extends BaseObject
      */
     public function setPath(string $path)
     {
-        $this->_path = static::normalizePath($path);
+        $this->_path = Url::normalizePath($path);
         return $this;
-    }
-
-    /**
-     * Конвертирует параметры запроса в строку
-     *
-     * @param array $query
-     * @return string
-     */
-    public static function buildQuery(array $query)
-    {
-        return empty($query) ? '' : http_build_query($query);
     }
 
     /**
@@ -400,92 +287,7 @@ class UrlInfo extends BaseObject
      */
     public function getQuery(bool $toString = false)
     {
-        return $toString ? static::buildQuery($this->_query) : $this->_query;
-    }
-
-    /**
-     * Парсит параметры запроса из строки
-     *
-     * @param string $query
-     * @return array
-     */
-    public static function parseQuery(string $query)
-    {
-        $query = trim($query, '? ');
-        if ($query == '') {
-            return [];
-        }
-
-        $parsed = null;
-        parse_str($query, $parsed);
-
-        return $parsed;
-    }
-
-    /**
-     * Нормализирует параметры запроса.
-     * Конвертирует из строки в массив, сортирует по названию параметров.
-     *
-     * @param array|string $query
-     * @return array
-     */
-    public static function normalizeQuery($query)
-    {
-        if (is_string($query)) {
-            $query = static::parseQuery($query);
-        } else {
-            $query = (array) $query;
-        }
-
-        if (empty($query)) {
-            $query = [];
-        } else {
-            foreach ($query as $k => $v) {
-                if (is_array($v)) {
-                    $query[$k] = self::normalizeQuery($v);
-                }
-            }
-
-            ksort($query);
-        }
-
-        return $query;
-    }
-
-    /**
-     * Фильтрует парамеры запроса, удаляя ключи с пустыми значениями.
-     *
-     * @param array $query
-     * @return array
-     */
-    public static function filterQuery(array $query)
-    {
-        foreach ($query as $k => $v) {
-            if (is_array($v)) {
-                $query[$k] = self::filterQuery($v);
-                if (empty($query[$k])) {
-                    unset($query[$k]);
-                } else {
-                    $v = trim($v);
-                    if ($v === '') {
-                        unset($query[$k]);
-                    }
-                }
-            }
-        }
-
-        return $query;
-    }
-
-    /**
-     * Преобразовывает многомерные данные параметров в плоский массив параметров.
-     *
-     * @param array $args парамеры запроса
-     * @return string[] одномерный массив параметров в виде ["id=1", "a[]=2", "b[3][4]=5"]
-     */
-    public static function flatQuery(array $args)
-    {
-        return preg_split('~\&~uism', static::buildQuery($args), -1, PREG_SPLIT_NO_EMPTY);
+        return $toString ? Url::buildQuery($this->_query) : $this->_query;
     }
 
     /**
@@ -496,7 +298,7 @@ class UrlInfo extends BaseObject
      */
     public function setQuery($query)
     {
-        $this->_query = static::normalizeQuery($query);
+        $this->_query = Url::normalizeQuery($query);
         return $this;
     }
 
@@ -537,6 +339,7 @@ class UrlInfo extends BaseObject
             if ($this->pass != '') {
                 $hostInfo .= ':' . $this->pass;
             }
+
             $hostInfo .= '@';
         }
 
@@ -552,7 +355,8 @@ class UrlInfo extends BaseObject
 
         if (!empty($this->_port)) {
             // исключаем добавление стандартных портов
-            $port = static::getPortByScheme($this->_scheme);
+            $port = static::portByScheme($this->_scheme);
+
             if ($port != $this->_port) {
                 $hostInfo .= ':' . $this->port;
             }
@@ -594,6 +398,7 @@ class UrlInfo extends BaseObject
         } catch (\Exception $ex) {
             // none
         }
+
         return false;
     }
 
@@ -690,15 +495,13 @@ class UrlInfo extends BaseObject
                             $basePath = '/' . implode('/', $basePath);
                         }
 
-                        $full->path = static::normalizePath($basePath . '/' . $full->path);
+                        $full->path = Url::normalizePath($basePath . '/' . $full->path);
                     }
             }
         }
 
         return $full;
     }
-
-    //////////////// Домены
 
     /**
      * Возвращает поддомен домена.
@@ -714,24 +517,15 @@ class UrlInfo extends BaseObject
     public function getSubdomain(string $parent)
     {
         $parent = trim($parent);
-
         if (empty($parent)) {
             return false;
         }
-
-        $parent = mb_strtolower(idn_to_utf8($parent, IDNA_DEFAULT, INTL_IDNA_VARIANT_UTS46));
 
         if ($this->host == '') {
             return false;
         }
 
-        $regex = sprintf('~^(?:(.+?)\.)?%s$~uism', preg_quote($parent));
-        $matches = null;
-        if (! preg_match($regex, $this->host, $matches)) {
-            return false;
-        }
-
-        return $matches[1] ?? '';
+        return Url::getSubdomain($this->_host, $parent);
     }
 
     /**
@@ -742,16 +536,11 @@ class UrlInfo extends BaseObject
      */
     public function isSubdomain(string $parent)
     {
-        $parent = trim($parent);
-        if (empty($parent)) {
-            throw new \InvalidArgumentException('empty parent');
-        }
-
         if ($this->host == '') {
             return false;
         }
 
-        return ! empty($this->getSubdomain($parent));
+        return ! empty(Url::isSubdomain($this->_host, $parent));
     }
 
     /**
@@ -762,32 +551,11 @@ class UrlInfo extends BaseObject
      */
     public function isDomainRelated(string $domain)
     {
-        $domain = trim($domain);
-        if (empty($domain)) {
-            throw new \InvalidArgumentException('empty domain');
-        }
-
-        $domain = mb_strtolower(idn_to_utf8($domain));
-
-        if ($this->host == '') {
+        if ($this->_host == '') {
             return false;
         }
 
-        if ($this->host == $domain) {
-            return true;
-        }
-
-        $regex = '~.+?\.%s$~uism';
-
-        if (preg_match(sprintf($regex, preg_quote($domain)), $this->host)) {
-            return true;
-        }
-
-        if (preg_match(sprintf($regex, preg_quote($this->host)), $domain)) {
-            return true;
-        }
-
-        return false;
+        return Url::isDomainsRelated($this->_host, $domain);
     }
 
     /**
@@ -863,44 +631,12 @@ class UrlInfo extends BaseObject
     }
 
     /**
-     * Конверирует домен в ASCII IDN
-     *
-     * @param string $domain
-     * @return string
-     */
-    public static function idnToAscii(string $domain)
-    {
-        $domain = trim($domain);
-        if ($domain == '') {
-            return '';
-        }
-
-        return idn_to_ascii($domain, IDNA_DEFAULT, INTL_IDNA_VARIANT_UTS46);
-    }
-
-    /**
-     * Конвертирует в IDN UTF-8
-     *
-     * @param string $domain
-     * @return string
-     */
-    public static function idnToUtf8(string $domain)
-    {
-        $domain = trim($domain);
-        if ($domain == '') {
-            return '';
-        }
-
-        return idn_to_utf8($domain, IDNA_DEFAULT, INTL_IDNA_VARIANT_UTS46);
-    }
-
-    /**
      * Возвращает схему по номеру порта
      *
      * @param int $port
      * @return string
      */
-    public static function getSchemeByPort(int $port)
+    public static function schemeByPort(int $port)
     {
         foreach (self::SERVICES as $scheme => $p) {
             if ($p == $port) {
@@ -917,7 +653,7 @@ class UrlInfo extends BaseObject
      * @param string $scheme
      * @return int
      */
-    public static function getPortByScheme(string $scheme)
+    public static function portByScheme(string $scheme)
     {
         foreach (self::SERVICES as $sch => $port) {
             if ($sch == $scheme) {
