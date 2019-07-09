@@ -440,7 +440,38 @@ class UrlInfo extends BaseObject
         if (empty($query)) {
             $query = [];
         } else {
+            foreach ($query as $k => $v) {
+                if (is_array($v)) {
+                    $query[$k] = self::normalizeQuery($v);
+                }
+            }
+
             ksort($query);
+        }
+
+        return $query;
+    }
+
+    /**
+     * Фильтрует парамеры, удаляя с пустыми значениями
+     *
+     * @param array $query
+     * @return array
+     */
+    public static function filterQuery(array $query)
+    {
+        foreach ($query as $k => $v) {
+            if (is_array($v)) {
+                $query[$k] = self::filterQuery($v);
+                if (empty($query[$k])) {
+                    unset($query[$k]);
+                } else {
+                    $v = trim($v);
+                    if ($v === '') {
+                        unset($query[$k]);
+                    }
+                }
+            }
         }
 
         return $query;
