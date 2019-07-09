@@ -453,7 +453,7 @@ class UrlInfo extends BaseObject
     }
 
     /**
-     * Фильтрует парамеры, удаляя с пустыми значениями
+     * Фильтрует парамеры запроса, удаляя ключи с пустыми значениями.
      *
      * @param array $query
      * @return array
@@ -475,6 +475,17 @@ class UrlInfo extends BaseObject
         }
 
         return $query;
+    }
+
+    /**
+     * Преобразовывает многомерные данные параметров в плоский массив параметров.
+     *
+     * @param array $args парамеры запроса
+     * @return string[] одномерный массив параметров в виде ["id=1", "a[]=2", "b[3][4]=5"]
+     */
+    public static function flatQuery(array $args)
+    {
+        return preg_split('~\&~uism', static::buildQuery($args), -1, PREG_SPLIT_NO_EMPTY);
     }
 
     /**
