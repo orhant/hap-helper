@@ -113,7 +113,7 @@ class Url extends \yii\helpers\Url
         $flat1 = self::flatQuery($args1);
         $flat2 = self::flatQuery($args2);
 
-        $flat = array_diff_assoc($flat1, $flat2);
+        $flat = array_diff($flat1, $flat2);
 
         return self::parseQuery(implode(ini_get('arg_separator.output'), $flat));
     }
