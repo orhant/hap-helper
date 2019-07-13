@@ -100,6 +100,25 @@ class Url extends \yii\helpers\Url
     }
 
     /**
+     * Вычитание параметров рекурсивно
+     *
+     * Из параметров args1 вычитаются параметры args2
+     *
+     * @param array $args1
+     * @param array $args2
+     * @return array $args1 - $args2
+     */
+    public static function diffQuery(array $args1, array $args2)
+    {
+        $flat1 = self::flatQuery($args1);
+        $flat2 = self::flatQuery($args2);
+
+        $flat = array_diff_assoc($flat1, $flat2);
+
+        return self::parseQuery(implode(ini_get('arg_separator.output'), $flat));
+    }
+
+    /**
      * Конверирует домен в ASCII IDN
      *
      * @param string $domain
