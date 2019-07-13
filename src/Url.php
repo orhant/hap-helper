@@ -76,11 +76,11 @@ class Url extends \yii\helpers\Url
                 $query[$k] = self::filterQuery($v);
                 if (empty($query[$k])) {
                     unset($query[$k]);
-                } else {
-                    $v = trim($v);
-                    if ($v === '') {
-                        unset($query[$k]);
-                    }
+                }
+            } else {
+                $v = trim($v);
+                if ($v === '') {
+                    unset($query[$k]);
                 }
             }
         }
