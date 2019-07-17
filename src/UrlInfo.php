@@ -617,6 +617,7 @@ class UrlInfo extends BaseObject
      * @param string $mask маска может содержать специальные символы '*' и '$' как в robots.txt
      * @throws \LogicException url не абсолютный
      * @return boolean true если совпадает
+     * @link https://yandex.ru/support/webmaster/controlling-robot/robots-txt.html
      */
     public function matchRobotsMask(string $mask)
     {
