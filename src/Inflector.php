@@ -26,11 +26,8 @@ class Inflector extends \yii\helpers\Inflector
      */
     public static function slug($string, $replacement = '-', $lowercase = true)
     {
-        // очищаем специальные символы
-        $string = preg_replace('~[\x00-\x1F\x7F\xA0]+~uism', ' ', $string);
-
-        // очищаем различные пробелы
-	    $string = trim(preg_replace('~[\s\h\v\r\n\t]+~uism', ' ', $string));
+        // очищаем специальные символы и пробелы
+        $string = trim(preg_replace('~[\x00-\x1F\x7F\xA0\s\h\v\r\n\t]+~uism', ' ', $string));
 	    if ($string === '') {
 	        return '';
 	    }
@@ -38,22 +35,33 @@ class Inflector extends \yii\helpers\Inflector
 	    // конверируем в нижний реестр
 	    $string = mb_strtolower($string);
 
-	    // транслируем русские буквы в латинские
-	    $srch = [];
-	    $rpls = [];
-	    foreach (self::TRANSLIT as $rus => $lat) {
-	        $srch[] = '~'.$rus.'~uism';
-	        $rpls[] = $lat;
-	    }
+        // транслитерация русских букв
+	    $string = preg_replace(
+	        array_map(function($ch) {
+	            return '~' . $ch . '~uism';
+	        }, array_keys(self::TRANSLIT)),
+	        array_values(self::TRANSLIT),
+	       $string
+        );
 
-	    $string = preg_replace($srch, $rpls, $string);
+	    // подстановка известных символов
+	    $knownChars = [
+	        '~\+~' => 'plus',
+	        '~\@~' => 'at',
+	    ];
+
+	    $string = preg_replace(
+	        array_keys($knownChars),
+	        array_values($knownChars),
+	       $string
+        );
 
 	    // заменяем все, которые НЕ разрешены
-	    $notallowed = '~[^a-z0-9\-\_\.\~]+~uism';
-	    $string = preg_replace ($notallowed, '-', $string);
+	    $string = preg_replace ('~[^a-z0-9\-\_\.\~]+~uism', '-', $string);
 
 	    // удаляем подстановочные вначале, в конце и задвоения
-	    $string = preg_replace (['~(^\-+)|(\-+$)~uism', '~\-{2,}~uism'], ['', '-'], $string);
+	    //$string = preg_replace (['~(^\-+)|(\-+$)~uism', '~\-{2,}~uism'], ['', '-'], $string);
+	    $string = preg_replace (['~(^\-+)|(\-+$)~uism'], [''], $string);
 
 	    // заменяем подстановочные на заданные
 	    $string = str_replace('-', $replacement, $string);
