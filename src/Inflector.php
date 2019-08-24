@@ -1,5 +1,5 @@
 <?php
-namespace apkv\helpers;
+namespace dicr\helper;
 
 /**
  * Inflector.
