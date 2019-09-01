@@ -24,6 +24,26 @@ class Html extends \yii\helpers\Html
     }
 
     /**
+     * Конвертирует html в текст для XML.
+     *
+     * @param string $html
+     * @return string plain-текст
+     */
+    public static function toText(string $html)
+	{
+        // декодируем html-символы &entity;
+        $text = html_entity_decode(html_entity_decode($html, ENT_QUOTES|ENT_HTML5, 'utf-8'));
+
+        // убираем теги
+        $text = strip_tags($text);
+
+        // меняем контрольные символы на пробелы
+        $text = preg_replace('~[[:cntrl:]]+~uism', ' ', $text);
+
+        return trim($text);
+    }
+
+    /**
      * Html meta tag
      *
      * @param array $options
