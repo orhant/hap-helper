@@ -1,6 +1,12 @@
 <?php
 namespace dicr\helper;
 
+/**
+ * Url Helper.
+ *
+ * @author Igor (Dicr) Tarasov <develop@dicr.org>
+ * @version 2019
+ */
 class Url extends \yii\helpers\Url
 {
     /**

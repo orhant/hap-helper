@@ -109,8 +109,8 @@ class UrlInfoTest extends TestCase
         ['/path', '/path/', true],
         ['//site.ru/path', '/path/', true],
 	    ['//site.ru', '/', true],
-        ['//site.ru', '//site.ru:80', true],
-        ['//site.ru:443', 'https://site.ru', true],
+        ['//site.ru', '//site.ru:80', false],
+        ['//site.ru:443', 'https://site.ru', false],
 	    ['//site.ru:80', '//site.ru:81', false],
         ['https://site.ru', '/', true],
         ['https://site.ru', '//site.ru', true],
@@ -119,8 +119,8 @@ class UrlInfoTest extends TestCase
         ['//user@site.ru', '//user@site.ru', true],
         ['//user:pass@site.ru', '//user@site.ru', false],
         ['//user:pass@site.ru', '//user:pass@site.ru', true],
-        ['//user:pass@site.ru', '//user:pass@site.ru:80', true],
-        ['http://user:pass@site.ru', '//user:pass@site.ru:80', true],
+        ['//user:pass@site.ru', '//user:pass@site.ru:80', false],
+        ['http://user:pass@site.ru', '//user:pass@site.ru:80', false],
         ['https://user:pass@site.ru:83', '/page', true],
         ['//site.ru', '//test.site.ru', true],
         ['//site.ru', '//login@test.site.ru', false],
@@ -134,6 +134,12 @@ class UrlInfoTest extends TestCase
 	 */
 	public function testSameSite()
 	{
+	    /*
+	    $u1 = new UrlInfo('https://site.ru');
+	    $u2 = new UrlInfo('//site.ru');
+	    var_dump($u1->isSameSite($u2)); exit;
+	    */
+
         foreach (self::TEST_SAMESITE as list($url1, $url2, $res)) {
             $urlInfo1 = new UrlInfo($url1);
 			$urlInfo2 = new UrlInfo($url2);
@@ -145,6 +151,75 @@ class UrlInfoTest extends TestCase
 	}
 
 	const TEST_ABSOLUTE = [
+	    // полная лесенка
+	    'http://l1:w1@h1.com:81/p1?q1=v1&q11=v11#f1' => [
+	        '' => 'http://l1:w1@h1.com:81/p1?q1=v1&q11=v11#f1',
+	        '#f2' => 'http://l1:w1@h1.com:81/p1?q1=v1&q11=v11#f2',
+	        '?q2=v2' => 'http://l1:w1@h1.com:81/p1?q2=v2',
+	        '?q2=v2#f2' => 'http://l1:w1@h1.com:81/p1?q2=v2#f2',
+	        'p2' => 'http://l1:w1@h1.com:81/p2',
+	        '/p2' => 'http://l1:w1@h1.com:81/p2',
+	        '/p2/' => 'http://l1:w1@h1.com:81/p2/',
+	        '/p2?q2=v2' => 'http://l1:w1@h1.com:81/p2?q2=v2',
+	        '/p2?q2=v2#f2' => 'http://l1:w1@h1.com:81/p2?q2=v2#f2',
+	        '//h2.com' => 'http://h2.com',
+	        '//h2.com/' => 'http://h2.com',
+	        '//h2.com/p2' => 'http://h2.com/p2',
+	        '//h2.com/p2?q2=v2' => 'http://h2.com/p2?q2=v2',
+	        '//h2.com/p2?q2=v2#f2' => 'http://h2.com/p2?q2=v2#f2',
+	        '//h2.com:88' => 'http://h2.com:88',
+	        '//h2.com:88/p2' => 'http://h2.com:88/p2',
+	        '//h2.com:88/p2?q2=v2' => 'http://h2.com:88/p2?q2=v2',
+	        '//h2.com:88/p2?q2=v2#f2' => 'http://h2.com:88/p2?q2=v2#f2',
+	        '//l2:w2@h2.com' => 'http://l2:w2@h2.com',
+	        '//l2:w2@h2.com/p2' => 'http://l2:w2@h2.com/p2',
+	        '//l2:w2@h2.com:88' => 'http://l2:w2@h2.com:88',
+	        '//l2:w2@h2.com:88/p2' => 'http://l2:w2@h2.com:88/p2',
+	        'https://h2.com' => 'https://h2.com',
+            'https://h2.com/p2' => 'https://h2.com/p2',
+	        'https://h2.com/p2?q2=v2' => 'https://h2.com/p2?q2=v2',
+	        'https://l2:w2@h2.com' => 'https://l2:w2@h2.com',
+	        'https://l2:w2@h2.com:88' => 'https://l2:w2@h2.com:88',
+	        'https://l2:w2@h2.com:88/p2' => 'https://l2:w2@h2.com:88/p2'
+        ],
+
+	    // порты
+	    'https://site.com' => [
+	        '//site2.com:443' => 'https://site2.com',
+	        '//site2.com:444' => 'https://site2.com:444',
+	        '//site2.com:80' => 'http://site2.com'
+        ],
+
+	    // пути
+	    'http://s.com' => [
+	        '' => 'http://s.com',
+	        '/' => 'http://s.com',
+	        'p2' => 'http://s.com/p2',
+	        'p2/' => 'http://s.com/p2/',
+	        '/p2' => 'http://s.com/p2',
+	        '/p2/' => 'http://s.com/p2/',
+	    ],
+
+	    // пути2
+	    'http://s.com/p' => [
+	        '' => 'http://s.com/p',
+	        '/' => 'http://s.com',
+	        'p2' => 'http://s.com/p2',
+	        'p2/' => 'http://s.com/p2/',
+	        '/p2' => 'http://s.com/p2',
+	        '/p2/' => 'http://s.com/p2/'
+	    ],
+
+	    // пути3
+	    'http://s.com/p/' => [
+	        '' => 'http://s.com/p/',
+	        '/' => 'http://s.com',
+	        'p2' => 'http://s.com/p/p2',
+	        'p2/' => 'http://s.com/p/p2/',
+	        '/p2' => 'http://s.com/p2',
+	        '/p2/' => 'http://s.com/p2/'
+	    ],
+
 		// короткий IDN домен с минимальным количеством параметров
 		'http://сайт.рф' => [
 			'' => 'http://сайт.рф',
@@ -195,7 +270,7 @@ class UrlInfoTest extends TestCase
 			'/seo/' => 'https://site.ru/seo/'
 		],
 
-	    // проблема с экстравагантными Url
+	    // проблемы при работе с URL
 	    'https://grad-snab.ru' => [
 	        'grad-snab.ru' => 'https://grad-snab.ru/grad-snab.ru',
 	        '//grad-snab.ru' => 'https://grad-snab.ru'
@@ -207,12 +282,18 @@ class UrlInfoTest extends TestCase
 	 */
 	public function testAbsolute()
 	{
+	    /*
+	    $u1 = new UrlInfo('http://site.ru/path/to.php?prod=1#link');
+	    $u2 = new UrlInfo('//site2.ru?a=b');
+	    //var_dump($u2->toAbsolute($u1)->toString()); exit;
+        */
+
 		foreach (self::TEST_ABSOLUTE as $base => $tests) {
 			$baseUrl = new UrlInfo($base);
 			foreach ($tests as $src => $res) {
 				$srcUrl = new UrlInfo($src);
 				$resUrl = $srcUrl->toAbsolute($baseUrl);
-				self::assertEquals($res, $resUrl->toString(), 'SRC: '.$src);
+				self::assertEquals($res, $resUrl->toString(), 'BASE: ' . $base . '; SRC: ' . $src);
 			}
 		}
 	}
