@@ -51,7 +51,7 @@ class PathInfoTest extends TestCase
 	public function testNormalizePath()
 	{
 		foreach (self::TEST_NORMALIZE as $path => $res) {
-			self::assertEquals($res, PathInfo::normalizePath($path), 'path: ' . $path);
+			self::assertEquals($res, PathInfo::normalize($path), 'path: ' . $path);
 		}
 	}
 

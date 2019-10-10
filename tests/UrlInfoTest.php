@@ -2,6 +2,7 @@
 namespace dicr\tests;
 
 use PHPUnit\Framework\TestCase;
+use dicr\helper\Url;
 use dicr\helper\UrlInfo;
 
 /**
@@ -29,7 +30,7 @@ class UrlInfoTest extends TestCase
 	public function testNormalizeHost()
 	{
 		foreach (self::TEST_NORMALIZE_HOST as $dom => $res) {
-			self::assertEquals($res, UrlInfo::normalizeHost($dom));
+			self::assertEquals($res, Url::normalizeHost($dom));
 		}
 	}
 
@@ -55,7 +56,7 @@ class UrlInfoTest extends TestCase
 	public function testNormalizePath()
 	{
 		foreach (self::TEST_NORMALIZE_PATH as $path => $res) {
-			self::assertEquals($res, UrlInfo::normalizePath($path));
+			self::assertEquals($res, Url::normalizePath($path));
 		}
 	}
 
@@ -78,7 +79,7 @@ class UrlInfoTest extends TestCase
 	public function testNormalizeQuery()
 	{
 		foreach (self::TEST_NORMALIZE_QUERY as $src => $res) {
-			self::assertEquals($res, UrlInfo::normalizeQuery($src), 'src: '.$src);
+			self::assertEquals($res, Url::normalizeQuery($src), 'src: '.$src);
 		}
 	}
 
@@ -144,7 +145,7 @@ class UrlInfoTest extends TestCase
 	}
 
 	const TEST_ABSOLUTE = [
-		// коротки IDN домен с минимальным количеством параметров
+		// короткий IDN домен с минимальным количеством параметров
 		'http://сайт.рф' => [
 			'' => 'http://сайт.рф',
 			'#test' => 'http://сайт.рф#test',
@@ -180,6 +181,7 @@ class UrlInfoTest extends TestCase
 			'..' => 'http://site.ru/path'
 		],
 
+	    // еще тесты
 	    'https://site.ru/anketirovali/' => [
 			''	=> 'https://site.ru/anketirovali/',
 			'/' => 'https://site.ru',
@@ -191,7 +193,13 @@ class UrlInfoTest extends TestCase
 			'https://site.ru/wp-json/' => 'https://site.ru/wp-json/',
 			'https://site.ru/?p=136' => 'https://site.ru?p=136',
 			'/seo/' => 'https://site.ru/seo/'
-		]
+		],
+
+	    // проблема с экстравагантными Url
+	    'https://grad-snab.ru' => [
+	        'grad-snab.ru' => 'https://grad-snab.ru/grad-snab.ru',
+	        '//grad-snab.ru' => 'https://grad-snab.ru'
+	    ]
 	];
 
 	/**

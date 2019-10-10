@@ -159,7 +159,7 @@ class PathInfo extends BaseObject
         $isAbsolute = self::isAbsolute($path);
 
         /** @var string[] $parts */
-        $parts = preg_split('~\/~uism', self::normalizePath($path), -1, PREG_SPLIT_NO_EMPTY);
+        $parts = preg_split('~\/~uism', self::normalize($path), -1, PREG_SPLIT_NO_EMPTY);
 
         if (empty($parts)) {
             if (!$isAbsolute) {
