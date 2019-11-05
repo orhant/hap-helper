@@ -1,21 +1,29 @@
 <?php
+/**
+ * Copyright (c) 2019.
+ *
+ * @author Igor A Tarasov <develop@dicr.org>
+ */
+
+declare(strict_types = 1);
 namespace dicr\helper;
+
+use function count;
+use function is_array;
 
 /**
  * Работа с массивами.
- *
- * @author Igor (Dicr) Tarasov <develop@dicr.org>
- * @version 180601
  */
 class ArrayHelper extends \yii\helpers\ArrayHelper
 {
-
     /**
      * Удаляет элемент из массива.
      * В отличие от оригинала поддерживает комплексный ключ.
      *
-     * @param $array array исходный массив
-     * @param $path string|array ключ для удаления. Может быть строкой с путем ключа, разделенным "." или массивом.
+     * @param array $array исходный массив
+     * @param string|array $path ключ для удаления. Может быть строкой с путем ключа, разделенным "." или массивом.
+     * @param mixed $default
+     * @return mixed
      */
     public static function remove(&$array, $path, $default = null)
     {

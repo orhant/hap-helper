@@ -1,7 +1,15 @@
 <?php
+/**
+ * Copyright (c) 2019.
+ *
+ * @author Igor A Tarasov <develop@dicr.org>
+ */
+
+declare(strict_types = 1);
 namespace dicr\helper;
 
 use yii\base\Model;
+use yii\helpers\Json;
 
 /**
  * Html helper.
@@ -20,7 +28,18 @@ class Html extends \yii\helpers\Html
      */
     public static function esc($str)
     {
-        return parent::encode((string)$str);
+        return static::encode((string)$str);
+    }
+
+    /**
+     * Деэкранирует из html.
+     *
+     * @param string $str
+     * @return string
+     */
+    public static function decode($str)
+    {
+        return html_entity_decode(html_entity_decode($str, ENT_QUOTES | ENT_HTML5, 'utf-8'));
     }
 
     /**
@@ -30,17 +49,17 @@ class Html extends \yii\helpers\Html
      * @return string plain-текст
      */
     public static function toText(string $html)
-	{
+    {
         // декодируем html-символы &entity;
-        $text = html_entity_decode(html_entity_decode($html, ENT_QUOTES|ENT_HTML5, 'utf-8'));
+        $html = static::decode($html);
 
         // убираем теги
-        $text = strip_tags($text);
+        $html = strip_tags($html);
 
         // меняем контрольные символы на пробелы
-        $text = preg_replace('~[[:cntrl:]]+~uism', ' ', $text);
+        $html = preg_replace('~[[:cntrl:]]+~uim', ' ', $html);
 
-        return trim($text);
+        return trim($html);
     }
 
     /**
@@ -84,7 +103,25 @@ class Html extends \yii\helpers\Html
      */
     public static function link(array $options)
     {
-        return Html::tag('link', '', $options);
+        return self::tag('link', '', $options);
+    }
+
+    /**
+     * StyleSheet- ссылка.
+     *
+     * @param string $href
+     * @param array $options
+     * @return string
+     */
+    public static function cssLink(string $href, array $options = [])
+    {
+        if (! isset($options['rel'])) {
+            $options['rel'] = 'stylesheet';
+        }
+
+        return static::link(array_merge($options, [
+            'href' => $href
+        ]));
     }
 
     /**
@@ -98,10 +135,21 @@ class Html extends \yii\helpers\Html
         ob_start();
 
         foreach ($links as $rel => $href) {
-            echo self::link(['rel' => $rel, 'href' => $href]);
+            echo static::link(['rel' => $rel, 'href' => $href]);
         }
 
         return ob_get_clean();
+    }
+
+    /**
+     * Подключение скрипта.
+     *
+     * @param string $src
+     * @return string
+     */
+    public static function jsLink(string $src)
+    {
+        return self::tag('script', '', ['src' => $src]);
     }
 
     /**
@@ -112,13 +160,14 @@ class Html extends \yii\helpers\Html
      */
     public static function flag($value)
     {
-        return Html::tag('i', '', [
+        return static::tag('i', '', [
             'class' => [$value ? 'fas' : 'far', 'fa-star']
         ]);
     }
 
     /**
      * Рендерит булевое значение.
+     *
      * @param \yii\base\Model $model
      * @param string $attribute
      * @return string
@@ -126,5 +175,48 @@ class Html extends \yii\helpers\Html
     public static function activeFlag(Model $model, string $attribute)
     {
         return static::flag($model->{$attribute});
+    }
+
+    /**
+     * Иконка FontAwesome старой версии (класс "fa fa-$name").
+     *
+     * @param string $name
+     * @param array $options
+     * @return string
+     */
+    public static function fa(string $name, array $options = [])
+    {
+        return static::tag('i', '', array_merge($options, [
+            'class' => 'fa fa-' . $name
+        ]));
+    }
+
+    /**
+     * Иконка FontAwesome новой версии (класс "fas fa-$name").
+     *
+     * @param string $name
+     * @param array $options
+     * @return string
+     */
+    public static function fas(string $name, array $options = [])
+    {
+        return static::tag('i', '', array_merge($options, [
+            'class' => 'fas fa-' . $name
+        ]));
+    }
+
+    /**
+     * Генерирует скрипт подключения jQuery плагина.
+     *
+     * @param string $target
+     * @param string $name плагин
+     * @param array $options опции плагина
+     * @return string html
+     */
+    public static function plugin(string $target, string $name, array $options = [])
+    {
+        return self::tag('script', '$(function() {
+                $("' . $target . '").' . $name . '(' . Json::encode($options) . ');
+            });', $options);
     }
 }

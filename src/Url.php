@@ -1,5 +1,16 @@
 <?php
+/**
+ * Copyright (c) 2019.
+ *
+ * @author Igor A Tarasov <develop@dicr.org>
+ */
+
+declare(strict_types = 1);
 namespace dicr\helper;
+
+use InvalidArgumentException;
+use function is_array;
+use function is_string;
 
 /**
  * Url Helper.
@@ -18,7 +29,7 @@ class Url extends \yii\helpers\Url
     public static function parseQuery(string $query)
     {
         $query = trim($query, '? ');
-        if ($query == '') {
+        if ($query === '') {
             return [];
         }
 
@@ -51,7 +62,7 @@ class Url extends \yii\helpers\Url
         if (is_string($query)) {
             $query = static::parseQuery($query);
         } else {
-            $query = (array) $query;
+            $query = (array)$query;
         }
 
         if (empty($query)) {
@@ -102,7 +113,7 @@ class Url extends \yii\helpers\Url
      */
     public static function flatQuery(array $args)
     {
-        return preg_split('~\&~uism', static::buildQuery($args), -1, PREG_SPLIT_NO_EMPTY);
+        return preg_split('~&~um', static::buildQuery($args), - 1, PREG_SPLIT_NO_EMPTY);
     }
 
     /**
@@ -133,7 +144,7 @@ class Url extends \yii\helpers\Url
     public static function idnToAscii(string $domain)
     {
         $domain = trim($domain);
-        if ($domain == '') {
+        if ($domain === '') {
             return '';
         }
 
@@ -149,7 +160,7 @@ class Url extends \yii\helpers\Url
     public static function idnToUtf8(string $domain)
     {
         $domain = trim($domain);
-        if ($domain == '') {
+        if ($domain === '') {
             return '';
         }
 
@@ -165,35 +176,35 @@ class Url extends \yii\helpers\Url
      * - удаляет несколько разделителей "."
      *
      * @param string $name домен или ссылка
-     * @throws \InvalidArgumentException
      * @return string
+     * @throws \InvalidArgumentException
      */
     public static function normalizeHost(string $name)
     {
         // убираем все пробельные символы
-        $name = preg_replace('~[\s\h\t\v\r\n]+~uism', '', trim($name));
+        $name = preg_replace('~[\s\h\t\v\r\n]+~uim', '', trim($name));
         if ($name === '') {
             return $name;
         }
 
         // для корректного распознавания строки как домена, парсеру необходимо наличие протокола
-        if (! preg_match('~^(\w+\:)?\/\/~uism', $name)) {
+        if (! preg_match('~^(\w+:)?//~um', $name)) {
             $name = '//' . $name;
         }
 
         // парсим имя домена
         $name = trim(parse_url($name, PHP_URL_HOST));
         if (empty($name)) {
-            throw new \InvalidArgumentException('domain name');
+            throw new InvalidArgumentException('domain name');
         }
 
         // преобразуем в нижний регистр и UTF-8
         $name = mb_strtolower(static::idnToUtf8($name));
 
         // разбиваем домен на компоненты
-        $parts = preg_split('~\.+~uism', $name, - 1, PREG_SPLIT_NO_EMPTY);
+        $parts = preg_split('~\.+~um', $name, - 1, PREG_SPLIT_NO_EMPTY);
         if (empty($parts)) {
-            throw new \InvalidArgumentException('domain name');
+            throw new InvalidArgumentException('domain name');
         }
 
         return implode('.', $parts);
@@ -209,24 +220,25 @@ class Url extends \yii\helpers\Url
     public static function normalizePath(string $path)
     {
         $path = trim($path);
-        if ($path == '') {
+        if ($path === '') {
             return '';
         }
 
         // сохраняем начальный и конечный слэши
-        $startSlash = (mb_substr($path, 0, 1) === '/');
+        $startSlash = (mb_strpos($path, '/') === 0);
         $endSlash = (mb_substr($path, - 1, 1) === '/');
 
         // разбиваем путь на компоненты
-        $path = array_values(preg_split('~\/+~uism', $path, - 1, PREG_SPLIT_NO_EMPTY) ?: []);
+        /** @noinspection CallableParameterUseCaseInTypeContextInspection */
+        $path = array_values(preg_split('~/+~um', $path, - 1, PREG_SPLIT_NO_EMPTY) ?: []);
 
         $newPath = [];
         foreach ($path as $p) {
-            if ($p == '' || $p == '.') {
+            if ($p === '' || $p === '.') {
                 continue;
             }
 
-            if ($p == '..' && $startSlash) {
+            if ($p === '..' && $startSlash) {
                 array_pop($newPath);
             } else {
                 $newPath[] = $p;
@@ -239,7 +251,7 @@ class Url extends \yii\helpers\Url
             $path = '/' . $path;
         }
 
-        if ($endSlash && $path != '/') {
+        if ($endSlash && $path !== '/') {
             $path .= '/';
         }
 
@@ -257,25 +269,25 @@ class Url extends \yii\helpers\Url
     {
         $dom1 = static::normalizeHost($dom1);
         if (empty($dom1)) {
-            throw new \InvalidArgumentException('dom1');
+            throw new InvalidArgumentException('dom1');
         }
 
         $dom2 = static::normalizeHost($dom2);
         if (empty($dom2)) {
-            throw new \InvalidArgumentException('dom2');
+            throw new InvalidArgumentException('dom2');
         }
 
-        if ($dom1 == $dom2) {
+        if ($dom1 === $dom2) {
             return true;
         }
 
         $regex = '~.+?\.%s$~uism';
 
-        if (preg_match(sprintf($regex, preg_quote($dom1)), $dom2)) {
+        if (preg_match(sprintf($regex, preg_quote($dom1, '~')), $dom2)) {
             return true;
         }
 
-        if (preg_match(sprintf($regex, preg_quote($dom2)), $dom1)) {
+        if (preg_match(sprintf($regex, preg_quote($dom2, '~')), $dom1)) {
             return true;
         }
 
@@ -298,16 +310,16 @@ class Url extends \yii\helpers\Url
     {
         $domain = static::normalizeHost($domain);
         if (empty($domain)) {
-            throw new \InvalidArgumentException('domain');
+            throw new InvalidArgumentException('domain');
         }
 
         $parent = static::normalizeHost($parent);
         if (empty($parent)) {
-            throw new \InvalidArgumentException('parent');
+            throw new InvalidArgumentException('parent');
         }
 
         $matches = null;
-        if (! preg_match(sprintf('~^(?:(.+?)\.)?%s$~uism', preg_quote($parent)), $domain, $matches)) {
+        if (! preg_match(sprintf('~^(?:(.+?)\.)?%s$~uism', preg_quote($parent, '~')), $domain, $matches)) {
             return false;
         }
 
@@ -319,21 +331,21 @@ class Url extends \yii\helpers\Url
      *
      * @param string $domain
      * @param string $parent
-     * @throws \InvalidArgumentException
      * @return boolean
+     * @throws \InvalidArgumentException
      */
     public static function isSubdomain(string $domain, string $parent)
     {
         $domain = static::normalizeHost($domain);
         if (empty($domain)) {
-            throw new \InvalidArgumentException('domain');
+            throw new InvalidArgumentException('domain');
         }
 
         $parent = static::normalizeHost($parent);
         if (empty($parent)) {
-            throw new \InvalidArgumentException('parent');
+            throw new InvalidArgumentException('parent');
         }
 
-        return !empty(static::getSubdomain($domain, $parent));
+        return ! empty(static::getSubdomain($domain, $parent));
     }
 }

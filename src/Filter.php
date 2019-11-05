@@ -1,5 +1,16 @@
 <?php
-namespace app\helpers;
+/**
+ * Copyright (c) 2019.
+ *
+ * @author Igor A Tarasov <develop@dicr.org>
+ */
+
+declare(strict_types = 1);
+namespace dicr\helper;
+
+use InvalidArgumentException;
+use function is_array;
+use function is_int;
 
 /**
  * Фильтр данных.
@@ -13,26 +24,26 @@ class Filter
      * Парсит id
      *
      * @param mixed $id
-     * @throws \InvalidArgumentException
      * @return int|null
+     * @throws \InvalidArgumentException
      */
     public static function id($id)
     {
-        if (!is_int($id)) {
+        if (! is_int($id)) {
             $id = trim($id);
             if ($id === '') {
                 return null;
             }
 
-            if (!ctype_digit($id)) {
-                throw new \InvalidArgumentException('id');
+            if (! ctype_digit($id)) {
+                throw new InvalidArgumentException('id');
             }
 
             $id = (int)$id;
         }
 
         if ($id < 0) {
-            throw new \InvalidArgumentException('id');
+            throw new InvalidArgumentException('id');
         }
 
         if (empty($id)) {
@@ -54,7 +65,7 @@ class Filter
             return [];
         }
 
-        if (!is_array($ids)) {
+        if (! is_array($ids)) {
             $ids = [$ids];
         }
 

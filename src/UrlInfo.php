@@ -1,10 +1,25 @@
 <?php
+/**
+ * Copyright (c) 2019.
+ *
+ * @author Igor A Tarasov <develop@dicr.org>
+ */
+
+declare(strict_types = 1);
 namespace dicr\helper;
 
+use ArrayAccess;
+use InvalidArgumentException;
+use Throwable;
+use Yii;
 use yii\base\Arrayable;
 use yii\base\ArrayableTrait;
 use yii\base\BaseObject;
 use yii\base\InvalidConfigException;
+use function gettype;
+use function in_array;
+use function is_array;
+use function is_string;
 
 /**
  * Модель ссылки.
@@ -25,12 +40,13 @@ use yii\base\InvalidConfigException;
  * @author Igor (Dicr) Tarasov <develop@dicr.org>
  * @version 180621
  */
-class UrlInfo extends BaseObject implements Arrayable, \ArrayAccess
+class UrlInfo extends BaseObject implements Arrayable, ArrayAccess
 {
     use ArrayableTrait;
+    use ArrayAccessTrait;
 
     /** @var array стандартные сервисы и порты */
-    const SERVICES = [
+    public const SERVICES = [
         'http' => 80,
         'https' => 443,
         'ftp' => 21,
@@ -39,8 +55,10 @@ class UrlInfo extends BaseObject implements Arrayable, \ArrayAccess
     ];
 
     /** @var array специальные схемы, которым не обязателен хост */
-    const SCHEME_NONHTTP = [
-        'javascript', 'mailto', 'tel'
+    public const SCHEME_NONHTTP = [
+        'javascript',
+        'mailto',
+        'tel'
     ];
 
     /** @var string схема */
@@ -79,19 +97,71 @@ class UrlInfo extends BaseObject implements Arrayable, \ArrayAccess
         if (is_string($url)) {
             $config = $url === '' ? [] : parse_url($url);
             if ($config === false) {
-                throw new \InvalidArgumentException('url: ' . $url);
+                throw new InvalidArgumentException('url: ' . $url);
             }
 
             $url = $config;
-        } elseif (!is_array($url)) {
-            throw new \InvalidArgumentException('неизвестный тип url: ' . gettype($url));
+        } elseif (! is_array($url)) {
+            throw new InvalidArgumentException('неизвестный тип url: ' . gettype($url));
         }
 
         parent::__construct($url);
     }
 
     /**
+     * Создает экземпляр из строки
+     *
+     * @param string $url адрес URL
+     * @return \dicr\helper\UrlInfo|false
+     */
+    public static function fromString(string $url)
+    {
+        try {
+            return new static($url);
+        } catch (Throwable $ex) {
+            Yii::debug($ex, __METHOD__);
+        }
+
+        return false;
+    }
+
+    /**
+     * Возвращает схему по номеру порта
+     *
+     * @param int $port
+     * @return string
+     */
+    public static function schemeByPort(int $port)
+    {
+        foreach (self::SERVICES as $scheme => $p) {
+            if ($p === $port) {
+                return $scheme;
+            }
+        }
+
+        return '';
+    }
+
+    /**
+     * Возвращает номер порта по схеме сервиса
+     *
+     * @param string $scheme
+     * @return int
+     */
+    public static function portByScheme(string $scheme)
+    {
+        foreach (self::SERVICES as $sch => $port) {
+            if ($sch === $scheme) {
+                return $port;
+            }
+        }
+
+        return 0;
+    }
+
+    /**
      * {@inheritDoc}
+     * @throws \yii\base\InvalidConfigException
      * @see \yii\base\BaseObject::init()
      */
     public function init()
@@ -99,7 +169,7 @@ class UrlInfo extends BaseObject implements Arrayable, \ArrayAccess
         parent::init();
 
         // если указана схема, то должен быть указан хост
-        if ($this->_scheme !== '' && !in_array($this->_scheme, self::SCHEME_NONHTTP) && $this->host === '') {
+        if ($this->_scheme !== '' && ! in_array($this->_scheme, self::SCHEME_NONHTTP, true) && $this->host === '') {
             throw new InvalidConfigException('host не указан');
         }
 
@@ -109,7 +179,7 @@ class UrlInfo extends BaseObject implements Arrayable, \ArrayAccess
         }
 
         // если указан логин или порт, то должен быть указан хост
-        if (($this->_user !== '' || $this->_port != 0) && $this->_host === '') {
+        if (($this->_user !== '' || $this->_port !== 0) && $this->_host === '') {
             throw new InvalidConfigException('host не указан');
         }
 
@@ -117,7 +187,7 @@ class UrlInfo extends BaseObject implements Arrayable, \ArrayAccess
         if ($this->_host !== '') {
             if ($this->_path === '') {
                 $this->_path = '/';
-            } elseif (substr($this->_path, 0, 1) !== '/') {
+            } elseif ($this->_path[0] !== '/') {
                 throw new InvalidConfigException('path должен начинаться с "/"');
             }
         }
@@ -233,8 +303,8 @@ class UrlInfo extends BaseObject implements Arrayable, \ArrayAccess
      * Устанавливает хост
      *
      * @param string $host
-     * @throws \InvalidArgumentException
      * @return self
+     * @throws \InvalidArgumentException
      */
     public function setHost(string $host)
     {
@@ -256,13 +326,13 @@ class UrlInfo extends BaseObject implements Arrayable, \ArrayAccess
      * Устанавливает порт
      *
      * @param int $port
-     * @throws \InvalidArgumentException
      * @return self
+     * @throws \InvalidArgumentException
      */
     public function setPort(int $port)
     {
         if ($port < 0 || $port > 65535) {
-            throw new \InvalidArgumentException('port');
+            throw new InvalidArgumentException('port');
         }
 
         $this->_port = $port;
@@ -304,7 +374,7 @@ class UrlInfo extends BaseObject implements Arrayable, \ArrayAccess
      */
     public function getQuery(bool $toString = false)
     {
-        return !empty($this->_query) && $toString ? Url::buildQuery($this->_query) : $this->_query;
+        return ! empty($this->_query) && $toString ? Url::buildQuery($this->_query) : $this->_query;
     }
 
     /**
@@ -367,7 +437,7 @@ class UrlInfo extends BaseObject implements Arrayable, \ArrayAccess
                 // исключаем добавление стандартных портов
                 $port = static::portByScheme($this->_scheme);
 
-                if ($port != $this->port) {
+                if ($port !== $this->port) {
                     $hostInfo .= ':' . $this->port;
                 }
             }
@@ -402,23 +472,6 @@ class UrlInfo extends BaseObject implements Arrayable, \ArrayAccess
     }
 
     /**
-     * Создает экземпляр из строки
-     *
-     * @param string $url адрес URL
-     * @return \dicr\helper\UrlInfo|false
-     */
-    public static function fromString(string $url)
-    {
-        try {
-            return new static($url);
-        } catch (\Exception $ex) {
-            // none
-        }
-
-        return false;
-    }
-
-    /**
      * Возвращает строковое представление
      *
      * @param bool $toAscii преобразовать домен из UTF в ASCII IDN
@@ -435,7 +488,7 @@ class UrlInfo extends BaseObject implements Arrayable, \ArrayAccess
         $hostInfo = $this->getHostInfo($toAscii);
 
         if ($hostInfo !== '') {
-            if (! in_array($this->scheme, self::SCHEME_NONHTTP)) {
+            if (! in_array($this->scheme, self::SCHEME_NONHTTP, true)) {
                 $url .= '//';
             }
 
@@ -443,7 +496,7 @@ class UrlInfo extends BaseObject implements Arrayable, \ArrayAccess
         }
 
         $requestUri = $this->getRequestUri(true);
-        if ($this->path == '/') {
+        if ($this->path === '/') {
             $requestUri = ltrim($requestUri, '/');
         }
 
@@ -461,9 +514,11 @@ class UrlInfo extends BaseObject implements Arrayable, \ArrayAccess
     {
         try {
             return $this->toString();
-        } catch (\Throwable $ex) {
-            \Yii::error($ex, __METHOD__);
+        } catch (Throwable $ex) {
+            Yii::error($ex, __METHOD__);
         }
+
+        return '';
     }
 
     /**
@@ -489,11 +544,11 @@ class UrlInfo extends BaseObject implements Arrayable, \ArrayAccess
         }
 
         if (empty($base)) {
-            throw new \InvalidArgumentException('base пустой');
+            throw new InvalidArgumentException('base пустой');
         }
 
-        if (!$base->isAbsolute) {
-            throw new \InvalidArgumentException('base не абсолюный Url');
+        if (! $base->isAbsolute) {
+            throw new InvalidArgumentException('base не абсолюный Url');
         }
 
         // клонируем полную ссылку для перезаписи
@@ -507,7 +562,7 @@ class UrlInfo extends BaseObject implements Arrayable, \ArrayAccess
             $start = 'hostinfo';
         } elseif ($this->path !== '') {
             $start = 'path';
-        } elseif (!empty($this->query)) {
+        } elseif (! empty($this->query)) {
             $start = 'query';
         } elseif ($this->fragment !== '') {
             $start = 'fragment';
@@ -515,37 +570,37 @@ class UrlInfo extends BaseObject implements Arrayable, \ArrayAccess
 
         // перезаписываем, начиная с заданного компонента
         switch ($start) {
-            case 'scheme':
-                $full->scheme = $this->scheme;
+            /** @noinspection PhpMissingBreakStatementInspection */ case 'scheme':
+            $full->scheme = $this->scheme;
 
-            case 'hostinfo':
-                $full->user = $this->user;
-                $full->pass = $this->pass;
-                $full->host = $this->host;
-                $full->port = $this->port;
+            /** @noinspection PhpMissingBreakStatementInspection */ case 'hostinfo':
+            $full->user = $this->user;
+            $full->pass = $this->pass;
+            $full->host = $this->host;
+            $full->port = $this->port;
 
-            case 'path':
-                if ($base->path === '' || mb_substr($this->path, 0, 1) === '/') {
-                    // если базовый пустой или относительный путь полный, то переписываем весь путь
-                    $full->path = '/' . ltrim($this->path, '/');
-                } elseif (mb_substr($base->path, -1, 1) === '/') {
-                    // если базовый заканчивается на '/', то добавляем относительный
-                    $full->path .= $this->path;
-                } else {
-                    // удаляем последний компонент из базового
-                    $path = preg_split('~[\/]+~uism', $base->path, -1, PREG_SPLIT_NO_EMPTY);
-                    if (!empty($path)) {
-                        array_pop($path);
-                    }
-
-                    // добавляем относительный путь
-                    $path[] = $this->path;
-
-                    $full->path = '/' . implode('/', $path);
+            /** @noinspection PhpMissingBreakStatementInspection */ case 'path':
+            if ($base->path === '' || mb_strpos($this->path, '/') === 0) {
+                // если базовый пустой или относительный путь полный, то переписываем весь путь
+                $full->path = '/' . ltrim($this->path, '/');
+            } elseif (mb_substr($base->path, - 1, 1) === '/') {
+                // если базовый заканчивается на '/', то добавляем относительный
+                $full->path .= $this->path;
+            } else {
+                // удаляем последний компонент из базового
+                $path = preg_split('~[/]+~um', $base->path, - 1, PREG_SPLIT_NO_EMPTY);
+                if (! empty($path)) {
+                    array_pop($path);
                 }
 
-            case 'query':
-                $full->query = $this->query;
+                // добавляем относительный путь
+                $path[] = $this->path;
+
+                $full->path = '/' . implode('/', $path);
+            }
+
+            /** @noinspection PhpMissingBreakStatementInspection */ case 'query':
+            $full->query = $this->query;
 
             case 'fragment':
                 $full->fragment = $this->fragment;
@@ -624,7 +679,7 @@ class UrlInfo extends BaseObject implements Arrayable, \ArrayAccess
     public function isSameSite(UrlInfo $other, array $options = [])
     {
         if (empty($other)) {
-            throw new \InvalidArgumentException('other');
+            throw new InvalidArgumentException('other');
         }
 
         $subdoms = ! empty($options['subdoms']); // разрешать поддомены
@@ -635,10 +690,8 @@ class UrlInfo extends BaseObject implements Arrayable, \ArrayAccess
         $u2 = $other;
 
         // сравниваем схемы
-        if (
-            (($u1->scheme !== '' && $u2->scheme !== '') || in_array($u1->scheme, self::SCHEME_NONHTTP) || in_array($u2->scheme, self::SCHEME_NONHTTP))
-            && $u1->scheme !== $u2->scheme
-        ) {
+        if ((($u1->scheme !== '' && $u2->scheme !== '') || in_array($u1->scheme, self::SCHEME_NONHTTP, true) ||
+             in_array($u2->scheme, self::SCHEME_NONHTTP, true)) && $u1->scheme !== $u2->scheme) {
             return false;
         }
 
@@ -646,29 +699,25 @@ class UrlInfo extends BaseObject implements Arrayable, \ArrayAccess
         if ($u1->hostInfo !== '' && $u2->hostInfo !== '') {
 
             // сравниваем user, pass, port
-            if ($u1->user !== $u2->user || $u1->pass != $u2->pass || $u1->_port !== $u2->_port) {
+            if ($u1->user !== $u2->user || $u1->pass !== $u2->pass || $u1->_port !== $u2->_port) {
                 return false;
             }
 
-            if (($subdoms && !$u1->isDomainRelated($u2->host)) || (!$subdoms && $u1->host !== $u2->host)) {
+            if (($subdoms && ! $u1->isDomainRelated($u2->host)) || (! $subdoms && $u1->host !== $u2->host)) {
                 return false;
             }
         }
 
         // проверяем путь
-        if ($subpath && $u1->path !== '' && ($u2->path == '' || mb_strpos($u2->path, $u1->path) !== 0)) {
-            return false;
-        }
-
-        return true;
+        return ! ($subpath && $u1->path !== '' && ($u2->path === '' || mb_strpos($u2->path, $u1->path) !== 0));
     }
 
     /**
      * Проверяет совпадение маски правила robots.txt с данным URL
      *
      * @param string $mask маска может содержать специальные символы '*' и '$' как в robots.txt
-     * @throws \LogicException url не абсолютный
      * @return boolean true если совпадает
+     * @throws \LogicException url не абсолютный
      * @link https://yandex.ru/support/webmaster/controlling-robot/robots-txt.html
      */
     public function matchRobotsMask(string $mask)
@@ -678,78 +727,8 @@ class UrlInfo extends BaseObject implements Arrayable, \ArrayAccess
             return false;
         }
 
-        $regex = '~^' . str_replace(['\*','\$'], ['.*','$'], preg_quote($mask, '~')) . '~us';
+        $regex = '~^' . str_replace(['\*', '\$'], ['.*', '$'], preg_quote($mask, '~')) . '~us';
 
-        return (bool) preg_match($regex, $this->getRequestUri());
-    }
-
-    /**
-     * Возвращает схему по номеру порта
-     *
-     * @param int $port
-     * @return string
-     */
-    public static function schemeByPort(int $port)
-    {
-        foreach (self::SERVICES as $scheme => $p) {
-            if ($p == $port) {
-                return $scheme;
-            }
-        }
-
-        return '';
-    }
-
-    /**
-     * Возвращает номер порта по схеме сервиса
-     *
-     * @param string $scheme
-     * @return int
-     */
-    public static function portByScheme(string $scheme)
-    {
-        foreach (self::SERVICES as $sch => $port) {
-            if ($sch == $scheme) {
-                return $port;
-            }
-        }
-
-        return 0;
-    }
-
-    /**
-     * {@inheritDoc}
-     * @see \ArrayAccess::offsetExists()
-     */
-    public function offsetExists($offset)
-    {
-        return isset($this->$offset);
-    }
-
-    /**
-     * {@inheritDoc}
-     * @see \ArrayAccess::offsetGet()
-     */
-    public function offsetGet($offset)
-    {
-        return $this->$offset;
-    }
-
-    /**
-     * {@inheritDoc}
-     * @see \ArrayAccess::offsetSet()
-     */
-    public function offsetSet($offset, $item)
-    {
-        $this->$offset = $item;
-    }
-
-    /**
-     * {@inheritDoc}
-     * @see \ArrayAccess::offsetUnset()
-     */
-    public function offsetUnset($offset)
-    {
-        $this->$offset = null;
+        return (bool)preg_match($regex, $this->getRequestUri());
     }
 }
