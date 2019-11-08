@@ -9,6 +9,7 @@ declare(strict_types = 1);
 namespace dicr\helper;
 
 use InvalidArgumentException;
+use function count;
 use function is_array;
 use function is_string;
 
@@ -21,6 +22,36 @@ use function is_string;
 class Url extends \yii\helpers\Url
 {
     /**
+     * Нормализирует параметры запроса.
+     * Конвертирует из строки в массив, сортирует по названию параметров.
+     *
+     * @param array|string $query
+     * @return array
+     */
+    public static function normalizeQuery($query)
+    {
+        if (empty($query)) {
+            return [];
+        }
+
+        if (! is_array($query)) {
+            $query = static::parseQuery($query);
+        }
+
+        foreach ($query as $k => &$v) {
+            if (is_array($v)) {
+                $v = self::normalizeQuery($v);
+            }
+        }
+
+        unset($v);
+
+        ksort($query);
+
+        return $query;
+    }
+
+    /**
      * Парсит параметры запроса из строки
      *
      * @param string $query
@@ -28,7 +59,7 @@ class Url extends \yii\helpers\Url
      */
     public static function parseQuery(string $query)
     {
-        $query = trim($query, '? ');
+        $query = trim($query, '?');
         if ($query === '') {
             return [];
         }
@@ -40,6 +71,84 @@ class Url extends \yii\helpers\Url
     }
 
     /**
+     * Фильтрует парамеры запроса, удаляя ключи с пустыми значениями.
+     *
+     * @param array|string $query
+     * @return array
+     */
+    public static function filterQuery($query)
+    {
+        if (empty($query)) {
+            return [];
+        }
+
+        if (! is_array($query)) {
+            $query = static::parseQuery($query);
+        }
+
+        foreach ($query as $k => &$v) {
+            if ($v === null || $v === '' || $v === []) {
+                unset($query[$k]);
+            } elseif (is_array($v)) {
+                $v = self::filterQuery($v);
+                if (empty($v)) {
+                    unset($query[$k]);
+                }
+            }
+        }
+
+        return $query;
+    }
+
+    /**
+     * Вычитание параметров рекурсивно
+     *
+     * Из параметров args1 вычитаются параметры args2
+     *
+     * @param array|string $query1
+     * @param array|string $query2
+     * @return array $query1 - $query2
+     */
+    public static function diffQuery($query1, $query2)
+    {
+        return static::unflatQuery(array_diff(static::flatQuery($query1), static::flatQuery($query2)));
+    }
+
+    /**
+     * Восстанавливает парамеры запроса из плоского вида.
+     *
+     * @param array $flatQuery
+     * @return array
+     */
+    public static function unflatQuery(array $flatQuery)
+    {
+        if (count($flatQuery) < 1) {
+            return [];
+        }
+
+        return static::parseQuery(implode(ini_get('arg_separator.output'), $flatQuery));
+    }
+
+    /**
+     * Преобразовывает многомерные данные параметров в плоский массив параметров.
+     *
+     * @param array|string $query парамеры запроса
+     * @return string[] одномерный массив параметров в виде ["id=1", "a[]=2", "b[3][4]=5"]
+     */
+    public static function flatQuery($query)
+    {
+        if (empty($query)) {
+            return [];
+        }
+
+        if (! is_string($query)) {
+            $query = static::buildQuery($query);
+        }
+
+        return explode(ini_get('arg_separator.output'), $query);
+    }
+
+    /**
      * Конвертирует параметры запроса в строку
      *
      * @param array $query
@@ -48,91 +157,6 @@ class Url extends \yii\helpers\Url
     public static function buildQuery(array $query)
     {
         return empty($query) ? '' : http_build_query($query);
-    }
-
-    /**
-     * Нормализирует параметры запроса.
-     * Конвертирует из строки в массив, сортирует по названию параметров.
-     *
-     * @param array|string $query
-     * @return array
-     */
-    public static function normalizeQuery($query)
-    {
-        if (is_string($query)) {
-            $query = static::parseQuery($query);
-        } else {
-            $query = (array)$query;
-        }
-
-        if (empty($query)) {
-            $query = [];
-        } else {
-            foreach ($query as $k => $v) {
-                if (is_array($v)) {
-                    $query[$k] = self::normalizeQuery($v);
-                }
-            }
-
-            ksort($query);
-        }
-
-        return $query;
-    }
-
-    /**
-     * Фильтрует парамеры запроса, удаляя ключи с пустыми значениями.
-     *
-     * @param array $query
-     * @return array
-     */
-    public static function filterQuery(array $query)
-    {
-        foreach ($query as $k => $v) {
-            if (is_array($v)) {
-                $query[$k] = self::filterQuery($v);
-                if (empty($query[$k])) {
-                    unset($query[$k]);
-                }
-            } else {
-                $v = trim($v);
-                if ($v === '') {
-                    unset($query[$k]);
-                }
-            }
-        }
-
-        return $query;
-    }
-
-    /**
-     * Преобразовывает многомерные данные параметров в плоский массив параметров.
-     *
-     * @param array $args парамеры запроса
-     * @return string[] одномерный массив параметров в виде ["id=1", "a[]=2", "b[3][4]=5"]
-     */
-    public static function flatQuery(array $args)
-    {
-        return preg_split('~&~um', static::buildQuery($args), - 1, PREG_SPLIT_NO_EMPTY);
-    }
-
-    /**
-     * Вычитание параметров рекурсивно
-     *
-     * Из параметров args1 вычитаются параметры args2
-     *
-     * @param array $args1
-     * @param array $args2
-     * @return array $args1 - $args2
-     */
-    public static function diffQuery(array $args1, array $args2)
-    {
-        $flat1 = self::flatQuery($args1);
-        $flat2 = self::flatQuery($args2);
-
-        $flat = array_diff($flat1, $flat2);
-
-        return self::parseQuery(implode(ini_get('arg_separator.output'), $flat));
     }
 
     /**
@@ -149,65 +173,6 @@ class Url extends \yii\helpers\Url
         }
 
         return idn_to_ascii($domain, IDNA_DEFAULT, INTL_IDNA_VARIANT_UTS46);
-    }
-
-    /**
-     * Конвертирует в IDN UTF-8
-     *
-     * @param string $domain
-     * @return string
-     */
-    public static function idnToUtf8(string $domain)
-    {
-        $domain = trim($domain);
-        if ($domain === '') {
-            return '';
-        }
-
-        return idn_to_utf8($domain, IDNA_DEFAULT, INTL_IDNA_VARIANT_UTS46);
-    }
-
-    /**
-     * Нормализация имени домена, удаляет схему и путь
-     * - удаляет пробелы
-     * - преобразует в нижний регистр, IDN->UTF-8
-     * - выделяет из ссылки, удаляя остальные компоненты
-     * - удаляет www, ftp поддомены
-     * - удаляет несколько разделителей "."
-     *
-     * @param string $name домен или ссылка
-     * @return string
-     * @throws \InvalidArgumentException
-     */
-    public static function normalizeHost(string $name)
-    {
-        // убираем все пробельные символы
-        $name = preg_replace('~[\s\h\t\v\r\n]+~uim', '', trim($name));
-        if ($name === '') {
-            return $name;
-        }
-
-        // для корректного распознавания строки как домена, парсеру необходимо наличие протокола
-        if (! preg_match('~^(\w+:)?//~um', $name)) {
-            $name = '//' . $name;
-        }
-
-        // парсим имя домена
-        $name = trim(parse_url($name, PHP_URL_HOST));
-        if (empty($name)) {
-            throw new InvalidArgumentException('domain name');
-        }
-
-        // преобразуем в нижний регистр и UTF-8
-        $name = mb_strtolower(static::idnToUtf8($name));
-
-        // разбиваем домен на компоненты
-        $parts = preg_split('~\.+~um', $name, - 1, PREG_SPLIT_NO_EMPTY);
-        if (empty($parts)) {
-            throw new InvalidArgumentException('domain name');
-        }
-
-        return implode('.', $parts);
     }
 
     /**
@@ -295,6 +260,88 @@ class Url extends \yii\helpers\Url
     }
 
     /**
+     * Нормализация имени домена, удаляет схему и путь
+     * - удаляет пробелы
+     * - преобразует в нижний регистр, IDN->UTF-8
+     * - выделяет из ссылки, удаляя остальные компоненты
+     * - удаляет www, ftp поддомены
+     * - удаляет несколько разделителей "."
+     *
+     * @param string $name домен или ссылка
+     * @return string
+     * @throws \InvalidArgumentException
+     */
+    public static function normalizeHost(string $name)
+    {
+        // убираем все пробельные символы
+        $name = preg_replace('~[\s\h\t\v\r\n]+~uim', '', trim($name));
+        if ($name === '') {
+            return $name;
+        }
+
+        // для корректного распознавания строки как домена, парсеру необходимо наличие протокола
+        if (! preg_match('~^(\w+:)?//~um', $name)) {
+            $name = '//' . $name;
+        }
+
+        // парсим имя домена
+        $name = trim(parse_url($name, PHP_URL_HOST));
+        if (empty($name)) {
+            throw new InvalidArgumentException('domain name');
+        }
+
+        // преобразуем в нижний регистр и UTF-8
+        $name = mb_strtolower(static::idnToUtf8($name));
+
+        // разбиваем домен на компоненты
+        $parts = preg_split('~\.+~um', $name, - 1, PREG_SPLIT_NO_EMPTY);
+        if (empty($parts)) {
+            throw new InvalidArgumentException('domain name');
+        }
+
+        return implode('.', $parts);
+    }
+
+    /**
+     * Конвертирует в IDN UTF-8
+     *
+     * @param string $domain
+     * @return string
+     */
+    public static function idnToUtf8(string $domain)
+    {
+        $domain = trim($domain);
+        if ($domain === '') {
+            return '';
+        }
+
+        return idn_to_utf8($domain, IDNA_DEFAULT, INTL_IDNA_VARIANT_UTS46);
+    }
+
+    /**
+     * Проверяет является ли домен поддоменом другого
+     *
+     * @param string $domain
+     * @param string $parent
+     * @return boolean
+     * @throws \InvalidArgumentException
+     */
+    public static function isSubdomain(string $domain, string $parent)
+    {
+        $domain = static::normalizeHost($domain);
+        if (empty($domain)) {
+            throw new InvalidArgumentException('domain');
+        }
+
+        $parent = static::normalizeHost($parent);
+        if (empty($parent)) {
+            throw new InvalidArgumentException('parent');
+        }
+
+        return ! empty(static::getSubdomain($domain, $parent));
+    }
+
+    /**
      * Возвращает поддомен домена.
      * Пример:
      * "test.mail.ru", "mail.ru" => "test"
@@ -324,28 +371,5 @@ class Url extends \yii\helpers\Url
         }
 
         return $matches[1] ?? '';
-    }
-
-    /**
-     * Проверяет является ли домен поддоменом другого
-     *
-     * @param string $domain
-     * @param string $parent
-     * @return boolean
-     * @throws \InvalidArgumentException
-     */
-    public static function isSubdomain(string $domain, string $parent)
-    {
-        $domain = static::normalizeHost($domain);
-        if (empty($domain)) {
-            throw new InvalidArgumentException('domain');
-        }
-
-        $parent = static::normalizeHost($parent);
-        if (empty($parent)) {
-            throw new InvalidArgumentException('parent');
-        }
-
-        return ! empty(static::getSubdomain($domain, $parent));
     }
 }
