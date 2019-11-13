@@ -7,6 +7,9 @@
 
 /** @noinspection PhpUnhandledExceptionInspection */
 
+declare(strict_types = 1);
+
+use yii\db\Connection;
 use yii\web\Application;
 
 error_reporting(- 1);
@@ -30,7 +33,7 @@ new Application([
     ],
     'components' => [
         'db' => [
-            'class' => 'yii\db\Connection',
+            'class' => Connection::class,
             'dsn' => 'sqlite::memory:',
         ],
     ],

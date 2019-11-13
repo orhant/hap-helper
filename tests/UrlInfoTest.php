@@ -1,4 +1,11 @@
 <?php
+/**
+ * Copyright (c) 2019.
+ *
+ * @author Igor A Tarasov <develop@dicr.org>
+ */
+
+declare(strict_types = 1);
 namespace dicr\tests;
 
 use PHPUnit\Framework\TestCase;
@@ -13,7 +20,7 @@ use dicr\helper\UrlInfo;
  */
 class UrlInfoTest extends TestCase
 {
-	const TEST_NORMALIZE_HOST = [
+	public const TEST_NORMALIZE_HOST = [
 		''	=> '',
 		'site.ru' => 'site.ru',
 		'//site.ru' => 'site.ru',
@@ -30,11 +37,11 @@ class UrlInfoTest extends TestCase
 	public function testNormalizeHost()
 	{
 		foreach (self::TEST_NORMALIZE_HOST as $dom => $res) {
-			self::assertEquals($res, Url::normalizeHost($dom));
+			self::assertSame($res, Url::normalizeHost($dom));
 		}
 	}
 
-	const TEST_NORMALIZE_PATH = [
+	public const TEST_NORMALIZE_PATH = [
 		'' => '',
 		'/' => '/',
 	    '//./' => '/',
@@ -56,11 +63,11 @@ class UrlInfoTest extends TestCase
 	public function testNormalizePath()
 	{
 		foreach (self::TEST_NORMALIZE_PATH as $path => $res) {
-			self::assertEquals($res, Url::normalizePath($path));
+			self::assertSame($res, Url::normalizePath($path));
 		}
 	}
 
-	const TEST_NORMALIZE_QUERY = [
+	public const TEST_NORMALIZE_QUERY = [
 		'' => [],
 		'?' => [],
 		'&' => [],
@@ -83,7 +90,7 @@ class UrlInfoTest extends TestCase
 		}
 	}
 
-	const TEST_SUBDOMAIN = [
+	public const TEST_SUBDOMAIN = [
 		['site.ru', 'site.ru', ''],
 		['site.ru', 'test.site.u', false],
 		['test.site.ru', 'site.ru', 'test'],
@@ -96,13 +103,13 @@ class UrlInfoTest extends TestCase
 	public function testSubdomain()
 	{
 		$urlInfo = new UrlInfo();
-		foreach (self::TEST_SUBDOMAIN as list($domain, $parent, $result)) {
+		foreach (self::TEST_SUBDOMAIN as [$domain, $parent, $result]) {
 			$urlInfo->host = $domain;
-			self::assertEquals($result, $urlInfo->getSubdomain($parent), $domain . '|' . $parent);
+			self::assertSame($result, $urlInfo->getSubdomain($parent), $domain . '|' . $parent);
 		}
 	}
 
-	const TEST_SAMESITE = [
+	public const TEST_SAMESITE = [
 	    ['mailto:test@site.ru', '//test@site.ru', false],
         ['//test@site.ru', 'mailto:test@site.ru', false],
         ['//test@site.ru', '//@site.ru', false],
@@ -140,17 +147,17 @@ class UrlInfoTest extends TestCase
 	    var_dump($u1->isSameSite($u2)); exit;
 	    */
 
-        foreach (self::TEST_SAMESITE as list($url1, $url2, $res)) {
+        foreach (self::TEST_SAMESITE as [$url1, $url2, $res]) {
             $urlInfo1 = new UrlInfo($url1);
 			$urlInfo2 = new UrlInfo($url2);
 
-			self::assertEquals($res, $urlInfo1->isSameSite($urlInfo2, [
-			    'subdoms' => true
-			]), $url1.'|'.$url2);
+			self::assertSame($res, $urlInfo1->isSameSite($urlInfo2, [
+                'subdoms' => true
+            ]), $url1 . '|' . $url2);
 		}
 	}
 
-	const TEST_ABSOLUTE = [
+	public const TEST_ABSOLUTE = [
 	    // полная лесенка
 	    'http://l1:w1@h1.com:81/p1?q1=v1&q11=v11#f1' => [
 	        '' => 'http://l1:w1@h1.com:81/p1?q1=v1&q11=v11#f1',
@@ -293,13 +300,13 @@ class UrlInfoTest extends TestCase
 			foreach ($tests as $src => $res) {
 				$srcUrl = new UrlInfo($src);
 				$resUrl = $srcUrl->toAbsolute($baseUrl);
-				self::assertEquals($res, $resUrl->toString(), 'BASE: ' . $base . '; SRC: ' . $src);
+				self::assertSame($res, $resUrl->toString(), 'BASE: ' . $base . '; SRC: ' . $src);
 			}
 		}
 	}
 
 	/** @var array non-http links */
-	const TEST_NONHTTP = [
+	public const TEST_NONHTTP = [
 	    'javascript:' => 'javascript:',
 	    'javascript:void(0)' => 'javascript:void(0)',
 	    'mailto:' => 'mailto:',
@@ -315,10 +322,10 @@ class UrlInfoTest extends TestCase
 	{
 	    foreach (self::TEST_NONHTTP as $src => $dst) {
 	        $url = UrlInfo::fromString($src);
-	        if ($dst === false) {
-	            self::assertFalse($url, $src);
-	        } else {
+	        if ($dst !== false) {
 	            self::assertSame($dst, (string)$url, $src);
+	        } else {
+	            self::assertFalse($url, $src);
 	        }
 	    }
 	}

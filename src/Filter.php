@@ -9,7 +9,6 @@ declare(strict_types = 1);
 namespace dicr\helper;
 
 use InvalidArgumentException;
-use function is_array;
 use function is_int;
 
 /**
@@ -61,27 +60,49 @@ class Filter
      */
     public static function ids($ids)
     {
-        if ($ids === null) {
-            return [];
-        }
+        $ids = (array)($ids ?: []);
 
-        if (! is_array($ids)) {
-            $ids = [$ids];
-        }
-
-        foreach ($ids as $i => $id) {
+        foreach ($ids as $i => &$id) {
             $id = self::id($id);
             if ($id === null) {
                 unset($ids[$i]);
-            } else {
-                $ids[$i] = $id;
             }
         }
 
-        $ids = array_unique($ids, SORT_NUMERIC);
+        unset($id);
 
-        sort($ids, SORT_NUMERIC);
+        if (!empty($ids)) {
+            $ids = array_unique($ids, SORT_NUMERIC);
+            sort($ids, SORT_NUMERIC);
+        }
 
         return $ids;
+    }
+
+    /**
+     * Фильрует масив строк.
+     *
+     * @param string|array $strings
+     * @return string[]
+     */
+    public static function strings($strings)
+    {
+        $strings = (array)($strings ?: []);
+
+        foreach ($strings as $i => &$v) {
+            $v = (string)$v;
+            if ($v === '') {
+                unset($strings[$i]);
+            }
+        }
+
+        unset($v);
+
+        if (! empty($strings)) {
+            $strings = array_unique($strings);
+            sort($strings, SORT_STRING);
+        }
+
+        return $strings;
     }
 }

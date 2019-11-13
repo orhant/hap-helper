@@ -1,4 +1,11 @@
 <?php
+/**
+ * Copyright (c) 2019.
+ *
+ * @author Igor A Tarasov <develop@dicr.org>
+ */
+
+declare(strict_types = 1);
 namespace dicr\tests;
 
 use PHPUnit\Framework\TestCase;
@@ -12,7 +19,7 @@ use dicr\helper\PathInfo;
  */
 class PathInfoTest extends TestCase
 {
-	const TEST_NORMALIZE = [
+	public const TEST_NORMALIZE = [
 		'' => '',
 
 	    '/' => '/',
@@ -51,11 +58,11 @@ class PathInfoTest extends TestCase
 	public function testNormalizePath()
 	{
 		foreach (self::TEST_NORMALIZE as $path => $res) {
-			self::assertEquals($res, PathInfo::normalize($path), 'path: ' . $path);
+			self::assertSame($res, PathInfo::normalize($path), 'path: ' . $path);
 		}
 	}
 
-	const TEST_PARENT = [
+	public const TEST_PARENT = [
 	    '' => '..',
 	    '/' => '/',
 	    '/path' => '/',
@@ -76,7 +83,7 @@ class PathInfoTest extends TestCase
 	public function testParent()
 	{
 		foreach (self::TEST_PARENT as $path => $res) {
-			self::assertEquals($res, PathInfo::parent($path), 'parent: ' . $path);
+			self::assertSame($res, PathInfo::parent($path), 'parent: ' . $path);
 		}
 	}
 }

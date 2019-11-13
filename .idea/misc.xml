@@ -3,4 +3,19 @@
   <component name="JavaScriptSettings">
     <option name="languageLevel" value="ES6" />
   </component>
+  <component name="PhpEntryPointsManager">
+    <entry_point>
+      <entry_point TYPE="phpClass" FQNAME="\dicr\helper\Debug" />
+      <entry_point TYPE="phpNamespace" FQNAME="\dicr\helper" />
+      <entry_point TYPE="phpClass" FQNAME="\dicr\helper\Filter" />
+      <entry_point TYPE="phpClass" FQNAME="\dicr\helper\Html" />
+      <entry_point TYPE="phpClass" FQNAME="\dicr\helper\Inflector" />
+      <entry_point TYPE="phpClass" FQNAME="\dicr\helper\StringHelper" />
+    </entry_point>
+    <pattern value="\dicr\helper\Debug" />
+    <pattern value="\dicr\helper\Filter" />
+    <pattern value="\dicr\helper\Html" />
+    <pattern value="\dicr\helper\Inflector" />
+    <pattern value="\dicr\helper\StringHelper" />
+  </component>
 </project>

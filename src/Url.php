@@ -156,7 +156,7 @@ class Url extends \yii\helpers\Url
      */
     public static function buildQuery(array $query)
     {
-        return empty($query) ? '' : preg_replace(['~%5B~i', '~%5D~i', '~\[\d+\]~'], ['[', ']', '[]'], http_build_query($query));
+        return empty($query) ? '' : preg_replace(['~%5B~i', '~%5D~i', '~\[\d+]~'], ['[', ']', '[]'], http_build_query($query));
     }
 
     /**

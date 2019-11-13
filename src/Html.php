@@ -32,17 +32,6 @@ class Html extends \yii\helpers\Html
     }
 
     /**
-     * Деэкранирует из html.
-     *
-     * @param string $str
-     * @return string
-     */
-    public static function decode($str)
-    {
-        return html_entity_decode(html_entity_decode($str, ENT_QUOTES | ENT_HTML5, 'utf-8'));
-    }
-
-    /**
      * Конвертирует html в текст для XML.
      *
      * @param string $html
@@ -63,14 +52,14 @@ class Html extends \yii\helpers\Html
     }
 
     /**
-     * Html meta tag
+     * Деэкранирует из html.
      *
-     * @param array $options
+     * @param string $str
      * @return string
      */
-    public static function meta(array $options)
+    public static function decode($str)
     {
-        return self::tag('meta', '', $options);
+        return html_entity_decode(html_entity_decode($str, ENT_QUOTES | ENT_HTML5, 'utf-8'));
     }
 
     /**
@@ -96,14 +85,14 @@ class Html extends \yii\helpers\Html
     }
 
     /**
-     * Html tag link
+     * Html meta tag
      *
      * @param array $options
      * @return string
      */
-    public static function link(array $options)
+    public static function meta(array $options)
     {
-        return self::tag('link', '', $options);
+        return self::tag('meta', '', $options);
     }
 
     /**
@@ -122,6 +111,17 @@ class Html extends \yii\helpers\Html
         return static::link(array_merge($options, [
             'href' => $href
         ]));
+    }
+
+    /**
+     * Html tag link
+     *
+     * @param array $options
+     * @return string
+     */
+    public static function link(array $options)
+    {
+        return self::tag('link', '', $options);
     }
 
     /**
@@ -153,6 +153,18 @@ class Html extends \yii\helpers\Html
     }
 
     /**
+     * Рендерит булевое значение.
+     *
+     * @param \yii\base\Model $model
+     * @param string $attribute
+     * @return string
+     */
+    public static function activeFlag(Model $model, string $attribute)
+    {
+        return static::flag($model->{$attribute});
+    }
+
+    /**
      * Рендерит булевое значение флага.
      *
      * @param mixed $value
@@ -163,18 +175,6 @@ class Html extends \yii\helpers\Html
         return static::tag('i', '', [
             'class' => [$value ? 'fas' : 'far', 'fa-star']
         ]);
-    }
-
-    /**
-     * Рендерит булевое значение.
-     *
-     * @param \yii\base\Model $model
-     * @param string $attribute
-     * @return string
-     */
-    public static function activeFlag(Model $model, string $attribute)
-    {
-        return static::flag($model->{$attribute});
     }
 
     /**
@@ -215,8 +215,8 @@ class Html extends \yii\helpers\Html
      */
     public static function plugin(string $target, string $name, array $options = [])
     {
-        return self::tag('script', '$(function() {
-                $("' . $target . '").' . $name . '(' . Json::encode($options) . ');
-            });', $options);
+        return self::script('$(function() {
+            $("' . $target . '").' . $name . '(' . Json::encode($options) . ');
+        });');
     }
 }
