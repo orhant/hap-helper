@@ -16,4 +16,18 @@ namespace dicr\helper;
  */
 class StringHelper extends \yii\helpers\StringHelper
 {
+    /**
+     * Первая буква в нижний регистр.
+     *
+     * @param $string
+     * @param string $encoding
+     * @return string
+     */
+    public static function mb_lcfirst($string, $encoding = 'UTF-8')
+    {
+        $firstChar = mb_substr($string, 0, 1, $encoding);
+        $rest = mb_substr($string, 1, null, $encoding);
+
+        return mb_strtolower($firstChar, $encoding) . $rest;
+    }
 }
