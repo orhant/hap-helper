@@ -40,15 +40,15 @@ class Html extends \yii\helpers\Html
     public static function toText($html)
     {
         // декодируем html-символы &entity;
-        $html = static::decode((string)$html);
+        $text = static::decode((string)$html);
 
         // убираем теги
-        $html = strip_tags($html);
+        $text = strip_tags($text);
 
         // меняем контрольные символы на пробелы
-        $html = preg_replace('~[[:cntrl:]]+~uim', ' ', $html);
+        $text = (string)preg_replace('~[[:cntrl:]]+~uim', ' ', $text);
 
-        return trim($html);
+        return trim($text);
     }
 
     /**
@@ -59,7 +59,7 @@ class Html extends \yii\helpers\Html
      */
     public static function hasText($html)
     {
-        return self::toText(self::decode(string)$html)  !== '';
+        return self::toText((string)$html)  !== '';
     }
 
     /**
