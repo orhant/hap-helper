@@ -37,10 +37,10 @@ class Html extends \yii\helpers\Html
      * @param string $html
      * @return string plain-текст
      */
-    public static function toText(string $html)
+    public static function toText($html)
     {
         // декодируем html-символы &entity;
-        $html = static::decode($html);
+        $html = static::decode((string)$html);
 
         // убираем теги
         $html = strip_tags($html);
@@ -52,6 +52,17 @@ class Html extends \yii\helpers\Html
     }
 
     /**
+     * Проверяет содержит ли html текст, кроме пустых тэгов.
+     *
+     * @param $html
+     * @return bool
+     */
+    public static function hasText($html)
+    {
+        return self::toText(self::decode(string)$html)  !== '';
+    }
+
+    /**
      * Деэкранирует из html.
      *
      * @param string $str
@@ -59,7 +70,7 @@ class Html extends \yii\helpers\Html
      */
     public static function decode($str)
     {
-        return html_entity_decode(html_entity_decode($str, ENT_QUOTES | ENT_HTML5, 'utf-8'));
+        return html_entity_decode(html_entity_decode((string)$str, ENT_QUOTES | ENT_HTML5, 'utf-8'));
     }
 
     /**
