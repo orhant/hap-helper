@@ -1,8 +1,9 @@
 <?php
 /**
- * Copyright (c) 2019.
- *
+ * @copyright 2019-2019 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
+ * @license proprietary
+ * @version 14.11.19 03:58:12
  */
 
 declare(strict_types = 1);
@@ -42,6 +43,7 @@ class ArrayHelper extends \yii\helpers\ArrayHelper
         $key = array_shift($path);
         $ret = $array[$key] ?? $default;
         unset($array[$key]);
+
         return $ret;
     }
 }

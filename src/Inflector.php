@@ -1,8 +1,9 @@
 <?php
 /**
- * Copyright (c) 2019.
- *
+ * @copyright 2019-2019 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
+ * @license proprietary
+ * @version 14.11.19 03:58:12
  */
 
 declare(strict_types = 1);
@@ -58,7 +59,7 @@ class Inflector extends \yii\helpers\Inflector
      *
      * @param string $string
      * @param string $replacement
-     * @param boolean $lowercase
+     * @param bool $lowercase
      * @return string
      */
     public static function slug($string, $replacement = '-', $lowercase = true)

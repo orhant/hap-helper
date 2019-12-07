@@ -1,8 +1,9 @@
 <?php
 /**
- * Copyright (c) 2019.
- *
+ * @copyright 2019-2019 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
+ * @license proprietary
+ * @version 14.11.19 03:58:12
  */
 
 declare(strict_types = 1);
@@ -95,7 +96,7 @@ class PathInfo extends BaseObject
      * Проверяет является ли путь абсолютным
      *
      * @param string $path
-     * @return boolean
+     * @return bool
      */
     public static function isAbsolute(string $path)
     {
@@ -214,7 +215,7 @@ class PathInfo extends BaseObject
     /**
      * Возвращает признак абсолютного пути
      *
-     * @return boolean
+     * @return bool
      */
     public function getIsAbsolute()
     {

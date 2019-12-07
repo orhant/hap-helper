@@ -1,8 +1,9 @@
 <?php
 /**
- * Copyright (c) 2019.
- *
+ * @copyright 2019-2019 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
+ * @license proprietary
+ * @version 14.11.19 03:58:12
  */
 
 declare(strict_types = 1);
@@ -156,7 +157,8 @@ class Url extends \yii\helpers\Url
      */
     public static function buildQuery(array $query)
     {
-        return empty($query) ? '' : preg_replace(['~%5B~i', '~%5D~i', '~\[\d+]~'], ['[', ']', '[]'], http_build_query($query));
+        return empty($query) ? '' :
+            preg_replace(['~%5B~i', '~%5D~i', '~\[\d+]~'], ['[', ']', '[]'], http_build_query($query));
     }
 
     /**
@@ -228,7 +230,7 @@ class Url extends \yii\helpers\Url
      *
      * @param string $dom1 домен
      * @param string $dom2 домен
-     * @return boolean true, если $dom1 == $dom2 или один из них является поддоменом другого
+     * @return bool true, если $dom1 == $dom2 или один из них является поддоменом другого
      */
     public static function isDomainsRelated(string $dom1, string $dom2)
     {
@@ -323,7 +325,7 @@ class Url extends \yii\helpers\Url
      *
      * @param string $domain
      * @param string $parent
-     * @return boolean
+     * @return bool
      * @throws \InvalidArgumentException
      */
     public static function isSubdomain(string $domain, string $parent)

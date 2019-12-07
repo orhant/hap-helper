@@ -1,8 +1,9 @@
 <?php
 /**
- * Copyright (c) 2019.
- *
+ * @copyright 2019-2019 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
+ * @license proprietary
+ * @version 14.11.19 03:58:12
  */
 
 declare(strict_types = 1);
@@ -210,6 +211,7 @@ class UrlInfo extends BaseObject implements Arrayable, ArrayAccess
     public function fields()
     {
         $fields = $this->attributes();
+
         return array_combine($fields, $fields);
     }
 
@@ -241,6 +243,7 @@ class UrlInfo extends BaseObject implements Arrayable, ArrayAccess
     public function setScheme(string $scheme)
     {
         $this->_scheme = $scheme !== '' ? strtolower($scheme) : '';
+
         return $this;
     }
 
@@ -263,6 +266,7 @@ class UrlInfo extends BaseObject implements Arrayable, ArrayAccess
     public function setUser(string $user)
     {
         $this->_user = $user;
+
         return $this;
     }
 
@@ -285,6 +289,7 @@ class UrlInfo extends BaseObject implements Arrayable, ArrayAccess
     public function setPass(string $pass)
     {
         $this->_pass = $pass;
+
         return $this;
     }
 
@@ -309,6 +314,7 @@ class UrlInfo extends BaseObject implements Arrayable, ArrayAccess
     public function setHost(string $host)
     {
         $this->_host = $host !== '' ? Url::normalizeHost($host) : '';
+
         return $this;
     }
 
@@ -363,6 +369,7 @@ class UrlInfo extends BaseObject implements Arrayable, ArrayAccess
         }
 
         $this->_path = $path !== '' && $path !== '/' ? Url::normalizePath($path) : $path;
+
         return $this;
     }
 
@@ -386,6 +393,7 @@ class UrlInfo extends BaseObject implements Arrayable, ArrayAccess
     public function setQuery($query)
     {
         $this->_query = empty($query) ? [] : Url::normalizeQuery($query);
+
         return $this;
     }
 
@@ -408,6 +416,7 @@ class UrlInfo extends BaseObject implements Arrayable, ArrayAccess
     public function setFragment(string $fragment)
     {
         $this->_fragment = $fragment !== '' ? ltrim($fragment, '#') : '';
+
         return $this;
     }
 
@@ -524,7 +533,7 @@ class UrlInfo extends BaseObject implements Arrayable, ArrayAccess
     /**
      * Возвращает признак абсолютной ссылки
      *
-     * @return boolean
+     * @return bool
      */
     public function getIsAbsolute()
     {
@@ -638,7 +647,7 @@ class UrlInfo extends BaseObject implements Arrayable, ArrayAccess
      * Проверяет является ли поддоменом $parent
      *
      * @param string $parent родительский домен
-     * @return boolean true если $domain != $parent и являестся поддоменом $parent
+     * @return bool true если $domain != $parent и являестся поддоменом $parent
      */
     public function isSubdomain(string $parent)
     {
@@ -653,7 +662,7 @@ class UrlInfo extends BaseObject implements Arrayable, ArrayAccess
      * Проверяет имеет ли домен взаимоотношение родительский-дочерний с $domain
      *
      * @param string $domain сравниваемый домен
-     * @return boolean true, если $domain1 == $domain2 или один из них является поддоменом другого
+     * @return bool true, если $domain1 == $domain2 или один из них является поддоменом другого
      */
     public function isDomainRelated(string $domain)
     {
@@ -716,7 +725,7 @@ class UrlInfo extends BaseObject implements Arrayable, ArrayAccess
      * Проверяет совпадение маски правила robots.txt с данным URL
      *
      * @param string $mask маска может содержать специальные символы '*' и '$' как в robots.txt
-     * @return boolean true если совпадает
+     * @return bool true если совпадает
      * @throws \LogicException url не абсолютный
      * @link https://yandex.ru/support/webmaster/controlling-robot/robots-txt.html
      */
