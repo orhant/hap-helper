@@ -3,7 +3,7 @@
  * @copyright 2019-2019 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 06.12.19 06:27:54
+ * @version 23.12.19 20:12:45
  */
 
 declare(strict_types = 1);
@@ -167,7 +167,7 @@ class Html extends \yii\helpers\Html
     /**
      * Рендерит булевое значение.
      *
-     * @param \yii\base\Model $model
+     * @param Model $model
      * @param string $attribute
      * @return string
      */

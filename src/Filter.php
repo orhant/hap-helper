@@ -3,7 +3,7 @@
  * @copyright 2019-2019 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 14.11.19 03:58:12
+ * @version 23.12.19 20:12:45
  */
 
 declare(strict_types = 1);
@@ -25,7 +25,7 @@ class Filter
      *
      * @param mixed $id
      * @return int|null
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public static function id($id)
     {

@@ -3,22 +3,39 @@
  * @copyright 2019-2019 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 14.11.19 03:58:12
+ * @version 23.12.19 20:14:30
  */
 
-declare(strict_types = 1);
+declare(strict_types=1);
+
 namespace dicr\helper;
 
 use InvalidArgumentException;
+use function array_diff;
+use function array_map;
+use function array_pop;
+use function array_values;
 use function count;
+use function explode;
+use function http_build_query;
+use function implode;
+use function ini_get;
 use function is_array;
 use function is_string;
+use function ksort;
+use function parse_str;
+use function parse_url;
+use function preg_match;
+use function preg_quote;
+use function preg_replace;
+use function preg_split;
+use function sprintf;
+use function trim;
+use const PHP_URL_HOST;
+use const PREG_SPLIT_NO_EMPTY;
 
 /**
  * Url Helper.
- *
- * @author Igor (Dicr) Tarasov <develop@dicr.org>
- * @version 2019
  */
 class Url extends \yii\helpers\Url
 {
@@ -35,7 +52,7 @@ class Url extends \yii\helpers\Url
             return [];
         }
 
-        if (! is_array($query)) {
+        if (!is_array($query)) {
             $query = static::parseQuery($query);
         }
 
@@ -76,6 +93,7 @@ class Url extends \yii\helpers\Url
      *
      * @param array|string $query
      * @return array
+     * @noinspection PhpUnused
      */
     public static function filterQuery($query)
     {
@@ -83,7 +101,7 @@ class Url extends \yii\helpers\Url
             return [];
         }
 
-        if (! is_array($query)) {
+        if (!is_array($query)) {
             $query = static::parseQuery($query);
         }
 
@@ -109,6 +127,7 @@ class Url extends \yii\helpers\Url
      * @param array|string $query1
      * @param array|string $query2
      * @return array $query1 - $query2
+     * @noinspection PhpUnused
      */
     public static function diffQuery($query1, $query2)
     {
@@ -127,6 +146,10 @@ class Url extends \yii\helpers\Url
             return [];
         }
 
+        // кодируем параметры
+        $flatQuery = array_map('urlencode', $flatQuery);
+
+        // объединяем и парсим строку параметров
         return static::parseQuery(implode(ini_get('arg_separator.output'), $flatQuery));
     }
 
@@ -142,11 +165,17 @@ class Url extends \yii\helpers\Url
             return [];
         }
 
-        if (! is_string($query)) {
+        if (!is_string($query)) {
             $query = static::buildQuery($query);
         }
 
-        return explode(ini_get('arg_separator.output'), $query);
+        // разбиваем по разделителю параметров "&"
+        $flatQuery = explode(ini_get('arg_separator.output'), $query);
+
+        // декодируем парметры
+        $flatQuery = array_map('urldecode', $flatQuery);
+
+        return $flatQuery;
     }
 
     /**
@@ -157,8 +186,7 @@ class Url extends \yii\helpers\Url
      */
     public static function buildQuery(array $query)
     {
-        return empty($query) ? '' :
-            preg_replace(['~%5B~i', '~%5D~i', '~\[\d+]~'], ['[', ']', '[]'], http_build_query($query));
+        return empty($query) ? '' : preg_replace(['~%5B~i', '~%5D~i', '~\[\d+]~'], ['[', ']', '[]'], http_build_query($query));
     }
 
     /**
@@ -193,11 +221,11 @@ class Url extends \yii\helpers\Url
 
         // сохраняем начальный и конечный слэши
         $startSlash = (mb_strpos($path, '/') === 0);
-        $endSlash = (mb_substr($path, - 1, 1) === '/');
+        $endSlash = (mb_substr($path, -1, 1) === '/');
 
         // разбиваем путь на компоненты
         /** @noinspection CallableParameterUseCaseInTypeContextInspection */
-        $path = array_values(preg_split('~/+~um', $path, - 1, PREG_SPLIT_NO_EMPTY) ?: []);
+        $path = array_values(preg_split('~/+~um', $path, -1, PREG_SPLIT_NO_EMPTY) ?: []);
 
         $newPath = [];
         foreach ($path as $p) {
@@ -230,7 +258,7 @@ class Url extends \yii\helpers\Url
      *
      * @param string $dom1 домен
      * @param string $dom2 домен
-     * @return bool true, если $dom1 == $dom2 или один из них является поддоменом другого
+     * @return boolean true, если $dom1 == $dom2 или один из них является поддоменом другого
      */
     public static function isDomainsRelated(string $dom1, string $dom2)
     {
@@ -271,7 +299,7 @@ class Url extends \yii\helpers\Url
      *
      * @param string $name домен или ссылка
      * @return string
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public static function normalizeHost(string $name)
     {
@@ -282,7 +310,7 @@ class Url extends \yii\helpers\Url
         }
 
         // для корректного распознавания строки как домена, парсеру необходимо наличие протокола
-        if (! preg_match('~^(\w+:)?//~um', $name)) {
+        if (!preg_match('~^(\w+:)?//~um', $name)) {
             $name = '//' . $name;
         }
 
@@ -296,7 +324,7 @@ class Url extends \yii\helpers\Url
         $name = mb_strtolower(static::idnToUtf8($name));
 
         // разбиваем домен на компоненты
-        $parts = preg_split('~\.+~um', $name, - 1, PREG_SPLIT_NO_EMPTY);
+        $parts = preg_split('~\.+~um', $name, -1, PREG_SPLIT_NO_EMPTY);
         if (empty($parts)) {
             throw new InvalidArgumentException('domain name');
         }
@@ -325,8 +353,8 @@ class Url extends \yii\helpers\Url
      *
      * @param string $domain
      * @param string $parent
-     * @return bool
-     * @throws \InvalidArgumentException
+     * @return boolean
+     * @throws InvalidArgumentException
      */
     public static function isSubdomain(string $domain, string $parent)
     {
@@ -340,7 +368,7 @@ class Url extends \yii\helpers\Url
             throw new InvalidArgumentException('parent');
         }
 
-        return ! empty(static::getSubdomain($domain, $parent));
+        return !empty(static::getSubdomain($domain, $parent));
     }
 
     /**
@@ -368,7 +396,7 @@ class Url extends \yii\helpers\Url
         }
 
         $matches = null;
-        if (! preg_match(sprintf('~^(?:(.+?)\.)?%s$~uism', preg_quote($parent, '~')), $domain, $matches)) {
+        if (!preg_match(sprintf('~^(?:(.+?)\.)?%s$~uism', preg_quote($parent, '~')), $domain, $matches)) {
             return false;
         }
 

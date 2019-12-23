@@ -3,7 +3,7 @@
  * @copyright 2019-2019 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 14.11.19 03:58:12
+ * @version 23.12.19 20:12:45
  */
 
 declare(strict_types = 1);
@@ -11,6 +11,7 @@ namespace dicr\helper;
 
 use ArrayAccess;
 use InvalidArgumentException;
+use LogicException;
 use Throwable;
 use Yii;
 use yii\base\Arrayable;
@@ -90,7 +91,7 @@ class UrlInfo extends BaseObject implements Arrayable, ArrayAccess
      * Конструктор
      *
      * @param string|array $url
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function __construct($url = [])
     {
@@ -113,7 +114,7 @@ class UrlInfo extends BaseObject implements Arrayable, ArrayAccess
      * Создает экземпляр из строки
      *
      * @param string $url адрес URL
-     * @return \dicr\helper\UrlInfo|false
+     * @return UrlInfo|false
      */
     public static function fromString(string $url)
     {
@@ -162,7 +163,7 @@ class UrlInfo extends BaseObject implements Arrayable, ArrayAccess
 
     /**
      * {@inheritDoc}
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      * @see \yii\base\BaseObject::init()
      */
     public function init()
@@ -309,7 +310,7 @@ class UrlInfo extends BaseObject implements Arrayable, ArrayAccess
      *
      * @param string $host
      * @return self
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function setHost(string $host)
     {
@@ -333,7 +334,7 @@ class UrlInfo extends BaseObject implements Arrayable, ArrayAccess
      *
      * @param int $port
      * @return self
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function setPort(int $port)
     {
@@ -726,7 +727,7 @@ class UrlInfo extends BaseObject implements Arrayable, ArrayAccess
      *
      * @param string $mask маска может содержать специальные символы '*' и '$' как в robots.txt
      * @return bool true если совпадает
-     * @throws \LogicException url не абсолютный
+     * @throws LogicException url не абсолютный
      * @link https://yandex.ru/support/webmaster/controlling-robot/robots-txt.html
      */
     public function matchRobotsMask(string $mask)
