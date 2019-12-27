@@ -3,10 +3,11 @@
  * @copyright 2019-2019 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 14.11.19 03:58:12
+ * @version 27.12.19 13:30:53
  */
 
-declare(strict_types = 1);
+declare(strict_types=1);
+
 namespace dicr\helper;
 
 /**
@@ -65,7 +66,7 @@ class Inflector extends \yii\helpers\Inflector
     public static function slug($string, $replacement = '-', $lowercase = true)
     {
         // очищаем специальные символы и пробелы
-        $string = trim(preg_replace('~[\x00-\x1F\x7F\xA0\s\h\v\r\n\t]+~uim', ' ', $string));
+        $string = trim(preg_replace('~[\x00-\x1F\x7F\xA0\s\h\v\r\n\t]+~uim', ' ', (string)$string));
         if ($string === '') {
             return '';
         }
@@ -74,7 +75,7 @@ class Inflector extends \yii\helpers\Inflector
         $string = mb_strtolower($string);
 
         // транслитерация русских букв
-        $string = preg_replace(array_map(static function($ch) {
+        $string = preg_replace(array_map(static function ($ch) {
             return '~' . $ch . '~uism';
         }, array_keys(self::TRANSLIT)), array_values(self::TRANSLIT), $string);
 
