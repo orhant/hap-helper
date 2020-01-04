@@ -1,9 +1,9 @@
 <?php
 /**
- * @copyright 2019-2019 Dicr http://dicr.org
+ * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 23.12.19 20:14:30
+ * @version 04.01.20 08:55:16
  */
 
 declare(strict_types=1);
@@ -15,11 +15,9 @@ use function array_diff;
 use function array_map;
 use function array_pop;
 use function array_values;
-use function count;
 use function explode;
 use function http_build_query;
 use function implode;
-use function ini_get;
 use function is_array;
 use function is_string;
 use function ksort;
@@ -31,6 +29,8 @@ use function preg_replace;
 use function preg_split;
 use function sprintf;
 use function trim;
+use function urldecode;
+use function urlencode;
 use const PHP_URL_HOST;
 use const PREG_SPLIT_NO_EMPTY;
 
@@ -48,7 +48,7 @@ class Url extends \yii\helpers\Url
      */
     public static function normalizeQuery($query)
     {
-        if (empty($query)) {
+        if ($query === null || $query === '' || $query === []) {
             return [];
         }
 
@@ -63,7 +63,6 @@ class Url extends \yii\helpers\Url
         }
 
         unset($v);
-
         ksort($query);
 
         return $query;
@@ -72,11 +71,19 @@ class Url extends \yii\helpers\Url
     /**
      * Парсит параметры запроса из строки
      *
-     * @param string $query
+     * @param string|array $query
      * @return array
      */
-    public static function parseQuery(string $query)
+    public static function parseQuery($query)
     {
+        if ($query === null || $query === '' || $query === []) {
+            return [];
+        }
+
+        if (is_array($query)) {
+            return $query;
+        }
+
         $query = trim($query, '?');
         if ($query === '') {
             return [];
@@ -97,7 +104,7 @@ class Url extends \yii\helpers\Url
      */
     public static function filterQuery($query)
     {
-        if (empty($query)) {
+        if ($query === null || $query === '' || $query === []) {
             return [];
         }
 
@@ -131,26 +138,11 @@ class Url extends \yii\helpers\Url
      */
     public static function diffQuery($query1, $query2)
     {
-        return static::unflatQuery(array_diff(static::flatQuery($query1), static::flatQuery($query2)));
-    }
-
-    /**
-     * Восстанавливает парамеры запроса из плоского вида.
-     *
-     * @param array $flatQuery
-     * @return array
-     */
-    public static function unflatQuery(array $flatQuery)
-    {
-        if (count($flatQuery) < 1) {
-            return [];
+        if ($query1 === null || $query1 === '' || $query1 === [] || $query2 === null || $query2 === '' || $query2 === []) {
+            return $query1;
         }
 
-        // кодируем параметры
-        $flatQuery = array_map('urlencode', $flatQuery);
-
-        // объединяем и парсим строку параметров
-        return static::parseQuery(implode(ini_get('arg_separator.output'), $flatQuery));
+        return static::unflatQuery(array_diff(static::flatQuery($query1), static::flatQuery($query2)));
     }
 
     /**
@@ -161,7 +153,7 @@ class Url extends \yii\helpers\Url
      */
     public static function flatQuery($query)
     {
-        if (empty($query)) {
+        if ($query === null || $query === '' || $query === []) {
             return [];
         }
 
@@ -170,12 +162,41 @@ class Url extends \yii\helpers\Url
         }
 
         // разбиваем по разделителю параметров "&"
-        $flatQuery = explode(ini_get('arg_separator.output'), $query);
+        $flatQuery = explode('&', $query);
 
         // декодируем парметры
-        $flatQuery = array_map('urldecode', $flatQuery);
+        //$flatQuery = array_map('urldecode', $flatQuery);
+        $flatQuery = array_map(static function ($item) {
+            $matches = null;
+            return preg_match('~^([^=]+=)(.+)$~um', $item, $matches) ?
+                $matches[1] . urldecode($matches[2]) : $item;
+        }, $flatQuery);
 
         return $flatQuery;
+    }
+
+    /**
+     * Восстанавливает парамеры запроса из плоского вида.
+     *
+     * @param array $flatQuery
+     * @return array
+     */
+    public static function unflatQuery(array $flatQuery)
+    {
+        if ($flatQuery === null || $flatQuery === '' || $flatQuery === []) {
+            return [];
+        }
+
+        // кодируем параметры
+        //$flatQuery = array_map('urlencode', $flatQuery);
+        $flatQuery = array_map(static function ($item) {
+            $matches = null;
+            return preg_match('~^([^=]+=)(.+)$~um', $item, $matches) ?
+                $matches[1] . urlencode($matches[2]) : $item;
+        }, $flatQuery);
+
+        // объединяем и парсим строку параметров
+        return static::parseQuery(implode('&', $flatQuery));
     }
 
     /**
@@ -186,7 +207,11 @@ class Url extends \yii\helpers\Url
      */
     public static function buildQuery(array $query)
     {
-        return empty($query) ? '' : preg_replace(['~%5B~i', '~%5D~i', '~\[\d+]~'], ['[', ']', '[]'], http_build_query($query));
+        if ($query === null || $query === '' || $query === []) {
+            return '';
+        }
+
+        return preg_replace(['~%5B~i', '~%5D~i', '~\[\d+]~'], ['[', ']', '[]'], http_build_query($query));
     }
 
     /**
