@@ -1,12 +1,13 @@
 <?php
 /**
- * @copyright 2019-2019 Dicr http://dicr.org
+ * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 14.11.19 03:58:12
+ * @version 15.01.20 12:42:19
  */
 
 declare(strict_types = 1);
+
 namespace dicr\helper;
 
 use InvalidArgumentException;
@@ -70,12 +71,14 @@ class PathInfo extends BaseObject
         $isAbsolute = mb_strpos($path, DIRECTORY_SEPARATOR) === 0;
 
         foreach (preg_split('~/~um', $path, - 1, PREG_SPLIT_NO_EMPTY) as $part) {
+            $partsEnd = end($parts);
+
             if ($part === '..') {
                 if (empty($parts)) {
                     if (! $isAbsolute) {
                         $parts[] = $part;
                     }
-                } elseif (end($parts) === '..' || end($parts) === '.') {
+                } elseif ($partsEnd === '..' || $partsEnd === '.') {
                     $parts[] = $part;
                 } else {
                     array_pop($parts);
@@ -141,12 +144,13 @@ class PathInfo extends BaseObject
 
         /** @var string[] $parts */
         $parts = preg_split('~/~um', self::normalize($path), - 1, PREG_SPLIT_NO_EMPTY);
+        $partsEnd = end($parts);
 
         if (empty($parts)) {
             if (! $isAbsolute) {
                 $parts = array_fill(count($parts), $levels, '..');
             }
-        } elseif (end($parts) === '..' || end($parts) === '.') {
+        } elseif ($partsEnd === '..' || $partsEnd === '.') {
             $parts = array_merge($parts, array_fill(count($parts), $levels, '..'));
         } elseif ($parts < $levels) {
             $parts = $isAbsolute ? [] : array_fill(0, $levels - count($parts), '..');
@@ -216,6 +220,7 @@ class PathInfo extends BaseObject
      * Возвращает признак абсолютного пути
      *
      * @return bool
+     * @noinspection PhpUnused
      */
     public function getIsAbsolute()
     {
@@ -226,6 +231,7 @@ class PathInfo extends BaseObject
      * Возвращает абсолютный путь
      *
      * @return string|null абсолютный путь или null если не существует
+     * @noinspection PhpUnused
      */
     public function getAbsolute()
     {
@@ -237,6 +243,7 @@ class PathInfo extends BaseObject
      *
      * @param int $levels
      * @return string
+     * @noinspection PhpUnused
      */
     public function getParent(int $levels = 1)
     {
@@ -252,6 +259,7 @@ class PathInfo extends BaseObject
      *
      * @param string $relative
      * @return string
+     * @noinspection PhpUnused
      */
     public function getChild(string $relative)
     {
@@ -290,6 +298,7 @@ class PathInfo extends BaseObject
      * Возвращает расширение
      *
      * @return string
+     * @noinspection PhpUnused
      */
     public function getExt()
     {

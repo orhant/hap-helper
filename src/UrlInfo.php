@@ -1,12 +1,13 @@
 <?php
 /**
- * @copyright 2019-2019 Dicr http://dicr.org
+ * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 23.12.19 20:12:45
+ * @version 15.01.20 12:31:44
  */
 
 declare(strict_types = 1);
+
 namespace dicr\helper;
 
 use ArrayAccess;
@@ -102,7 +103,7 @@ class UrlInfo extends BaseObject implements Arrayable, ArrayAccess
                 throw new InvalidArgumentException('url: ' . $url);
             }
 
-            $url = $config;
+            $url = (array)$config;
         } elseif (! is_array($url)) {
             throw new InvalidArgumentException('неизвестный тип url: ' . gettype($url));
         }
@@ -114,7 +115,7 @@ class UrlInfo extends BaseObject implements Arrayable, ArrayAccess
      * Создает экземпляр из строки
      *
      * @param string $url адрес URL
-     * @return UrlInfo|false
+     * @return static|false
      */
     public static function fromString(string $url)
     {
@@ -171,7 +172,7 @@ class UrlInfo extends BaseObject implements Arrayable, ArrayAccess
         parent::init();
 
         // если указана схема, то должен быть указан хост
-        if ($this->_scheme !== '' && ! in_array($this->_scheme, self::SCHEME_NONHTTP, true) && $this->host === '') {
+        if ($this->host === '' && $this->_scheme !== '' && ! in_array($this->_scheme, self::SCHEME_NONHTTP, true)) {
             throw new InvalidConfigException('host не указан');
         }
 
@@ -229,6 +230,7 @@ class UrlInfo extends BaseObject implements Arrayable, ArrayAccess
      * Возвращает схему
      *
      * @return string
+     * @noinspection PhpUnused
      */
     public function getScheme()
     {
@@ -239,7 +241,8 @@ class UrlInfo extends BaseObject implements Arrayable, ArrayAccess
      * Устанавливает схему
      *
      * @param string $scheme
-     * @return self
+     * @return static
+     * @noinspection PhpUnused
      */
     public function setScheme(string $scheme)
     {
@@ -252,6 +255,7 @@ class UrlInfo extends BaseObject implements Arrayable, ArrayAccess
      * Возвращает логин
      *
      * @return string
+     * @noinspection PhpUnused
      */
     public function getUser()
     {
@@ -262,7 +266,8 @@ class UrlInfo extends BaseObject implements Arrayable, ArrayAccess
      * Устанавливает пользователя
      *
      * @param string $user
-     * @return self
+     * @return static
+     * @noinspection PhpUnused
      */
     public function setUser(string $user)
     {
@@ -275,6 +280,7 @@ class UrlInfo extends BaseObject implements Arrayable, ArrayAccess
      * Возвращает пароль
      *
      * @return string
+     * @noinspection PhpUnused
      */
     public function getPass()
     {
@@ -285,7 +291,8 @@ class UrlInfo extends BaseObject implements Arrayable, ArrayAccess
      * Устанавливает пароль
      *
      * @param string $pass
-     * @return self
+     * @return static
+     * @noinspection PhpUnused
      */
     public function setPass(string $pass)
     {
@@ -309,8 +316,9 @@ class UrlInfo extends BaseObject implements Arrayable, ArrayAccess
      * Устанавливает хост
      *
      * @param string $host
-     * @return self
+     * @return static
      * @throws InvalidArgumentException
+     * @noinspection PhpUnused
      */
     public function setHost(string $host)
     {
@@ -323,6 +331,7 @@ class UrlInfo extends BaseObject implements Arrayable, ArrayAccess
      * Возвращает порт
      *
      * @return int порт
+     * @noinspection PhpUnused
      */
     public function getPort()
     {
@@ -333,8 +342,9 @@ class UrlInfo extends BaseObject implements Arrayable, ArrayAccess
      * Устанавливает порт
      *
      * @param int $port
-     * @return self
+     * @return static
      * @throws InvalidArgumentException
+     * @noinspection PhpUnused
      */
     public function setPort(int $port)
     {
@@ -361,7 +371,8 @@ class UrlInfo extends BaseObject implements Arrayable, ArrayAccess
      * Устанавливает путь.
      *
      * @param string $path
-     * @return self
+     * @return static
+     * @noinspection PhpUnused
      */
     public function setPath(string $path)
     {
@@ -389,7 +400,8 @@ class UrlInfo extends BaseObject implements Arrayable, ArrayAccess
      * Устанавливает параметры запроса
      *
      * @param array|string $query
-     * @return self
+     * @return static
+     * @noinspection PhpUnused
      */
     public function setQuery($query)
     {
@@ -402,6 +414,7 @@ class UrlInfo extends BaseObject implements Arrayable, ArrayAccess
      * Возвращает фрагмент
      *
      * @return string фрагмент
+     * @noinspection PhpUnused
      */
     public function getFragment()
     {
@@ -412,7 +425,8 @@ class UrlInfo extends BaseObject implements Arrayable, ArrayAccess
      * Устанавливает фрагмент
      *
      * @param string $fragment
-     * @return self
+     * @return static
+     * @noinspection PhpUnused
      */
     public function setFragment(string $fragment)
     {
@@ -535,6 +549,7 @@ class UrlInfo extends BaseObject implements Arrayable, ArrayAccess
      * Возвращает признак абсолютной ссылки
      *
      * @return bool
+     * @noinspection PhpUnused
      */
     public function getIsAbsolute()
     {
@@ -544,17 +559,13 @@ class UrlInfo extends BaseObject implements Arrayable, ArrayAccess
     /**
      * Возвращает абсолютный URL по базовому
      *
-     * @param self $base базовый абсолютный URL
-     * @return self полный URL
+     * @param static $base базовый абсолютный URL
+     * @return static полный URL
      */
     public function toAbsolute(UrlInfo $base)
     {
         if ($this->isAbsolute) {
             return clone $this;
-        }
-
-        if (empty($base)) {
-            throw new InvalidArgumentException('base пустой');
         }
 
         if (! $base->isAbsolute) {
@@ -649,6 +660,7 @@ class UrlInfo extends BaseObject implements Arrayable, ArrayAccess
      *
      * @param string $parent родительский домен
      * @return bool true если $domain != $parent и являестся поддоменом $parent
+     * @noinspection PhpUnused
      */
     public function isSubdomain(string $parent)
     {
@@ -680,7 +692,7 @@ class UrlInfo extends BaseObject implements Arrayable, ArrayAccess
      * Ссылка на том же сайте, если она относительная данной или
      * у нее одинаковые схемы, хосты, либо хост является поддоменом данной.
      *
-     * @param self $other базовый url
+     * @param static $other базовый url
      * @param array $options опции тестирования
      *        - subdoms - считать поддомены тем же сайтом = false
      *        - subpath - считать только ссылки в заданом пути (на уровень ниже) = false
@@ -688,10 +700,6 @@ class UrlInfo extends BaseObject implements Arrayable, ArrayAccess
      */
     public function isSameSite(UrlInfo $other, array $options = [])
     {
-        if (empty($other)) {
-            throw new InvalidArgumentException('other');
-        }
-
         $subdoms = ! empty($options['subdoms']); // разрешать поддомены
         $subpath = ! empty($options['subpath']); // разрешать только подкаталоги в пути
 
@@ -700,8 +708,10 @@ class UrlInfo extends BaseObject implements Arrayable, ArrayAccess
         $u2 = $other;
 
         // сравниваем схемы
-        if ((($u1->scheme !== '' && $u2->scheme !== '') || in_array($u1->scheme, self::SCHEME_NONHTTP, true) ||
-             in_array($u2->scheme, self::SCHEME_NONHTTP, true)) && $u1->scheme !== $u2->scheme) {
+        if ($u1->scheme !== $u2->scheme &&
+            (($u1->scheme !== '' && $u2->scheme !== '') || in_array($u1->scheme, self::SCHEME_NONHTTP, true) ||
+                in_array($u2->scheme, self::SCHEME_NONHTTP, true))
+        ) {
             return false;
         }
 
@@ -713,7 +723,7 @@ class UrlInfo extends BaseObject implements Arrayable, ArrayAccess
                 return false;
             }
 
-            if (($subdoms && ! $u1->isDomainRelated($u2->host)) || (! $subdoms && $u1->host !== $u2->host)) {
+            if ((! $subdoms && $u1->host !== $u2->host) || ($subdoms && ! $u1->isDomainRelated($u2->host))) {
                 return false;
             }
         }
@@ -729,6 +739,7 @@ class UrlInfo extends BaseObject implements Arrayable, ArrayAccess
      * @return bool true если совпадает
      * @throws LogicException url не абсолютный
      * @link https://yandex.ru/support/webmaster/controlling-robot/robots-txt.html
+     * @noinspection PhpUnused
      */
     public function matchRobotsMask(string $mask)
     {

@@ -1,19 +1,17 @@
 <?php
 /**
- * @copyright 2019-2019 Dicr http://dicr.org
+ * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 04.12.19 06:16:11
+ * @version 15.01.20 12:39:10
  */
 
 declare(strict_types = 1);
+
 namespace dicr\helper;
 
 /**
- * {@inheritdoc}
- *
- * @author Igor (Dicr) Tarasov <develop@dicr.org>
- * @version 180620
+ * String Helper.
  */
 class StringHelper extends \yii\helpers\StringHelper
 {
@@ -23,6 +21,7 @@ class StringHelper extends \yii\helpers\StringHelper
      * @param $string
      * @param string $encoding
      * @return string
+     * @noinspection PhpUnused
      */
     public static function mb_lcfirst($string, $encoding = 'UTF-8')
     {

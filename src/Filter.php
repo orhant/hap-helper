@@ -1,12 +1,13 @@
 <?php
 /**
- * @copyright 2019-2019 Dicr http://dicr.org
+ * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 23.12.19 20:12:45
+ * @version 15.01.20 12:32:32
  */
 
 declare(strict_types = 1);
+
 namespace dicr\helper;
 
 use InvalidArgumentException;

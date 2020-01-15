@@ -3,10 +3,10 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 04.01.20 08:55:16
+ * @version 15.01.20 12:42:20
  */
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace dicr\helper;
 
@@ -52,7 +52,7 @@ class Url extends \yii\helpers\Url
             return [];
         }
 
-        if (!is_array($query)) {
+        if (! is_array($query)) {
             $query = static::parseQuery($query);
         }
 
@@ -108,7 +108,7 @@ class Url extends \yii\helpers\Url
             return [];
         }
 
-        if (!is_array($query)) {
+        if (! is_array($query)) {
             $query = static::parseQuery($query);
         }
 
@@ -157,7 +157,7 @@ class Url extends \yii\helpers\Url
             return [];
         }
 
-        if (!is_string($query)) {
+        if (! is_string($query)) {
             $query = static::buildQuery($query);
         }
 
@@ -246,11 +246,11 @@ class Url extends \yii\helpers\Url
 
         // сохраняем начальный и конечный слэши
         $startSlash = (mb_strpos($path, '/') === 0);
-        $endSlash = (mb_substr($path, -1, 1) === '/');
+        $endSlash = (mb_substr($path, - 1, 1) === '/');
 
         // разбиваем путь на компоненты
         /** @noinspection CallableParameterUseCaseInTypeContextInspection */
-        $path = array_values(preg_split('~/+~um', $path, -1, PREG_SPLIT_NO_EMPTY) ?: []);
+        $path = array_values(preg_split('~/+~um', $path, - 1, PREG_SPLIT_NO_EMPTY) ?: []);
 
         $newPath = [];
         foreach ($path as $p) {
@@ -335,7 +335,7 @@ class Url extends \yii\helpers\Url
         }
 
         // для корректного распознавания строки как домена, парсеру необходимо наличие протокола
-        if (!preg_match('~^(\w+:)?//~um', $name)) {
+        if (! preg_match('~^(\w+:)?//~um', $name)) {
             $name = '//' . $name;
         }
 
@@ -349,7 +349,7 @@ class Url extends \yii\helpers\Url
         $name = mb_strtolower(static::idnToUtf8($name));
 
         // разбиваем домен на компоненты
-        $parts = preg_split('~\.+~um', $name, -1, PREG_SPLIT_NO_EMPTY);
+        $parts = preg_split('~\.+~um', $name, - 1, PREG_SPLIT_NO_EMPTY);
         if (empty($parts)) {
             throw new InvalidArgumentException('domain name');
         }
@@ -393,7 +393,7 @@ class Url extends \yii\helpers\Url
             throw new InvalidArgumentException('parent');
         }
 
-        return !empty(static::getSubdomain($domain, $parent));
+        return ! empty(static::getSubdomain($domain, $parent));
     }
 
     /**
@@ -421,7 +421,7 @@ class Url extends \yii\helpers\Url
         }
 
         $matches = null;
-        if (!preg_match(sprintf('~^(?:(.+?)\.)?%s$~uism', preg_quote($parent, '~')), $domain, $matches)) {
+        if (! preg_match(sprintf('~^(?:(.+?)\.)?%s$~uism', preg_quote($parent, '~')), $domain, $matches)) {
             return false;
         }
 

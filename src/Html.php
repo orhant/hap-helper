@@ -1,16 +1,18 @@
 <?php
 /**
- * @copyright 2019-2019 Dicr http://dicr.org
+ * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 23.12.19 20:12:45
+ * @version 15.01.20 12:34:19
  */
 
 declare(strict_types = 1);
+
 namespace dicr\helper;
 
 use yii\base\Model;
 use yii\helpers\Json;
+use function array_merge;
 
 /**
  * Html helper.
@@ -26,6 +28,7 @@ class Html extends \yii\helpers\Html
      * @param string|null $str
      * @return string
      * @see self::encode
+     * @noinspection PhpUnused
      */
     public static function esc($str)
     {
@@ -57,6 +60,7 @@ class Html extends \yii\helpers\Html
      *
      * @param $html
      * @return bool
+     * @noinspection PhpUnused
      */
     public static function hasText($html)
     {
@@ -79,8 +83,8 @@ class Html extends \yii\helpers\Html
      *
      * @param string $type тип контента: 'name', 'property', ...
      * @param string[] $values значения key => content
-     *
      * @return string
+     * @noinspection PhpUnused
      */
     public static function metas(string $type, array $values)
     {
@@ -113,6 +117,7 @@ class Html extends \yii\helpers\Html
      * @param string $href
      * @param array $options
      * @return string
+     * @noinspection PhpUnused
      */
     public static function cssLink(string $href, array $options = [])
     {
@@ -158,6 +163,7 @@ class Html extends \yii\helpers\Html
      *
      * @param string $src
      * @return string
+     * @noinspection PhpUnused
      */
     public static function jsLink(string $src)
     {
@@ -170,6 +176,7 @@ class Html extends \yii\helpers\Html
      * @param Model $model
      * @param string $attribute
      * @return string
+     * @noinspection PhpUnused
      */
     public static function activeFlag(Model $model, string $attribute)
     {
@@ -209,11 +216,27 @@ class Html extends \yii\helpers\Html
      * @param string $name
      * @param array $options
      * @return string
+     * @noinspection PhpUnused
      */
     public static function fas(string $name, array $options = [])
     {
         return static::tag('i', '', array_merge($options, [
             'class' => 'fas fa-' . $name
+        ]));
+    }
+
+    /**
+     * Иконка FontAwesome новой версии (класс "far fa-$name").
+     *
+     * @param string $name
+     * @param array $options
+     * @return string
+     * @noinspection PhpUnused
+     */
+    public static function far(string $name, array $options = [])
+    {
+        return static::tag('i', '', array_merge($options, [
+            'class' => 'far fa-' . $name
         ]));
     }
 
@@ -224,6 +247,7 @@ class Html extends \yii\helpers\Html
      * @param string $name плагин
      * @param array $options опции плагина
      * @return string html
+     * @noinspection PhpUnused
      */
     public static function plugin(string $target, string $name, array $options = [])
     {

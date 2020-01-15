@@ -1,12 +1,12 @@
 <?php
 /**
- * @copyright 2019-2019 Dicr http://dicr.org
+ * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 27.12.19 13:30:53
+ * @version 15.01.20 12:42:19
  */
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace dicr\helper;
 
@@ -75,7 +75,7 @@ class Inflector extends \yii\helpers\Inflector
         $string = mb_strtolower($string);
 
         // транслитерация русских букв
-        $string = preg_replace(array_map(static function ($ch) {
+        $string = (string)preg_replace(array_map(static function ($ch) {
             return '~' . $ch . '~uism';
         }, array_keys(self::TRANSLIT)), array_values(self::TRANSLIT), $string);
 
@@ -85,7 +85,7 @@ class Inflector extends \yii\helpers\Inflector
             '~\@~' => 'at',
         ];
 
-        $string = preg_replace(array_keys($knownChars), array_values($knownChars), $string);
+        $string = (string)preg_replace(array_keys($knownChars), array_values($knownChars), $string);
 
         // заменяем все, которые НЕ разрешены
         $string = preg_replace('~[^a-z0-9\-_.\~]+~uim', '-', $string);
