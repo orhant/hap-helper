@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 15.01.20 12:31:44
+ * @version 22.03.20 00:11:42
  */
 
 declare(strict_types = 1);
@@ -197,9 +197,10 @@ class UrlInfo extends BaseObject implements Arrayable, ArrayAccess
     }
 
     /**
-     * Вовращает список аттриутов модели.
+     * Возвращает список аттрибутов модели.
      *
      * @return string[]
+     * @noinspection PhpMethodMayBeStaticInspection
      */
     public function attributes()
     {
@@ -519,7 +520,7 @@ class UrlInfo extends BaseObject implements Arrayable, ArrayAccess
             $url .= $hostInfo;
         }
 
-        $requestUri = $this->getRequestUri(true);
+        $requestUri = $this->getRequestUri();
         if ($this->path === '/') {
             $requestUri = ltrim($requestUri, '/');
         }
@@ -569,7 +570,7 @@ class UrlInfo extends BaseObject implements Arrayable, ArrayAccess
         }
 
         if (! $base->isAbsolute) {
-            throw new InvalidArgumentException('base не абсолюный Url');
+            throw new InvalidArgumentException('base не абсолютный Url');
         }
 
         // клонируем полную ссылку для перезаписи
@@ -659,7 +660,7 @@ class UrlInfo extends BaseObject implements Arrayable, ArrayAccess
      * Проверяет является ли поддоменом $parent
      *
      * @param string $parent родительский домен
-     * @return bool true если $domain != $parent и являестся поддоменом $parent
+     * @return bool true если $domain != $parent и является поддоменом $parent
      * @noinspection PhpUnused
      */
     public function isSubdomain(string $parent)
@@ -688,14 +689,14 @@ class UrlInfo extends BaseObject implements Arrayable, ArrayAccess
 
     /**
      * Проверяет является ли сравниваемая ссылка
-     * на том же сайто что и данная.
+     * на том же сайте что и данная.
      * Ссылка на том же сайте, если она относительная данной или
      * у нее одинаковые схемы, хосты, либо хост является поддоменом данной.
      *
      * @param static $other базовый url
      * @param array $options опции тестирования
      *        - subdoms - считать поддомены тем же сайтом = false
-     *        - subpath - считать только ссылки в заданом пути (на уровень ниже) = false
+     *        - subpath - считать только ссылки в заданном пути (на уровень ниже) = false
      * @return bool true если тот же сайт
      */
     public function isSameSite(UrlInfo $other, array $options = [])

@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 15.01.20 12:42:19
+ * @version 22.03.20 00:07:00
  */
 
 declare(strict_types = 1);
@@ -56,6 +56,8 @@ class PathInfoTest extends TestCase
 
     /**
      * Test UrlInfo::normalizePath
+     *
+     * @noinspection PhpMethodMayBeStaticInspection
      */
     public function testNormalizePath()
     {
@@ -82,6 +84,9 @@ class PathInfoTest extends TestCase
         'path/../..' => '../..'
     ];
 
+    /**
+     * @noinspection PhpMethodMayBeStaticInspection
+     */
     public function testParent()
     {
         foreach (self::TEST_PARENT as $path => $res) {

@@ -1,14 +1,34 @@
 <component name="ProjectDictionaryState">
   <dictionary name="dicr">
     <words>
+      <w>aswg</w>
       <w>cntrl</w>
+      <w>dicr</w>
       <w>hostinfo</w>
+      <w>inflector</w>
+      <w>inputmask</w>
+      <w>lcfirst</w>
+      <w>mbstring</w>
+      <w>nonhttp</w>
+      <w>roave</w>
+      <w>shch</w>
+      <w>snab</w>
       <w>subdomain</w>
       <w>subdoms</w>
       <w>subpath</w>
+      <w>tarasov</w>
+      <w>translit</w>
       <w>uism</w>
       <w>unflat</w>
+      <w>urldecode</w>
+      <w>urlencode</w>
+      <w>webroot</w>
       <w>yandex</w>
+      <w>yiisoft</w>
+      <w>парсеру</w>
+      <w>парсим</w>
+      <w>парсит</w>
+      <w>рендерит</w>
     </words>
   </dictionary>
 </component>

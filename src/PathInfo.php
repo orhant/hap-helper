@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 15.01.20 12:42:19
+ * @version 22.03.20 00:10:24
  */
 
 declare(strict_types = 1);
@@ -20,7 +20,7 @@ use function count;
  *
  * @property-read string $path весь путь
  * @property-read bool $isAbsolute признак абсолютного
- * @property-read string|null $absolute абослютный путь
+ * @property-read string|null $absolute абсолютный путь
  * @property-read string $parent родительский путь
  * @property-read string $file имя файла с расширением без пути
  * @property-read string $name имя без расширения
@@ -55,7 +55,7 @@ class PathInfo extends BaseObject
     }
 
     /**
-     * Нормализирует путь. Вырезает лишние / и ..
+     * Нормализует путь. Вырезает лишние / и ..
      *
      * @param string $path
      * @return string
@@ -310,7 +310,7 @@ class PathInfo extends BaseObject
     }
 
     /**
-     * Конверирование в строку
+     * Конвертирование в строку
      *
      * @return string
      */

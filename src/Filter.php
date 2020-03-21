@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 15.01.20 12:32:32
+ * @version 22.03.20 00:09:28
  */
 
 declare(strict_types = 1);
@@ -15,9 +15,6 @@ use function is_int;
 
 /**
  * Фильтр данных.
- *
- * @author Igor (Dicr) Tarasov <develop@dicr.org>
- * @version 2019
  */
 class Filter
 {
@@ -82,7 +79,7 @@ class Filter
     }
 
     /**
-     * Фильрует масив строк.
+     * Фильтрует массив строк.
      *
      * @param string|array $strings
      * @return string[]

@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 15.01.20 12:42:20
+ * @version 22.03.20 00:10:56
  */
 
 declare(strict_types = 1);
@@ -40,7 +40,7 @@ use const PREG_SPLIT_NO_EMPTY;
 class Url extends \yii\helpers\Url
 {
     /**
-     * Нормализирует параметры запроса.
+     * Нормализует параметры запроса.
      * Конвертирует из строки в массив, сортирует по названию параметров.
      *
      * @param array|string $query
@@ -65,14 +65,14 @@ class Url extends \yii\helpers\Url
         unset($v);
         ksort($query);
 
-        return $query;
+        return (array)$query;
     }
 
     /**
      * Парсит параметры запроса из строки
      *
      * @param string|array $query
-     * @return array
+     * @return array параметры в виде массива
      */
     public static function parseQuery($query)
     {
@@ -81,7 +81,7 @@ class Url extends \yii\helpers\Url
         }
 
         if (is_array($query)) {
-            return $query;
+            return (array)$query;
         }
 
         $query = trim($query, '?');
@@ -92,7 +92,7 @@ class Url extends \yii\helpers\Url
         $parsed = null;
         parse_str($query, $parsed);
 
-        return $parsed;
+        return (array)$parsed;
     }
 
     /**
@@ -123,7 +123,7 @@ class Url extends \yii\helpers\Url
             }
         }
 
-        return $query;
+        return (array)$query;
     }
 
     /**
@@ -138,8 +138,12 @@ class Url extends \yii\helpers\Url
      */
     public static function diffQuery($query1, $query2)
     {
-        if ($query1 === null || $query1 === '' || $query1 === [] || $query2 === null || $query2 === '' || $query2 === []) {
-            return $query1;
+        if ($query1 === null || $query1 === '' || $query1 === []) {
+            return [];
+        }
+
+        if ($query2 === null || $query2 === '' || $query2 === []) {
+            return (array)$query1;
         }
 
         return static::unflatQuery(array_diff(static::flatQuery($query1), static::flatQuery($query2)));
@@ -164,7 +168,7 @@ class Url extends \yii\helpers\Url
         // разбиваем по разделителю параметров "&"
         $flatQuery = explode('&', $query);
 
-        // декодируем парметры
+        // декодируем параметры
         //$flatQuery = array_map('urldecode', $flatQuery);
         $flatQuery = array_map(static function ($item) {
             $matches = null;
@@ -215,7 +219,7 @@ class Url extends \yii\helpers\Url
     }
 
     /**
-     * Конверирует домен в ASCII IDN
+     * Конвертирует домен в ASCII IDN
      *
      * @param string $domain
      * @return string
@@ -249,7 +253,6 @@ class Url extends \yii\helpers\Url
         $endSlash = (mb_substr($path, - 1, 1) === '/');
 
         // разбиваем путь на компоненты
-        /** @noinspection CallableParameterUseCaseInTypeContextInspection */
         $path = array_values(preg_split('~/+~um', $path, - 1, PREG_SPLIT_NO_EMPTY) ?: []);
 
         $newPath = [];
@@ -283,7 +286,7 @@ class Url extends \yii\helpers\Url
      *
      * @param string $dom1 домен
      * @param string $dom2 домен
-     * @return boolean true, если $dom1 == $dom2 или один из них является поддоменом другого
+     * @return bool true, если $dom1 == $dom2 или один из них является поддоменом другого
      */
     public static function isDomainsRelated(string $dom1, string $dom2)
     {
@@ -378,7 +381,7 @@ class Url extends \yii\helpers\Url
      *
      * @param string $domain
      * @param string $parent
-     * @return boolean
+     * @return bool
      * @throws InvalidArgumentException
      */
     public static function isSubdomain(string $domain, string $parent)

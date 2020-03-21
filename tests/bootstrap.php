@@ -1,11 +1,9 @@
-<?php
-/**
- * @copyright 2019-2019 Dicr http://dicr.org
+<?php /**
+ * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 14.11.19 03:58:12
- */
-
+ * @version 22.03.20 00:13:38
+ */ /** @noinspection PhpUnused */
 /** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types = 1);
 

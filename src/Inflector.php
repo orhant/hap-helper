@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 15.01.20 12:42:19
+ * @version 22.03.20 00:09:50
  */
 
 declare(strict_types = 1);
@@ -71,7 +71,7 @@ class Inflector extends \yii\helpers\Inflector
             return '';
         }
 
-        // конверируем в нижний реестр
+        // конвертируем в нижний реестр
         $string = mb_strtolower($string);
 
         // транслитерация русских букв
@@ -90,7 +90,7 @@ class Inflector extends \yii\helpers\Inflector
         // заменяем все, которые НЕ разрешены
         $string = preg_replace('~[^a-z0-9\-_.\~]+~uim', '-', $string);
 
-        // удаляем подстановочные вначале, в конце и задвоения
+        // удаляем подстановочные вначале, в конце и дублирования
         //$string = preg_replace (['~(^\-+)|(\-+$)~uism', '~\-{2,}~uism'], ['', '-'], $string);
         $string = preg_replace(['~(^-+)|(-+$)~uism'], [''], $string);
 

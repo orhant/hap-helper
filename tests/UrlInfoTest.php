@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 15.01.20 12:42:19
+ * @version 22.03.20 00:08:26
  */
 
 declare(strict_types = 1);
@@ -35,6 +35,8 @@ class UrlInfoTest extends TestCase
 
     /**
      * Test UrlInfo::normalizeHost
+     *
+     * @noinspection PhpMethodMayBeStaticInspection
      */
     public function testNormalizeHost()
     {
@@ -61,6 +63,8 @@ class UrlInfoTest extends TestCase
 
     /**
      * Test UrlInfo::normalizePath
+     *
+     * @noinspection PhpMethodMayBeStaticInspection
      */
     public function testNormalizePath()
     {
@@ -84,6 +88,8 @@ class UrlInfoTest extends TestCase
 
     /**
      * Test UrlInfo::normalizeQuery
+     *
+     * @noinspection PhpMethodMayBeStaticInspection
      */
     public function testNormalizeQuery()
     {
@@ -111,7 +117,7 @@ class UrlInfoTest extends TestCase
         }
     }
 
-    public const TEST_SAMESITE = [
+    public const TEST_SAME_SITE = [
         ['mailto:test@site.ru', '//test@site.ru', false],
         ['//test@site.ru', 'mailto:test@site.ru', false],
         ['//test@site.ru', '//@site.ru', false],
@@ -149,7 +155,7 @@ class UrlInfoTest extends TestCase
         var_dump($u1->isSameSite($u2)); exit;
         */
 
-        foreach (self::TEST_SAMESITE as [$url1, $url2, $res]) {
+        foreach (self::TEST_SAME_SITE as [$url1, $url2, $res]) {
             $urlInfo1 = new UrlInfo($url1);
             $urlInfo2 = new UrlInfo($url2);
 
@@ -240,7 +246,7 @@ class UrlInfoTest extends TestCase
             '..' => 'http://сайт.рф',
         ],
 
-        // полный basepath с файлом в пути
+        // полный basePath с файлом в пути
         'http://site.ru/path/to.php?prod=1#link' => [
             '' => 'http://site.ru/path/to.php?prod=1#link',        // пустая
             '#qwe' => 'http://site.ru/path/to.php?prod=1#qwe',    // fragment
@@ -252,7 +258,7 @@ class UrlInfoTest extends TestCase
             '//site2.ru' => 'http://site2.ru'                    // other host with same scheme
         ],
 
-        // basepath с директорией в конце
+        // basePath с директорией в конце
         'http://site.ru/path/to/' => [
             '/new/index' => 'http://site.ru/new/index',        // absolute path
             'new/index#zzz' => 'http://site.ru/path/to/new/index#zzz',    // relative path
@@ -318,7 +324,9 @@ class UrlInfoTest extends TestCase
     ];
 
     /**
-     * Тесирует ссылки с не http-протоколом
+     * Тестирует ссылки с не http-протоколом
+     *
+     * @noinspection PhpMethodMayBeStaticInspection
      */
     public function testNonHttp()
     {

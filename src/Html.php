@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 15.01.20 12:34:19
+ * @version 22.03.20 00:09:28
  */
 
 declare(strict_types = 1);
@@ -16,9 +16,6 @@ use function array_merge;
 
 /**
  * Html helper.
- *
- * @author Igor (Dicr) Tarasov <develop@dicr.org>
- * @version 2019
  */
 class Html extends \yii\helpers\Html
 {
@@ -56,7 +53,7 @@ class Html extends \yii\helpers\Html
     }
 
     /**
-     * Проверяет содержит ли html текст, кроме пустых тэгов.
+     * Проверяет содержит ли html текст, кроме пустых тегов.
      *
      * @param $html
      * @return bool
@@ -68,7 +65,7 @@ class Html extends \yii\helpers\Html
     }
 
     /**
-     * Деэкранирует из html.
+     * Де-экранирует из html.
      *
      * @param string $str
      * @return string
@@ -79,7 +76,7 @@ class Html extends \yii\helpers\Html
     }
 
     /**
-     * Множесво HTML meta тегов.
+     * Множество HTML meta тегов.
      *
      * @param string $type тип контента: 'name', 'property', ...
      * @param string[] $values значения key => content
@@ -171,7 +168,7 @@ class Html extends \yii\helpers\Html
     }
 
     /**
-     * Рендерит булевое значение.
+     * Рендерит булево значение.
      *
      * @param Model $model
      * @param string $attribute
@@ -184,7 +181,7 @@ class Html extends \yii\helpers\Html
     }
 
     /**
-     * Рендерит булевое значение флага.
+     * Рендерит булево значение флага.
      *
      * @param mixed $value
      * @return string
