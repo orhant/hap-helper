@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 22.03.20 00:09:28
+ * @version 04.05.20 14:56:56
  */
 
 declare(strict_types = 1);
@@ -13,6 +13,7 @@ namespace dicr\helper;
 use yii\base\Model;
 use yii\helpers\Json;
 use function array_merge;
+use function strtolower;
 
 /**
  * Html helper.
@@ -251,5 +252,25 @@ class Html extends \yii\helpers\Html
         return self::script('$(function() {
             $("' . $target . '").' . $name . '(' . Json::encode($options) . ');
         });');
+    }
+
+    /**
+     * Самозакрывающийся тэг XML.
+     *
+     * @param $name
+     * @param string $content
+     * @param array $options
+     * @return string
+     */
+    public static function xml($name, $content = '', $options = [])
+    {
+        if ($name === null || $name === false) {
+            return $content;
+        }
+
+        $name = strtolower($name);
+
+        $html = "<$name" . static::renderTagAttributes($options);
+        return $html . ($content === '' ? '/>' : '>' . $content . "</$name>");
     }
 }
