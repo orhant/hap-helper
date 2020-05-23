@@ -3,14 +3,16 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 22.05.20 05:07:45
+ * @version 23.05.20 10:19:26
  */
 
 declare(strict_types = 1);
 
 namespace dicr\helper;
 
+use function explode;
 use function preg_match;
+use function preg_replace;
 use function preg_replace_callback;
 
 /**
@@ -82,6 +84,9 @@ class StringHelper extends \yii\helpers\StringHelper
         if (! empty($opts['cleanVars'])) {
             $string = (string)preg_replace($regex, '', $string);
         }
+
+        // заменяем несколько пробелов одним
+        $string = (string)preg_replace('~[\h\t]+~', ' ', $string);
 
         return $string;
     }
