@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 22.03.20 00:10:56
+ * @version 24.05.20 14:28:49
  */
 
 declare(strict_types = 1);
@@ -59,6 +59,8 @@ class Url extends \yii\helpers\Url
         foreach ($query as $k => &$v) {
             if (is_array($v)) {
                 $v = self::normalizeQuery($v);
+            } else {
+                $v = (string)$v;
             }
         }
 
@@ -120,6 +122,8 @@ class Url extends \yii\helpers\Url
                 if (empty($v)) {
                     unset($query[$k]);
                 }
+            } else {
+                $v = (string)$v;
             }
         }
 
