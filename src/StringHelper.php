@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 23.05.20 10:19:26
+ * @version 15.06.20 16:55:08
  */
 
 declare(strict_types = 1);
@@ -86,7 +86,7 @@ class StringHelper extends \yii\helpers\StringHelper
         }
 
         // заменяем несколько пробелов одним
-        $string = (string)preg_replace('~[\h\t]+~', ' ', $string);
+        $string = (string)preg_replace('~[\h\t]+~uism', ' ', $string);
 
         return $string;
     }
