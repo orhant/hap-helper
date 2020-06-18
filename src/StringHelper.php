@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 15.06.20 16:55:08
+ * @version 19.06.20 04:41:51
  */
 
 declare(strict_types = 1);
@@ -49,7 +49,7 @@ class StringHelper extends \yii\helpers\StringHelper
      * ```
      *
      * @param string|null $string строка с переменными
-     * @param array $vars значения для подмены (многомерный массив обхектов)
+     * @param array $vars значения для подмены (многомерный массив объектов)
      * @param array $opts опции
      * - bool $cleanVars - удалять ненайденные переменные
      * - bool $cleanText - удалять весь текст, если есть ненайденные переменные
@@ -86,7 +86,7 @@ class StringHelper extends \yii\helpers\StringHelper
         }
 
         // заменяем несколько пробелов одним
-        $string = (string)preg_replace('~[\h\t]+~uism', ' ', $string);
+        $string = (string)preg_replace('~[\h\t]+~uim', ' ', $string);
 
         return $string;
     }

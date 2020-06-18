@@ -3,18 +3,21 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 22.03.20 00:09:50
+ * @version 19.06.20 04:40:33
  */
 
 declare(strict_types = 1);
 
 namespace dicr\helper;
 
+use function array_keys;
+use function array_values;
+use function preg_replace;
+use function str_replace;
+use function trim;
+
 /**
- * Inflector.
- *
- * @author Igor (Dicr) Tarasov <develop@dicr.org>
- * @version 2019
+ * Class Inflector
  */
 class Inflector extends \yii\helpers\Inflector
 {
@@ -66,37 +69,34 @@ class Inflector extends \yii\helpers\Inflector
     public static function slug($string, $replacement = '-', $lowercase = true)
     {
         // очищаем специальные символы и пробелы
-        $string = trim(preg_replace('~[\x00-\x1F\x7F\xA0\s\h\v\r\n\t]+~uim', ' ', (string)$string));
+        $string = trim(preg_replace('~[[:cntrl:]]|[\x00-\x1F\x7F\xA0\s\h\t\v\r\n]+~uim', ' ', $string));
         if ($string === '') {
             return '';
         }
 
         // конвертируем в нижний реестр
-        $string = mb_strtolower($string);
+        if ($lowercase) {
+            $string = mb_strtolower($string);
+        }
 
         // транслитерация русских букв
-        $string = (string)preg_replace(array_map(static function ($ch) {
-            return '~' . $ch . '~uism';
-        }, array_keys(self::TRANSLIT)), array_values(self::TRANSLIT), $string);
+        $string = (string)str_replace(
+            array_keys(self::TRANSLIT), array_values(self::TRANSLIT), $string
+        );
 
         // подстановка известных символов
-        $knownChars = [
-            '~\+~' => 'plus',
-            '~\@~' => 'at',
-        ];
-
-        $string = (string)preg_replace(array_keys($knownChars), array_values($knownChars), $string);
+        $string = (string)str_replace(['+', '@'], ['plus', 'at'], $string);
 
         // заменяем все, которые НЕ разрешены
         $string = preg_replace('~[^a-z0-9\-_.\~]+~uim', '-', $string);
 
-        // удаляем подстановочные вначале, в конце и дублирования
-        //$string = preg_replace (['~(^\-+)|(\-+$)~uism', '~\-{2,}~uism'], ['', '-'], $string);
-        $string = preg_replace(['~(^-+)|(-+$)~uism'], [''], $string);
+        // удаляем подстановочные в начале, в конце и задвоения
+        $string = preg_replace('~(^-)|(-$)|(-{2,})~um', '', $string);
 
         // заменяем подстановочные на заданные
-        /** @noinspection CallableParameterUseCaseInTypeContextInspection */
-        $string = str_replace('-', $replacement, $string);
+        if ($replacement !== '-') {
+            $string = (string)str_replace('-', $replacement, $string);
+        }
 
         return $string;
     }

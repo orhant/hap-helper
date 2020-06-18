@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 22.03.20 00:11:42
+ * @version 19.06.20 04:42:16
  */
 
 declare(strict_types = 1);
@@ -39,9 +39,6 @@ use function is_string;
  * @property-read string $hostInfo user:pass@host:port
  * @property-read string $requestUri строка запроса (путь?параметры#фрагмент)
  * @property-read bool $isAbsolute признак абсолютной ссылки
- *
- * @author Igor (Dicr) Tarasov <develop@dicr.org>
- * @version 180621
  */
 class UrlInfo extends BaseObject implements Arrayable, ArrayAccess
 {
