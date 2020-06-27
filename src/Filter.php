@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 22.03.20 00:09:28
+ * @version 27.06.20 16:53:59
  */
 
 declare(strict_types = 1);
@@ -11,7 +11,15 @@ declare(strict_types = 1);
 namespace dicr\helper;
 
 use InvalidArgumentException;
+use function array_filter;
+use function array_map;
+use function array_unique;
+use function ctype_digit;
 use function is_int;
+use function is_numeric;
+use function sort;
+use function trim;
+use const SORT_STRING;
 
 /**
  * Фильтр данных.
@@ -61,19 +69,15 @@ class Filter
     {
         $ids = (array)($ids ?: []);
 
-        foreach ($ids as $i => &$id) {
-            $id = self::id($id);
-            if ($id === null) {
-                unset($ids[$i]);
-            }
-        }
+        $ids = array_filter($ids, static function($id) {
+            return is_numeric($id) && $id > 0;
+        });
 
-        unset($id);
+        $ids = array_map('\intval', $ids);
 
-        if (! empty($ids)) {
-            $ids = array_unique($ids, SORT_NUMERIC);
-            sort($ids, SORT_NUMERIC);
-        }
+        $ids = array_unique($ids);
+
+        sort($ids);
 
         return $ids;
     }

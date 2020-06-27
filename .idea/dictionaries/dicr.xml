@@ -7,6 +7,7 @@
       <w>hostinfo</w>
       <w>inflector</w>
       <w>inputmask</w>
+      <w>intval</w>
       <w>lcfirst</w>
       <w>mbstring</w>
       <w>nonhttp</w>

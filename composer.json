@@ -4,6 +4,10 @@
     "license": "MIT",
     "description": "Набор вспомогательных утилит для Yii2",
     "keywords": ["dicr", "php", "yii2", "helper", "utilities"],
+    "homepage": "https://gitlab.com/dicr/yii2-helper",
+    "support": {
+        "source": "https://gitlab.com/dicr/yii2-helper.git"
+    },
     "authors": [
         {
             "name": "Igor Tarasov",
@@ -12,10 +16,6 @@
             "role": "developer"
         }
     ],
-    "homepage": "https://gitlab.com/dicr/yii2-helper",
-    "support": {
-        "source": "https://gitlab.com/dicr/yii2-helper.git"
-    },
     "autoload": {
         "psr-4": {
             "dicr\\helper\\": "src/"
@@ -29,19 +29,16 @@
     "minimum-stability": "stable",
     "prefer-stable": true,
     "repositories": [
-        {
-            "type": "composer",
-            "url": "https://asset-packagist.org"
-        }
+        {"type": "composer", "url": "https://asset-packagist.org"}
     ],
     "require": {
         "php": ">=7.2",
         "ext-mbstring": "*",
         "ext-intl": "*",
-        "yiisoft/yii2": "~2.0.32"
+        "yiisoft/yii2": "~2.0.35"
     },
     "require-dev": {
         "roave/security-advisories": "dev-master",
-        "phpunit/phpunit": "~8.5.2"
+        "phpunit/phpunit": "~8.5.8"
     }
 }
