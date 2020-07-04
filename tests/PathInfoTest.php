@@ -3,11 +3,10 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 22.03.20 00:07:00
+ * @version 04.07.20 11:41:11
  */
 
 declare(strict_types = 1);
-
 namespace dicr\tests;
 
 use dicr\helper\PathInfo;
@@ -15,9 +14,6 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * PathInfo Test.
- *
- * @author Igor (Dicr) Tarasov <develop@dicr.org>
- * @version 2019
  */
 class PathInfoTest extends TestCase
 {

@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!--
-  ~ @copyright 2019-2019 Dicr http://dicr.org
+  ~ @copyright 2019-2020 Dicr http://dicr.org
   ~ @author Igor A Tarasov <develop@dicr.org>
   ~ @license proprietary
-  ~ @version 14.11.19 03:58:12
+  ~ @version 04.07.20 11:48:34
   -->
 
 <phpunit
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/6.3/phpunit.xsd"
-        bootstrap="tests/bootstrap.php"
+        bootstrap="vendor/autoload.php"
 >
     <testsuites>
         <testsuite name="my tests">

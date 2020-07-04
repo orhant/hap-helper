@@ -3,11 +3,10 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 22.03.20 00:13:38
+ * @version 04.07.20 11:35:11
  */
 
 declare(strict_types = 1);
-
 namespace dicr\tests;
 
 use dicr\helper\ArrayHelper;

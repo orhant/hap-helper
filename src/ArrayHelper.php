@@ -3,11 +3,10 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 15.01.20 12:42:19
+ * @version 04.07.20 11:49:14
  */
 
 declare(strict_types = 1);
-
 namespace dicr\helper;
 
 use function count;
