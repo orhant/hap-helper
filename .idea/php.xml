@@ -50,9 +50,13 @@
       <path value="$PROJECT_DIR$/vendor/sebastian/comparator" />
       <path value="$PROJECT_DIR$/vendor/sebastian/recursion-context" />
       <path value="$PROJECT_DIR$/vendor/sebastian/resource-operations" />
+      <path value="$PROJECT_DIR$/vendor/yiisoft/yii2-bootstrap4" />
+      <path value="$PROJECT_DIR$/vendor/npm-asset/bootstrap" />
+      <path value="$PROJECT_DIR$/vendor/phpunit/php-invoker" />
+      <path value="$PROJECT_DIR$/vendor/sebastian/code-unit" />
     </include_path>
   </component>
-  <component name="PhpProjectSharedConfiguration" php_language_level="7" />
+  <component name="PhpProjectSharedConfiguration" php_language_level="7.2" />
   <component name="PhpRuntimeConfiguration">
     <extensions>
       <extension name="FFI" enabled="true" />

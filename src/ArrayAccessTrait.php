@@ -3,23 +3,23 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 04.07.20 11:52:50
+ * @version 11.07.20 10:13:19
  */
 
 declare(strict_types = 1);
 namespace dicr\helper;
 
+use ArrayAccess;
+
 /**
  * Реализация интерфейса ArrayAccess.
- *
- * @noinspection PhpUnused
  */
 trait ArrayAccessTrait
 {
     /**
      * @param string|int $offset
      * @return bool
-     * @see \ArrayAccess::offsetExists()
+     * @see ArrayAccess::offsetExists()
      */
     public function offsetExists($offset)
     {

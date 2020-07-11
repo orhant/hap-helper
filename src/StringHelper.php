@@ -3,11 +3,10 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 27.06.20 19:13:14
+ * @version 11.07.20 10:13:53
  */
 
 declare(strict_types = 1);
-
 namespace dicr\helper;
 
 use function mb_strtolower;
@@ -24,7 +23,6 @@ class StringHelper extends \yii\helpers\StringHelper
      * @param $string
      * @param string $encoding
      * @return string
-     * @noinspection PhpUnused
      */
     public static function mb_lcfirst($string, $encoding = 'UTF-8')
     {

@@ -3,11 +3,10 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 24.05.20 14:28:49
+ * @version 11.07.20 10:14:05
  */
 
 declare(strict_types = 1);
-
 namespace dicr\helper;
 
 use InvalidArgumentException;
@@ -102,7 +101,6 @@ class Url extends \yii\helpers\Url
      *
      * @param array|string $query
      * @return array
-     * @noinspection PhpUnused
      */
     public static function filterQuery($query)
     {
@@ -138,7 +136,6 @@ class Url extends \yii\helpers\Url
      * @param array|string $query1
      * @param array|string $query2
      * @return array $query1 - $query2
-     * @noinspection PhpUnused
      */
     public static function diffQuery($query1, $query2)
     {

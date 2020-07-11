@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 04.07.20 11:49:21
+ * @version 11.07.20 10:13:30
  */
 
 declare(strict_types = 1);
@@ -23,7 +23,6 @@ class Debug
      * Дамп значения в html.
      *
      * @param array $vars
-     * @noinspection PhpUnused
      */
     public static function xmp(...$vars)
     {

@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 04.07.20 11:50:38
+ * @version 11.07.20 10:13:44
  */
 
 declare(strict_types = 1);
@@ -138,7 +138,6 @@ class PathInfo extends BaseObject
             return $path;
         }
 
-        /** @var bool $isAbsolute */
         $isAbsolute = self::isAbsolute($path);
 
         /** @var string[] $parts */
@@ -219,7 +218,6 @@ class PathInfo extends BaseObject
      * Возвращает признак абсолютного пути
      *
      * @return bool
-     * @noinspection PhpUnused
      */
     public function getIsAbsolute()
     {
@@ -230,7 +228,6 @@ class PathInfo extends BaseObject
      * Возвращает абсолютный путь
      *
      * @return string|null абсолютный путь или null если не существует
-     * @noinspection PhpUnused
      */
     public function getAbsolute()
     {
@@ -242,7 +239,6 @@ class PathInfo extends BaseObject
      *
      * @param int $levels
      * @return string
-     * @noinspection PhpUnused
      */
     public function getParent(int $levels = 1)
     {
@@ -258,7 +254,6 @@ class PathInfo extends BaseObject
      *
      * @param string $relative
      * @return string
-     * @noinspection PhpUnused
      */
     public function getChild(string $relative)
     {
@@ -297,7 +292,6 @@ class PathInfo extends BaseObject
      * Возвращает расширение
      *
      * @return string
-     * @noinspection PhpUnused
      */
     public function getExt()
     {

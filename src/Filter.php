@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 04.07.20 11:49:29
+ * @version 11.07.20 10:16:28
  */
 
 declare(strict_types = 1);
@@ -22,6 +22,8 @@ use const SORT_STRING;
 
 /**
  * Фильтр данных.
+ *
+ * @deprecated use dicr/yii2-validate
  */
 class Filter
 {

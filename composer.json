@@ -26,19 +26,23 @@
             "dicr\\tests\\": "tests/"
         }
     },
+    "extra": {
+        "bootstrap": "\\dicr\\helper\\Bootstrap"
+    },
     "minimum-stability": "stable",
     "prefer-stable": true,
     "repositories": [
         {"type": "composer", "url": "https://asset-packagist.org"}
     ],
     "require": {
-        "php": "7.*",
+        "php": "~7.2",
         "ext-mbstring": "*",
         "ext-intl": "*",
-        "yiisoft/yii2": "2.*"
+        "yiisoft/yii2": "~2.0",
+        "yiisoft/yii2-bootstrap4": "~2.0"
     },
     "require-dev": {
         "roave/security-advisories": "dev-master",
-        "phpunit/phpunit": "8.*"
+        "phpunit/phpunit": "~9.2"
     }
 }

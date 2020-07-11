@@ -3,13 +3,14 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 04.07.20 11:50:17
+ * @version 11.07.20 10:10:56
  */
 
 declare(strict_types = 1);
 
 namespace dicr\helper;
 
+use Yii;
 use yii\base\InvalidArgumentException;
 use function array_key_exists;
 use function array_keys;
@@ -118,13 +119,13 @@ class Inflector extends \yii\helpers\Inflector
         if ($count < 5 || $count > 20) {
             $mod = $count % 10;
             if ($mod === 1) {
-                $word = T::t('товар');
+                $word = Yii::t('dicr/helper', 'товар');
             } elseif ($mod === 2 || $mod === 3 || $mod === 4) {
-                $word = T::t('товара');
+                $word = Yii::t('dicr/helper', 'товара');
             }
         }
 
-        return $word ?? T::t('товаров');
+        return $word ?? Yii::t('dicr/helper', 'товаров');
     }
 
     /**
@@ -139,13 +140,13 @@ class Inflector extends \yii\helpers\Inflector
         if ($count < 5 || $count > 20) {
             $mod = $count % 10;
             if ($mod === 1) {
-                $word = T::t('модель');
+                $word = Yii::t('dicr/helper', 'модель');
             } elseif ($mod === 2 || $mod === 3 || $mod === 4) {
-                $word = T::t('модели');
+                $word = Yii::t('dicr/helper', 'модели');
             }
         }
 
-        return $word ?? T::t('моделей');
+        return $word ?? Yii::t('dicr/helper', 'моделей');
     }
 
     /**
@@ -161,31 +162,31 @@ class Inflector extends \yii\helpers\Inflector
         }
 
         $daysMap = [
-            0 => T::t('сегодня'),
-            1 => T::t('завтра'),
-            2 => T::t('послезавтра'),
-            3 => T::t('через {num} дня', ['num' => 3]),
-            4 => T::t('через {num} дня', ['num' => 4]),
-            5 => T::t('через {num} дней', ['num' => 5]),
-            6 => T::t('через {num} дней', ['num' => 6]),
-            7 => T::t('через неделю'),
-            8 => T::t('через {num} дней', ['num' => 8]),
-            9 => T::t('через {num} дней', ['num' => 9]),
-            10 => T::t('через {num}} дней', ['num' => 10]),
-            11 => T::t('через {num} дней', ['num' => 11]),
-            12 => T::t('через {num} дней', ['num' => 12]),
-            13 => T::t('через {num} дней', ['num' => 13]),
-            14 => T::t('через {num} недели', ['num' => 2]),
-            15 => T::t('через {num} дней', ['num' => 15]),
-            16 => T::t('через {num} дней', ['num' => 16]),
-            17 => T::t('через {num} дней', ['num' => 17]),
-            18 => T::t('через {num} дней', ['num' => 18]),
-            19 => T::t('через {num} дней', ['num' => 19]),
-            20 => T::t('через {num} дней', ['num' => 20]),
-            21 => T::t('через {num} недели', ['num' => 3]),
-            30 => T::t('через месяц'),
-            31 => T::t('через месяц'),
-            62 => T::t('через {num} месяца', ['num' => 2])
+            0 => Yii::t('dicr/helper', 'сегодня'),
+            1 => Yii::t('dicr/helper', 'завтра'),
+            2 => Yii::t('dicr/helper', 'послезавтра'),
+            3 => Yii::t('dicr/helper', 'через {num} дня', ['num' => 3]),
+            4 => Yii::t('dicr/helper', 'через {num} дня', ['num' => 4]),
+            5 => Yii::t('dicr/helper', 'через {num} дней', ['num' => 5]),
+            6 => Yii::t('dicr/helper', 'через {num} дней', ['num' => 6]),
+            7 => Yii::t('dicr/helper', 'через неделю'),
+            8 => Yii::t('dicr/helper', 'через {num} дней', ['num' => 8]),
+            9 => Yii::t('dicr/helper', 'через {num} дней', ['num' => 9]),
+            10 => Yii::t('dicr/helper', 'через {num}} дней', ['num' => 10]),
+            11 => Yii::t('dicr/helper', 'через {num} дней', ['num' => 11]),
+            12 => Yii::t('dicr/helper', 'через {num} дней', ['num' => 12]),
+            13 => Yii::t('dicr/helper', 'через {num} дней', ['num' => 13]),
+            14 => Yii::t('dicr/helper', 'через {num} недели', ['num' => 2]),
+            15 => Yii::t('dicr/helper', 'через {num} дней', ['num' => 15]),
+            16 => Yii::t('dicr/helper', 'через {num} дней', ['num' => 16]),
+            17 => Yii::t('dicr/helper', 'через {num} дней', ['num' => 17]),
+            18 => Yii::t('dicr/helper', 'через {num} дней', ['num' => 18]),
+            19 => Yii::t('dicr/helper', 'через {num} дней', ['num' => 19]),
+            20 => Yii::t('dicr/helper', 'через {num} дней', ['num' => 20]),
+            21 => Yii::t('dicr/helper', 'через {num} недели', ['num' => 3]),
+            30 => Yii::t('dicr/helper', 'через месяц'),
+            31 => Yii::t('dicr/helper', 'через месяц'),
+            62 => Yii::t('dicr/helper', 'через {num} месяца', ['num' => 2])
         ];
 
         if (isset($daysMap[$days])) {
@@ -196,7 +197,7 @@ class Inflector extends \yii\helpers\Inflector
 
         // получаем день и месяц
         return idate('d', $time) . ' ' .
-            mb_strtolower(T::t(self::MONTH_GENITIVE[idate('m', $time) - 1]));
+            mb_strtolower(Yii::t('dicr/helper', self::MONTH_GENITIVE[idate('m', $time) - 1]));
     }
 
     /**
@@ -221,9 +222,9 @@ class Inflector extends \yii\helpers\Inflector
             if (! isset($endDay) || $day !== $endDay + 1) {
                 if (isset($startDay)) {
                     // новый день не следует за предыдущим - сохраняем прошлый период
-                    $group = T::t(self::WEEKDAYS[$startDay]);
+                    $group = Yii::t('dicr/helper', self::WEEKDAYS[$startDay]);
                     if ($endDay > $startDay) {
-                        $group .= '-' . T::t(self::WEEKDAYS[$endDay]);
+                        $group .= '-' . Yii::t('dicr/helper', self::WEEKDAYS[$endDay]);
                     }
 
                     $groupDays[] = $group;
@@ -238,9 +239,9 @@ class Inflector extends \yii\helpers\Inflector
 
         // закрываем последний период
         if (isset($startDay)) {
-            $group = T::t(self::WEEKDAYS[$startDay]);
+            $group = Yii::t('dicr/helper', self::WEEKDAYS[$startDay]);
             if ($endDay > $startDay) {
-                $group .= '-' . T::t(self::WEEKDAYS[$endDay]);
+                $group .= '-' . Yii::t('dicr/helper', self::WEEKDAYS[$endDay]);
             }
 
             $groupDays[] = $group;
@@ -305,7 +306,7 @@ class Inflector extends \yii\helpers\Inflector
         // группируем выходные
         if (! empty($holidays)) {
             $days = implode(',', static::groupDays($holidays));
-            $schedule[$days] = T::t('выходной');
+            $schedule[$days] = Yii::t('dicr/helper', 'выходной');
         }
 
         return $schedule;

@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 04.05.20 14:56:56
+ * @version 11.07.20 10:14:19
  */
 
 declare(strict_types = 1);
@@ -18,7 +18,7 @@ use function strtolower;
 /**
  * Html helper.
  */
-class Html extends \yii\helpers\Html
+class Html extends \yii\bootstrap4\Html
 {
     /**
      * Синоним encode.
@@ -26,7 +26,6 @@ class Html extends \yii\helpers\Html
      * @param string|null $str
      * @return string
      * @see self::encode
-     * @noinspection PhpUnused
      */
     public static function esc($str)
     {
@@ -58,7 +57,6 @@ class Html extends \yii\helpers\Html
      *
      * @param $html
      * @return bool
-     * @noinspection PhpUnused
      */
     public static function hasText($html)
     {
@@ -82,7 +80,6 @@ class Html extends \yii\helpers\Html
      * @param string $type тип контента: 'name', 'property', ...
      * @param string[] $values значения key => content
      * @return string
-     * @noinspection PhpUnused
      */
     public static function metas(string $type, array $values)
     {
@@ -115,7 +112,6 @@ class Html extends \yii\helpers\Html
      * @param string $href
      * @param array $options
      * @return string
-     * @noinspection PhpUnused
      */
     public static function cssLink(string $href, array $options = [])
     {
@@ -150,7 +146,7 @@ class Html extends \yii\helpers\Html
         ob_start();
 
         foreach ($links as $rel => $href) {
-            echo static::link(['rel' => $rel, 'href' => $href]);
+            echo static::link(compact('rel', 'href'));
         }
 
         return ob_get_clean();
@@ -161,7 +157,6 @@ class Html extends \yii\helpers\Html
      *
      * @param string $src
      * @return string
-     * @noinspection PhpUnused
      */
     public static function jsLink(string $src)
     {
@@ -174,7 +169,6 @@ class Html extends \yii\helpers\Html
      * @param Model $model
      * @param string $attribute
      * @return string
-     * @noinspection PhpUnused
      */
     public static function activeFlag(Model $model, string $attribute)
     {
@@ -214,7 +208,6 @@ class Html extends \yii\helpers\Html
      * @param string $name
      * @param array $options
      * @return string
-     * @noinspection PhpUnused
      */
     public static function fas(string $name, array $options = [])
     {
@@ -229,7 +222,6 @@ class Html extends \yii\helpers\Html
      * @param string $name
      * @param array $options
      * @return string
-     * @noinspection PhpUnused
      */
     public static function far(string $name, array $options = [])
     {
@@ -245,7 +237,6 @@ class Html extends \yii\helpers\Html
      * @param string $name плагин
      * @param array $options опции плагина
      * @return string html
-     * @noinspection PhpUnused
      */
     public static function plugin(string $target, string $name, array $options = [])
     {
