@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 11.07.20 15:23:02
+ * @version 14.07.20 22:21:25
  */
 
 declare(strict_types = 1);
@@ -147,6 +147,27 @@ class Inflector extends \yii\helpers\Inflector
         }
 
         return $word ?? Yii::t('dicr/helper', 'моделей');
+    }
+
+    /**
+     * Форма кол-ва дней.
+     *
+     * @param int|string $count количество
+     * @return string форма слова
+     */
+    public static function numDays($count)
+    {
+        $count = (int)$count;
+        if ($count < 5 || $count > 20) {
+            $mod = $count % 10;
+            if ($mod === 1) {
+                $word = Yii::t('dicr/helper', 'день');
+            } elseif ($mod === 2 || $mod === 3 || $mod === 4) {
+                $word = Yii::t('dicr/helper', 'дня');
+            }
+        }
+
+        return $word ?? Yii::t('dicr/helper', 'дней');
     }
 
     /**

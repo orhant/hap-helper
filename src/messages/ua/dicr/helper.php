@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 11.07.20 15:24:41
+ * @version 14.07.20 22:22:50
  */
 
 /** @noinspection SpellCheckingInspection */
@@ -17,6 +17,10 @@ return [
     'модель' => 'модель',
     'модели' => 'моделі',
     'моделей' => 'моделей',
+
+    'день' => 'день',
+    'дня' => 'дні',
+    'дней' => 'днів',
 
     'месяц' => 'місяць',
     'месяца' => 'місяці',
