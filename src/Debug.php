@@ -3,14 +3,13 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 11.07.20 10:13:30
+ * @version 19.07.20 18:00:41
  */
 
+/** @noinspection ForgottenDebugOutputInspection */
 declare(strict_types = 1);
 namespace dicr\helper;
 
-use function count;
-use function reset;
 use function var_dump;
 use const YII_DEBUG;
 
@@ -22,14 +21,35 @@ class Debug
     /**
      * Дамп значения в html.
      *
-     * @param array $vars
+     * @param mixed ...$vars
      */
     public static function xmp(...$vars)
     {
-        if (YII_DEBUG && ! empty($vars)) {
+        if (YII_DEBUG) {
             echo '<xmp>';
-            /** @noinspection ForgottenDebugOutputInspection */
-            var_dump(count($vars) > 1 ? $vars : reset($vars));
+
+            foreach ($vars as $var) {
+                var_dump($var);
+            }
+
+            echo '</xmp>';
+        }
+    }
+
+    /**
+     * Дамп значений и выход.
+     *
+     * @param mixed ...$vars
+     */
+    public static function xe(...$vars)
+    {
+        if (YII_DEBUG) {
+            echo '<xmp>';
+
+            foreach ($vars as $var) {
+                var_dump($var);
+            }
+
             exit;
         }
     }
