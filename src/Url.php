@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 19.07.20 19:20:03
+ * @version 19.07.20 19:34:37
  */
 
 declare(strict_types = 1);
@@ -47,22 +47,19 @@ class Url extends \yii\helpers\Url
     public static function parseQuery($query)
     {
         if ($query === null || $query === '' || $query === []) {
-            return [];
+            $query = [];
+        } elseif (! is_array($query)) {
+            $query = trim((string)$query, " \t\n\r\0\x0B?");
+            if ($query === '') {
+                $query = [];
+            } else {
+                $parsed = [];
+                parse_str($query, $parsed);
+                $query = $parsed;
+            }
         }
 
-        if (is_array($query)) {
-            return $query;
-        }
-
-        $query = trim((string)$query, '?');
-        if ($query === '') {
-            return [];
-        }
-
-        $parsed = null;
-        parse_str($query, $parsed);
-
-        return (array)$parsed;
+        return (array)$query;
     }
 
     /**
@@ -74,10 +71,8 @@ class Url extends \yii\helpers\Url
     public static function buildQuery($query)
     {
         if ($query === null || $query === '' || $query === []) {
-            return '';
-        }
-
-        if (is_array($query)) {
+            $query = '';
+        } elseif (is_array($query)) {
             $query = preg_replace(['~%5B~i', '~%5D~i', '~\[\d+\]~'], ['[', ']', '[]'], http_build_query($query));
         }
 
@@ -92,15 +87,7 @@ class Url extends \yii\helpers\Url
      */
     public static function filterQuery($query)
     {
-        if ($query === null || $query === '' || $query === []) {
-            return [];
-        }
-
-        if (! is_array($query)) {
-            $query = static::parseQuery($query);
-        }
-
-        return array_filter($query, static function($v) {
+        return array_filter(static::parseQuery($query), static function($v) {
             if ($v === null || $v === '' || $v === []) {
                 return false;
             }
@@ -125,14 +112,7 @@ class Url extends \yii\helpers\Url
      */
     public static function normalizeQuery($query)
     {
-        if ($query === null || $query === '' || $query === []) {
-            return [];
-        }
-
-        if (! is_array($query)) {
-            $query = static::parseQuery($query);
-        }
-
+        $query = static::parseQuery($query);
         ksort($query);
 
         return array_map(static function($v) {
