@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 11.07.20 10:14:05
+ * @version 19.07.20 19:20:03
  */
 
 declare(strict_types = 1);
@@ -11,6 +11,7 @@ namespace dicr\helper;
 
 use InvalidArgumentException;
 use function array_diff;
+use function array_filter;
 use function array_map;
 use function array_pop;
 use function array_values;
@@ -18,7 +19,6 @@ use function explode;
 use function http_build_query;
 use function implode;
 use function is_array;
-use function is_string;
 use function ksort;
 use function parse_str;
 use function parse_url;
@@ -39,37 +39,6 @@ use const PREG_SPLIT_NO_EMPTY;
 class Url extends \yii\helpers\Url
 {
     /**
-     * Нормализует параметры запроса.
-     * Конвертирует из строки в массив, сортирует по названию параметров.
-     *
-     * @param array|string $query
-     * @return array
-     */
-    public static function normalizeQuery($query)
-    {
-        if ($query === null || $query === '' || $query === []) {
-            return [];
-        }
-
-        if (! is_array($query)) {
-            $query = static::parseQuery($query);
-        }
-
-        foreach ($query as $k => &$v) {
-            if (is_array($v)) {
-                $v = self::normalizeQuery($v);
-            } else {
-                $v = (string)$v;
-            }
-        }
-
-        unset($v);
-        ksort($query);
-
-        return (array)$query;
-    }
-
-    /**
      * Парсит параметры запроса из строки
      *
      * @param string|array $query
@@ -82,10 +51,10 @@ class Url extends \yii\helpers\Url
         }
 
         if (is_array($query)) {
-            return (array)$query;
+            return $query;
         }
 
-        $query = trim($query, '?');
+        $query = trim((string)$query, '?');
         if ($query === '') {
             return [];
         }
@@ -94,6 +63,25 @@ class Url extends \yii\helpers\Url
         parse_str($query, $parsed);
 
         return (array)$parsed;
+    }
+
+    /**
+     * Конвертирует параметры запроса в строку
+     *
+     * @param array|string $query
+     * @return string
+     */
+    public static function buildQuery($query)
+    {
+        if ($query === null || $query === '' || $query === []) {
+            return '';
+        }
+
+        if (is_array($query)) {
+            $query = preg_replace(['~%5B~i', '~%5D~i', '~\[\d+\]~'], ['[', ']', '[]'], http_build_query($query));
+        }
+
+        return (string)$query;
     }
 
     /**
@@ -112,20 +100,44 @@ class Url extends \yii\helpers\Url
             $query = static::parseQuery($query);
         }
 
-        foreach ($query as $k => &$v) {
+        return array_filter($query, static function($v) {
             if ($v === null || $v === '' || $v === []) {
-                unset($query[$k]);
-            } elseif (is_array($v)) {
+                return false;
+            }
+
+            if (is_array($v)) {
                 $v = self::filterQuery($v);
                 if (empty($v)) {
-                    unset($query[$k]);
+                    return false;
                 }
-            } else {
-                $v = (string)$v;
             }
+
+            return true;
+        });
+    }
+
+    /**
+     * Нормализует параметры запроса.
+     * Конвертирует из строки в массив, сортирует по названию параметров.
+     *
+     * @param array|string $query
+     * @return array
+     */
+    public static function normalizeQuery($query)
+    {
+        if ($query === null || $query === '' || $query === []) {
+            return [];
         }
 
-        return (array)$query;
+        if (! is_array($query)) {
+            $query = static::parseQuery($query);
+        }
+
+        ksort($query);
+
+        return array_map(static function($v) {
+            return is_array($v) ? self::normalizeQuery($v) : (string)$v;
+        }, $query);
     }
 
     /**
@@ -139,15 +151,20 @@ class Url extends \yii\helpers\Url
      */
     public static function diffQuery($query1, $query2)
     {
-        if ($query1 === null || $query1 === '' || $query1 === []) {
+        $query1 = self::parseQuery($query1);
+        if (empty($query1)) {
             return [];
         }
 
-        if ($query2 === null || $query2 === '' || $query2 === []) {
-            return (array)$query1;
+        $query2 = self::parseQuery($query2);
+        if (empty($query2)) {
+            return $query1;
         }
 
-        return static::unflatQuery(array_diff(static::flatQuery($query1), static::flatQuery($query2)));
+        return static::unflatQuery(array_diff(
+            static::flatQuery($query1),
+            static::flatQuery($query2)
+        ));
     }
 
     /**
@@ -162,22 +179,15 @@ class Url extends \yii\helpers\Url
             return [];
         }
 
-        if (! is_string($query)) {
-            $query = static::buildQuery($query);
-        }
+        $query = self::buildQuery($query);
 
-        // разбиваем по разделителю параметров "&"
-        $flatQuery = explode('&', $query);
-
-        // декодируем параметры
+        // разбиваем по разделителю параметров "&" и декодируем значения параметры
         //$flatQuery = array_map('urldecode', $flatQuery);
-        $flatQuery = array_map(static function ($item) {
+        return array_map(static function($item) {
             $matches = null;
             return preg_match('~^([^=]+=)(.+)$~um', $item, $matches) ?
                 $matches[1] . urldecode($matches[2]) : $item;
-        }, $flatQuery);
-
-        return $flatQuery;
+        }, (array)explode('&', $query));
     }
 
     /**
@@ -194,7 +204,7 @@ class Url extends \yii\helpers\Url
 
         // кодируем параметры
         //$flatQuery = array_map('urlencode', $flatQuery);
-        $flatQuery = array_map(static function ($item) {
+        $flatQuery = array_map(static function($item) {
             $matches = null;
             return preg_match('~^([^=]+=)(.+)$~um', $item, $matches) ?
                 $matches[1] . urlencode($matches[2]) : $item;
@@ -202,21 +212,6 @@ class Url extends \yii\helpers\Url
 
         // объединяем и парсим строку параметров
         return static::parseQuery(implode('&', $flatQuery));
-    }
-
-    /**
-     * Конвертирует параметры запроса в строку
-     *
-     * @param array $query
-     * @return string
-     */
-    public static function buildQuery(array $query)
-    {
-        if ($query === null || $query === '' || $query === []) {
-            return '';
-        }
-
-        return preg_replace(['~%5B~i', '~%5D~i', '~\[\d+]~'], ['[', ']', '[]'], http_build_query($query));
     }
 
     /**
