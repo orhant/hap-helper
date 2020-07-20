@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 14.07.20 22:21:25
+ * @version 20.07.20 18:04:43
  */
 
 declare(strict_types = 1);
@@ -189,6 +189,23 @@ class Inflector extends \yii\helpers\Inflector
         }
 
         return $word ?? Yii::t('dicr/helper', 'месяцев');
+    }
+
+    public function declination_of_number($number, $one, $two, $five)
+    {
+        if (($number - $number % 10) % 100 !== 10) {
+            if ($number % 10 === 1) {
+                $result = $one;
+            } elseif ($number % 10 >= 2 && $number % 10 <= 4) {
+                $result = $two;
+            } else {
+                $result = $five;
+            }
+        } else {
+            $result = $five;
+        }
+
+        return $result;
     }
 
     /**
