@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 11.07.20 10:09:21
+ * @version 27.07.20 04:59:26
  */
 
 declare(strict_types = 1);
@@ -21,7 +21,7 @@ class Bootstrap implements BootstrapInterface
     /**
      * @inheritDoc
      */
-    public function bootstrap($app)
+    public function bootstrap($app) : void
     {
         // Трансляция
         $app->i18n->translations['dicr/helper'] = [

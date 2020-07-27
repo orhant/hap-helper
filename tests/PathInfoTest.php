@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 04.07.20 11:41:11
+ * @version 27.07.20 05:48:50
  */
 
 declare(strict_types = 1);
@@ -17,6 +17,9 @@ use PHPUnit\Framework\TestCase;
  */
 class PathInfoTest extends TestCase
 {
+    /**
+     *
+     */
     public const TEST_NORMALIZE = [
         '' => '',
 
@@ -62,6 +65,9 @@ class PathInfoTest extends TestCase
         }
     }
 
+    /**
+     *
+     */
     public const TEST_PARENT = [
         '' => '..',
         '/' => '/',

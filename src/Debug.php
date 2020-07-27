@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 19.07.20 18:00:41
+ * @version 27.07.20 04:59:41
  */
 
 /** @noinspection ForgottenDebugOutputInspection */
@@ -23,7 +23,7 @@ class Debug
      *
      * @param mixed ...$vars
      */
-    public static function xmp(...$vars)
+    public static function xmp(...$vars) : void
     {
         if (YII_DEBUG) {
             echo '<xmp>';
@@ -41,7 +41,7 @@ class Debug
      *
      * @param mixed ...$vars
      */
-    public static function xe(...$vars)
+    public static function xe(...$vars) : void
     {
         if (YII_DEBUG) {
             echo '<xmp>';

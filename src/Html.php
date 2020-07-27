@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 11.07.20 10:14:19
+ * @version 27.07.20 05:03:05
  */
 
 declare(strict_types = 1);
@@ -25,9 +25,8 @@ class Html extends \yii\bootstrap4\Html
      *
      * @param string|null $str
      * @return string
-     * @see self::encode
      */
-    public static function esc($str)
+    public static function esc($str) : string
     {
         return static::encode((string)$str);
     }
@@ -38,7 +37,7 @@ class Html extends \yii\bootstrap4\Html
      * @param string $html
      * @return string plain-текст
      */
-    public static function toText($html)
+    public static function toText($html) : string
     {
         // декодируем html-символы &entity;
         $text = static::decode((string)$html);
@@ -58,7 +57,7 @@ class Html extends \yii\bootstrap4\Html
      * @param $html
      * @return bool
      */
-    public static function hasText($html)
+    public static function hasText($html) : bool
     {
         return self::toText((string)$html) !== '';
     }
@@ -69,7 +68,7 @@ class Html extends \yii\bootstrap4\Html
      * @param string $str
      * @return string
      */
-    public static function decode($str)
+    public static function decode($str) : string
     {
         return html_entity_decode(html_entity_decode((string)$str, ENT_QUOTES | ENT_HTML5, 'utf-8'));
     }
@@ -81,7 +80,7 @@ class Html extends \yii\bootstrap4\Html
      * @param string[] $values значения key => content
      * @return string
      */
-    public static function metas(string $type, array $values)
+    public static function metas(string $type, array $values) : string
     {
         ob_start();
 
@@ -101,7 +100,7 @@ class Html extends \yii\bootstrap4\Html
      * @param array $options
      * @return string
      */
-    public static function meta(array $options)
+    public static function meta(array $options) : string
     {
         return self::tag('meta', '', $options);
     }
@@ -113,7 +112,7 @@ class Html extends \yii\bootstrap4\Html
      * @param array $options
      * @return string
      */
-    public static function cssLink(string $href, array $options = [])
+    public static function cssLink(string $href, array $options = []) : string
     {
         if (! isset($options['rel'])) {
             $options['rel'] = 'stylesheet';
@@ -130,7 +129,7 @@ class Html extends \yii\bootstrap4\Html
      * @param array $options
      * @return string
      */
-    public static function link(array $options)
+    public static function link(array $options) : string
     {
         return self::tag('link', '', $options);
     }
@@ -141,7 +140,7 @@ class Html extends \yii\bootstrap4\Html
      * @param string[] $links ассоциативный массив rel => href
      * @return string
      */
-    public static function links(array $links)
+    public static function links(array $links) : string
     {
         ob_start();
 
@@ -158,9 +157,22 @@ class Html extends \yii\bootstrap4\Html
      * @param string $src
      * @return string
      */
-    public static function jsLink(string $src)
+    public static function jsLink(string $src) : string
     {
         return self::tag('script', '', ['src' => $src]);
+    }
+
+    /**
+     * Рендерит булево значение флага.
+     *
+     * @param mixed $value
+     * @return string
+     */
+    public static function flag($value) : string
+    {
+        return static::tag('i', '', [
+            'class' => [$value ? 'fas' : 'far', 'fa-star']
+        ]);
     }
 
     /**
@@ -170,22 +182,9 @@ class Html extends \yii\bootstrap4\Html
      * @param string $attribute
      * @return string
      */
-    public static function activeFlag(Model $model, string $attribute)
+    public static function activeFlag(Model $model, string $attribute) : string
     {
         return static::flag($model->{$attribute});
-    }
-
-    /**
-     * Рендерит булево значение флага.
-     *
-     * @param mixed $value
-     * @return string
-     */
-    public static function flag($value)
-    {
-        return static::tag('i', '', [
-            'class' => [$value ? 'fas' : 'far', 'fa-star']
-        ]);
     }
 
     /**
@@ -195,7 +194,7 @@ class Html extends \yii\bootstrap4\Html
      * @param array $options
      * @return string
      */
-    public static function fa(string $name, array $options = [])
+    public static function fa(string $name, array $options = []) : string
     {
         return static::tag('i', '', array_merge($options, [
             'class' => 'fa fa-' . $name
@@ -209,7 +208,7 @@ class Html extends \yii\bootstrap4\Html
      * @param array $options
      * @return string
      */
-    public static function fas(string $name, array $options = [])
+    public static function fas(string $name, array $options = []) : string
     {
         return static::tag('i', '', array_merge($options, [
             'class' => 'fas fa-' . $name
@@ -223,7 +222,7 @@ class Html extends \yii\bootstrap4\Html
      * @param array $options
      * @return string
      */
-    public static function far(string $name, array $options = [])
+    public static function far(string $name, array $options = []) : string
     {
         return static::tag('i', '', array_merge($options, [
             'class' => 'far fa-' . $name
@@ -238,7 +237,7 @@ class Html extends \yii\bootstrap4\Html
      * @param array $options опции плагина
      * @return string html
      */
-    public static function plugin(string $target, string $name, array $options = [])
+    public static function plugin(string $target, string $name, array $options = []) : string
     {
         return self::script('$(function() {
             $("' . $target . '").' . $name . '(' . Json::encode($options) . ');
@@ -253,7 +252,7 @@ class Html extends \yii\bootstrap4\Html
      * @param array $options
      * @return string
      */
-    public static function xml($name, $content = '', $options = [])
+    public static function xml($name, $content = '', $options = []) : string
     {
         if ($name === null || $name === false) {
             return $content;

@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 11.07.20 10:13:19
+ * @version 27.07.20 05:49:15
  */
 
 declare(strict_types = 1);
@@ -21,7 +21,7 @@ trait ArrayAccessTrait
      * @return bool
      * @see ArrayAccess::offsetExists()
      */
-    public function offsetExists($offset)
+    public function offsetExists($offset) : bool
     {
         return isset($this->{$offset});
     }
@@ -41,7 +41,7 @@ trait ArrayAccessTrait
      * @param mixed $item
      * @see \ArrayAccess::offsetSet()
      */
-    public function offsetSet($offset, $item)
+    public function offsetSet($offset, $item) : void
     {
         $this->{$offset} = $item;
     }
@@ -50,7 +50,7 @@ trait ArrayAccessTrait
      * @param $offset
      * @see \ArrayAccess::offsetUnset()
      */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset) : void
     {
         $this->{$offset} = null;
     }

@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 20.07.20 18:04:43
+ * @version 27.07.20 05:45:07
  */
 
 declare(strict_types = 1);
@@ -72,7 +72,7 @@ class Inflector extends \yii\helpers\Inflector
      * @param bool $lowercase
      * @return string
      */
-    public static function slug($string, $replacement = '-', $lowercase = true)
+    public static function slug($string, $replacement = '-', $lowercase = true) : string
     {
         // очищаем специальные символы и пробелы
         $string = trim(preg_replace('~[[:cntrl:]]|[\x00-\x1F\x7F\xA0\s\h\t\v\r\n]+~uim', ' ', $string));
@@ -108,24 +108,44 @@ class Inflector extends \yii\helpers\Inflector
     }
 
     /**
+     * Форма слова для количества единиц.
+     *
+     * @param int|string $count кол-во единиц, например "123"
+     * @param string $one единичная форма, например "товар"
+     * @param string $two форма значения 2, например: "товара"
+     * @param string $five форма значения 5, например: "товаров"
+     * @return string форма для количества $count
+     */
+    public static function numDeclension($count, string $one, string $two, string $five) : string
+    {
+        $count = (int)$count;
+        $word = null;
+
+        if ($count < 5 || $count > 20) {
+            $mod = $count % 10;
+            if ($mod === 1) {
+                $word = $one;
+            } elseif ($mod === 2 || $mod === 3 || $mod === 4) {
+                $word = $two;
+            }
+        }
+
+        return $word ?? $five;
+    }
+
+    /**
      * Количество товаров.
      *
      * @param int|string $count
      * @return string
      */
-    public static function numProds($count)
+    public static function numProds($count) : string
     {
-        $count = (int)$count;
-        if ($count < 5 || $count > 20) {
-            $mod = $count % 10;
-            if ($mod === 1) {
-                $word = Yii::t('dicr/helper', 'товар');
-            } elseif ($mod === 2 || $mod === 3 || $mod === 4) {
-                $word = Yii::t('dicr/helper', 'товара');
-            }
-        }
-
-        return $word ?? Yii::t('dicr/helper', 'товаров');
+        return self::numDeclension($count,
+            Yii::t('dicr/helper', 'товар'),
+            Yii::t('dicr/helper', 'товара'),
+            Yii::t('dicr/helper', 'товаров')
+        );
     }
 
     /**
@@ -134,19 +154,43 @@ class Inflector extends \yii\helpers\Inflector
      * @param int|string $count количество
      * @return string форма слова
      */
-    public static function numModels($count)
+    public static function numModels($count) : string
     {
-        $count = (int)$count;
-        if ($count < 5 || $count > 20) {
-            $mod = $count % 10;
-            if ($mod === 1) {
-                $word = Yii::t('dicr/helper', 'модель');
-            } elseif ($mod === 2 || $mod === 3 || $mod === 4) {
-                $word = Yii::t('dicr/helper', 'модели');
-            }
-        }
+        return self::numDeclension($count,
+            Yii::t('dicr/helper', 'модель'),
+            Yii::t('dicr/helper', 'модели'),
+            Yii::t('dicr/helper', 'моделей')
+        );
+    }
 
-        return $word ?? Yii::t('dicr/helper', 'моделей');
+    /**
+     * Форма кол-ва минут.
+     *
+     * @param int|string $count количество
+     * @return string форма слова
+     */
+    public static function numMinutes($count) : string
+    {
+        return self::numDeclension($count,
+            Yii::t('dicr/helper', 'минута'),
+            Yii::t('dicr/helper', 'минуты'),
+            Yii::t('dicr/helper', 'минут')
+        );
+    }
+
+    /**
+     * Форма кол-ва часов.
+     *
+     * @param int|string $count количество
+     * @return string форма слова
+     */
+    public static function numHours($count) : string
+    {
+        return self::numDeclension($count,
+            Yii::t('dicr/helper', 'час'),
+            Yii::t('dicr/helper', 'часа'),
+            Yii::t('dicr/helper', 'часов')
+        );
     }
 
     /**
@@ -155,19 +199,28 @@ class Inflector extends \yii\helpers\Inflector
      * @param int|string $count количество
      * @return string форма слова
      */
-    public static function numDays($count)
+    public static function numDays($count) : string
     {
-        $count = (int)$count;
-        if ($count < 5 || $count > 20) {
-            $mod = $count % 10;
-            if ($mod === 1) {
-                $word = Yii::t('dicr/helper', 'день');
-            } elseif ($mod === 2 || $mod === 3 || $mod === 4) {
-                $word = Yii::t('dicr/helper', 'дня');
-            }
-        }
+        return self::numDeclension($count,
+            Yii::t('dicr/helper', 'день'),
+            Yii::t('dicr/helper', 'дня'),
+            Yii::t('dicr/helper', 'дней')
+        );
+    }
 
-        return $word ?? Yii::t('dicr/helper', 'дней');
+    /**
+     * Форма кол-ва недель.
+     *
+     * @param int|string $count количество
+     * @return string форма слова
+     */
+    public static function numWeeks($count) : string
+    {
+        return self::numDeclension($count,
+            Yii::t('dicr/helper', 'неделя'),
+            Yii::t('dicr/helper', 'недели'),
+            Yii::t('dicr/helper', 'недель')
+        );
     }
 
     /**
@@ -176,36 +229,28 @@ class Inflector extends \yii\helpers\Inflector
      * @param int|string $count количество
      * @return string форма слова
      */
-    public static function numMonthes($count)
+    public static function numMonthes($count) : string
     {
-        $count = (int)$count;
-        if ($count < 5 || $count > 20) {
-            $mod = $count % 10;
-            if ($mod === 1) {
-                $word = Yii::t('dicr/helper', 'месяц');
-            } elseif ($mod === 2 || $mod === 3 || $mod === 4) {
-                $word = Yii::t('dicr/helper', 'месяца');
-            }
-        }
-
-        return $word ?? Yii::t('dicr/helper', 'месяцев');
+        return self::numDeclension($count,
+            Yii::t('dicr/helper', 'месяц'),
+            Yii::t('dicr/helper', 'месяца'),
+            Yii::t('dicr/helper', 'месяцев')
+        );
     }
 
-    public function declination_of_number($number, $one, $two, $five)
+    /**
+     * Форма кол-ва лет.
+     *
+     * @param int|string $count количество
+     * @return string форма слова
+     */
+    public static function numYears($count) : string
     {
-        if (($number - $number % 10) % 100 !== 10) {
-            if ($number % 10 === 1) {
-                $result = $one;
-            } elseif ($number % 10 >= 2 && $number % 10 <= 4) {
-                $result = $two;
-            } else {
-                $result = $five;
-            }
-        } else {
-            $result = $five;
-        }
-
-        return $result;
+        return self::numDeclension($count,
+            Yii::t('dicr/helper', 'год'),
+            Yii::t('dicr/helper', 'года'),
+            Yii::t('dicr/helper', 'лет')
+        );
     }
 
     /**
@@ -214,49 +259,56 @@ class Inflector extends \yii\helpers\Inflector
      * @param int $days срок дней (0 - сегодня, 1 - завтра)
      * @return string текстовое представление
      */
-    public static function daysTerm(int $days)
+    public static function daysTerm(int $days) : string
     {
         if ($days < 0) {
             throw new InvalidArgumentException('days');
         }
 
-        $daysMap = [
-            0 => Yii::t('dicr/helper', 'сегодня'),
-            1 => Yii::t('dicr/helper', 'завтра'),
-            2 => Yii::t('dicr/helper', 'послезавтра'),
-            3 => Yii::t('dicr/helper', 'через {num} дня', ['num' => 3]),
-            4 => Yii::t('dicr/helper', 'через {num} дня', ['num' => 4]),
-            5 => Yii::t('dicr/helper', 'через {num} дней', ['num' => 5]),
-            6 => Yii::t('dicr/helper', 'через {num} дней', ['num' => 6]),
-            7 => Yii::t('dicr/helper', 'через неделю'),
-            8 => Yii::t('dicr/helper', 'через {num} дней', ['num' => 8]),
-            9 => Yii::t('dicr/helper', 'через {num} дней', ['num' => 9]),
-            10 => Yii::t('dicr/helper', 'через {num}} дней', ['num' => 10]),
-            11 => Yii::t('dicr/helper', 'через {num} дней', ['num' => 11]),
-            12 => Yii::t('dicr/helper', 'через {num} дней', ['num' => 12]),
-            13 => Yii::t('dicr/helper', 'через {num} дней', ['num' => 13]),
-            14 => Yii::t('dicr/helper', 'через {num} недели', ['num' => 2]),
-            15 => Yii::t('dicr/helper', 'через {num} дней', ['num' => 15]),
-            16 => Yii::t('dicr/helper', 'через {num} дней', ['num' => 16]),
-            17 => Yii::t('dicr/helper', 'через {num} дней', ['num' => 17]),
-            18 => Yii::t('dicr/helper', 'через {num} дней', ['num' => 18]),
-            19 => Yii::t('dicr/helper', 'через {num} дней', ['num' => 19]),
-            20 => Yii::t('dicr/helper', 'через {num} дней', ['num' => 20]),
-            21 => Yii::t('dicr/helper', 'через {num} недели', ['num' => 3]),
-            30 => Yii::t('dicr/helper', 'через месяц'),
-            31 => Yii::t('dicr/helper', 'через месяц'),
-            62 => Yii::t('dicr/helper', 'через {num} месяца', ['num' => 2])
-        ];
+        if ($days === 0) {
+            return Yii::t('dicr/helper', 'сегодня');
+        }
 
-        if (isset($daysMap[$days])) {
-            return $daysMap[$days];
+        if ($days === 1) {
+            return Yii::t('dicr/helper', 'завтра');
+        }
+
+        if ($days === 2) {
+            return Yii::t('dicr/helper', 'послезавтра');
+        }
+
+        if ($days === 7) {
+            return Yii::t('dicr/helper', 'через') . ' ' .
+                Yii::t('dicr/helper', 'неделю');
+        }
+
+        if ($days === 14 || $days === 21) {
+            return Yii::t('dicr/helper', 'через') . ' ' .
+                ($days / 7) . ' ' . Yii::t('dicr/helper', 'недели');
+        }
+
+        if ($days === (int)idate('t')) {
+            return Yii::t('dicr/helper', 'через') . ' ' .
+                Yii::t('dicr/helper', 'месяц');
+        }
+
+        if ($days === 61) {
+            return Yii::t('dicr/helper', 'через') . ' 2 ' .
+                Yii::t('dicr/helper', 'месяца');
+        }
+
+        if ($days <= 30) {
+            return Yii::t('dicr/helper', 'через') . ' ' . $days . ' ' .
+                self::numDays($days);
         }
 
         $time = time() + 86400 * $days;
 
         // получаем день и месяц
         return idate('d', $time) . ' ' .
-            mb_strtolower(Yii::t('dicr/helper', self::MONTH_GENITIVE[idate('m', $time) - 1]));
+            mb_strtolower(
+                Yii::t('dicr/helper', self::MONTH_GENITIVE[idate('m', $time) - 1])
+            );
     }
 
     /**
@@ -268,7 +320,7 @@ class Inflector extends \yii\helpers\Inflector
      * @return string[] группы дней в формате:
      *    ['Пн-Ср', 'Пт', 'Вс']
      */
-    public static function groupDays(array $days)
+    public static function groupDays(array $days) : array
     {
         $groupDays = [];
         $startDay = null;
@@ -328,7 +380,7 @@ class Inflector extends \yii\helpers\Inflector
      *     'Вс' => 'выходной'
      *   ]
      */
-    public static function shortSchedule($schedule)
+    public static function shortSchedule($schedule) : array
     {
         if (empty($schedule)) {
             return [];
@@ -398,7 +450,7 @@ class Inflector extends \yii\helpers\Inflector
      * - bool $cleanText - удалять весь текст, если есть ненайденные переменные
      * @return string
      */
-    public static function replaceVars($string, array $vars = [], array $opts = [])
+    public static function replaceVars($string, array $vars = [], array $opts = []) : string
     {
         $filters = [
             'trim' => static function(string $string) {

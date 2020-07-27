@@ -3,13 +3,15 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 19.07.20 19:34:37
+ * @version 27.07.20 04:58:20
  */
 
 declare(strict_types = 1);
 namespace dicr\helper;
 
 use InvalidArgumentException;
+use Yii;
+use yii\base\ExitException;
 use function array_diff;
 use function array_filter;
 use function array_map;
@@ -44,7 +46,7 @@ class Url extends \yii\helpers\Url
      * @param string|array $query
      * @return array параметры в виде массива
      */
-    public static function parseQuery($query)
+    public static function parseQuery($query) : array
     {
         if ($query === null || $query === '' || $query === []) {
             $query = [];
@@ -68,7 +70,7 @@ class Url extends \yii\helpers\Url
      * @param array|string $query
      * @return string
      */
-    public static function buildQuery($query)
+    public static function buildQuery($query) : string
     {
         if ($query === null || $query === '' || $query === []) {
             $query = '';
@@ -85,7 +87,7 @@ class Url extends \yii\helpers\Url
      * @param array|string $query
      * @return array
      */
-    public static function filterQuery($query)
+    public static function filterQuery($query) : array
     {
         return array_filter(static::parseQuery($query), static function($v) {
             if ($v === null || $v === '' || $v === []) {
@@ -110,7 +112,7 @@ class Url extends \yii\helpers\Url
      * @param array|string $query
      * @return array
      */
-    public static function normalizeQuery($query)
+    public static function normalizeQuery($query) : array
     {
         $query = static::parseQuery($query);
         ksort($query);
@@ -129,7 +131,7 @@ class Url extends \yii\helpers\Url
      * @param array|string $query2
      * @return array $query1 - $query2
      */
-    public static function diffQuery($query1, $query2)
+    public static function diffQuery($query1, $query2) : array
     {
         $query1 = self::parseQuery($query1);
         if (empty($query1)) {
@@ -153,7 +155,7 @@ class Url extends \yii\helpers\Url
      * @param array|string $query парамеры запроса
      * @return string[] одномерный массив параметров в виде ["id=1", "a[]=2", "b[3][4]=5"]
      */
-    public static function flatQuery($query)
+    public static function flatQuery($query) : array
     {
         if ($query === null || $query === '' || $query === []) {
             return [];
@@ -176,7 +178,7 @@ class Url extends \yii\helpers\Url
      * @param array $flatQuery
      * @return array
      */
-    public static function unflatQuery(array $flatQuery)
+    public static function unflatQuery(array $flatQuery) : array
     {
         if ($flatQuery === null || $flatQuery === '' || $flatQuery === []) {
             return [];
@@ -200,7 +202,7 @@ class Url extends \yii\helpers\Url
      * @param string $domain
      * @return string
      */
-    public static function idnToAscii(string $domain)
+    public static function idnToAscii(string $domain) : string
     {
         $domain = trim($domain);
         if ($domain === '') {
@@ -217,7 +219,7 @@ class Url extends \yii\helpers\Url
      * @param string $path
      * @return string
      */
-    public static function normalizePath(string $path)
+    public static function normalizePath(string $path) : string
     {
         $path = trim($path);
         if ($path === '') {
@@ -264,7 +266,7 @@ class Url extends \yii\helpers\Url
      * @param string $dom2 домен
      * @return bool true, если $dom1 == $dom2 или один из них является поддоменом другого
      */
-    public static function isDomainsRelated(string $dom1, string $dom2)
+    public static function isDomainsRelated(string $dom1, string $dom2) : bool
     {
         $dom1 = static::normalizeHost($dom1);
         if (empty($dom1)) {
@@ -305,7 +307,7 @@ class Url extends \yii\helpers\Url
      * @return string
      * @throws InvalidArgumentException
      */
-    public static function normalizeHost(string $name)
+    public static function normalizeHost(string $name) : string
     {
         // убираем все пробельные символы
         $name = preg_replace('~[\s\h\t\v\r\n]+~uim', '', trim($name));
@@ -342,7 +344,7 @@ class Url extends \yii\helpers\Url
      * @param string $domain
      * @return string
      */
-    public static function idnToUtf8(string $domain)
+    public static function idnToUtf8(string $domain) : string
     {
         $domain = trim($domain);
         if ($domain === '') {
@@ -360,7 +362,7 @@ class Url extends \yii\helpers\Url
      * @return bool
      * @throws InvalidArgumentException
      */
-    public static function isSubdomain(string $domain, string $parent)
+    public static function isSubdomain(string $domain, string $parent) : bool
     {
         $domain = static::normalizeHost($domain);
         if (empty($domain)) {
@@ -384,10 +386,9 @@ class Url extends \yii\helpers\Url
      *
      * @param string $domain домен
      * @param string $parent родительский
-     * @return string|false string - имя поддомена,
-     *         false - если $domain не является поддоменом родительского
+     * @return string|null string - имя поддомена, null - если $domain не является поддоменом родительского
      */
-    public static function getSubdomain(string $domain, string $parent)
+    public static function getSubdomain(string $domain, string $parent) : ?string
     {
         $domain = static::normalizeHost($domain);
         if (empty($domain)) {
@@ -401,9 +402,24 @@ class Url extends \yii\helpers\Url
 
         $matches = null;
         if (! preg_match(sprintf('~^(?:(.+?)\.)?%s$~uism', preg_quote($parent, '~')), $domain, $matches)) {
-            return false;
+            return null;
         }
 
         return $matches[1] ?? '';
+    }
+
+    /**
+     * Редиректит на правильный URL страницы, если текущий не совпадает.
+     *
+     * @param array|string $url
+     * @throws ExitException
+     */
+    public static function redirectIfNeed($url) : void
+    {
+        $url = self::to($url);
+
+        if (Yii::$app->request->url !== $url) {
+            Yii::$app->end(0, Yii::$app->response->redirect($url, 301));
+        }
     }
 }

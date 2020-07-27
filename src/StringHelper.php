@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 11.07.20 10:13:53
+ * @version 27.07.20 05:48:20
  */
 
 declare(strict_types = 1);
@@ -24,7 +24,7 @@ class StringHelper extends \yii\helpers\StringHelper
      * @param string $encoding
      * @return string
      */
-    public static function mb_lcfirst($string, $encoding = 'UTF-8')
+    public static function mb_lcfirst($string, $encoding = 'UTF-8') : string
     {
         $firstChar = mb_substr($string, 0, 1, $encoding);
         $rest = mb_substr($string, 1, null, $encoding);
