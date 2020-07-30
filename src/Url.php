@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 27.07.20 04:58:20
+ * @version 30.07.20 15:05:57
  */
 
 declare(strict_types = 1);
@@ -14,13 +14,17 @@ use Yii;
 use yii\base\ExitException;
 use function array_diff;
 use function array_filter;
+use function array_keys;
 use function array_map;
+use function array_merge;
 use function array_pop;
 use function array_values;
+use function count;
 use function explode;
-use function http_build_query;
+use function filter_var;
 use function implode;
 use function is_array;
+use function is_object;
 use function ksort;
 use function parse_str;
 use function parse_url;
@@ -28,10 +32,12 @@ use function preg_match;
 use function preg_quote;
 use function preg_replace;
 use function preg_split;
+use function range;
 use function sprintf;
 use function trim;
 use function urldecode;
 use function urlencode;
+use const FILTER_VALIDATE_INT;
 use const PHP_URL_HOST;
 use const PREG_SPLIT_NO_EMPTY;
 
@@ -65,17 +71,100 @@ class Url extends \yii\helpers\Url
     }
 
     /**
+     * Рекурсивное построение строки параметров.
+     *
+     * @param array $query
+     * @param string $parentKey
+     * @return string[]
+     */
+    private static function internalBuildQuery(array $query, string $parentKey = '')
+    {
+        // удаляет из параметров некорректные ключи и null-значения
+        $filterParams = static function($params) use (&$filterParams) {
+            $filtered = [];
+
+            // преобразуем query, удаляя некорректные ключи и null-значения
+            foreach ((array)$params as $k => $v) {
+                // пропускаем некорректные ключи
+                if ((string)$k === '') {
+                    continue;
+                }
+
+                // считаем значения null для удаления
+                if ($v === null) {
+                    continue;
+                }
+
+                if (is_array($v) || is_object($v)) {
+                    $v = $filterParams($v);
+                } else {
+                    $v = (string)$v;
+                }
+
+                $filtered[$k] = $v;
+            }
+
+            return $filtered;
+        };
+
+        // проверяет является ли массив индексным списком параметров
+        $isIndexed = static function($params) {
+            $params = (array)$params;
+            if (empty($params)) {
+                return true;
+            }
+
+            $keys = array_map(static function($key) {
+                return filter_var($key, FILTER_VALIDATE_INT, [
+                    'options' => [
+                        'min_range' => 0
+                    ]
+                ]);
+            }, array_keys($params));
+
+            return $keys === range(0, count($params) - 1);
+        };
+
+        $query = $filterParams($query);
+        $isIndexed = $parentKey !== '' && $isIndexed($query);
+        $parts = [];
+
+        foreach ($query as $k => $v) {
+            if ($parentKey === '') {
+                $key = urlencode((string)$k);
+            } else {
+                $key = $isIndexed ? $parentKey . '[]' : $parentKey . '[' . urlencode((string)$k) . ']';
+            }
+
+            if (is_array($v) || is_object($v)) {
+                $v = (array)$v;
+                if ($v === []) {
+                    $parts[] = $key . '[]';
+                } else {
+                    $parts = array_merge($parts, self::internalBuildQuery($v, $key));
+                }
+            } else {
+                $parts[] = ((string)$v === '') ? $key : $key . '=' . urlencode((string)$v);
+            }
+        }
+
+        return $parts;
+    }
+
+    /**
      * Конвертирует параметры запроса в строку
      *
-     * @param array|string $query
+     * @param array|object|string $query
      * @return string
      */
     public static function buildQuery($query) : string
     {
         if ($query === null || $query === '' || $query === []) {
             $query = '';
-        } elseif (is_array($query)) {
-            $query = preg_replace(['~%5B~i', '~%5D~i', '~\[\d+\]~'], ['[', ']', '[]'], http_build_query($query));
+        } elseif (is_array($query) || is_object($query)) {
+            //$query = preg_replace(['~%5B~i', '~%5D~i', '~\[\d+\]~'], ['[', ']', '[]'], http_build_query($query));
+            $parts = self::internalBuildQuery((array)$query);
+            $query = implode('&', $parts);
         }
 
         return (string)$query;
