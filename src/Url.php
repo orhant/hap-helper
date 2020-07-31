@@ -3,13 +3,14 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 30.07.20 15:05:57
+ * @version 01.08.20 01:40:38
  */
 
 declare(strict_types = 1);
 namespace dicr\helper;
 
 use InvalidArgumentException;
+use RuntimeException;
 use Yii;
 use yii\base\ExitException;
 use function array_diff;
@@ -501,14 +502,17 @@ class Url extends \yii\helpers\Url
      * Редиректит на правильный URL страницы, если текущий не совпадает.
      *
      * @param array|string $url
-     * @throws ExitException
      */
     public static function redirectIfNeed($url) : void
     {
         $url = self::to($url);
 
         if (Yii::$app->request->url !== $url) {
-            Yii::$app->end(0, Yii::$app->response->redirect($url, 301));
+            try {
+                Yii::$app->end(0, Yii::$app->response->redirect($url, 301));
+            } catch (ExitException $ex) {
+                throw new RuntimeException($ex->getMessage(), $ex->getCode(), $ex);
+            }
         }
     }
 }
