@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 27.07.20 05:43:39
+ * @version 01.08.20 18:29:26
  */
 
 /** @noinspection SpellCheckingInspection */
@@ -17,6 +17,10 @@ return [
     'модель' => 'модель',
     'модели' => 'моделі',
     'моделей' => 'моделей',
+
+    'отзыв' => 'відгук',
+    'отзыва' => 'відгуки',
+    'отзывов' => 'відгуків',
 
     'минута' => 'хвилина',
     'минуты' => 'хвилини',

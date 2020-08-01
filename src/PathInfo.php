@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 27.07.20 05:49:15
+ * @version 01.08.20 18:33:21
  */
 
 declare(strict_types = 1);
@@ -119,7 +119,7 @@ class PathInfo extends BaseObject
     public static function absolute(string $path) : ?string
     {
         $realPath = realpath($path);
-        return $realPath === false ? null : (string)$realPath;
+        return $realPath === false ? null : $realPath;
     }
 
     /**

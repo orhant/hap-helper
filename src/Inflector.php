@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 27.07.20 05:45:07
+ * @version 01.08.20 18:30:43
  */
 
 declare(strict_types = 1);
@@ -160,6 +160,21 @@ class Inflector extends \yii\helpers\Inflector
             Yii::t('dicr/helper', 'модель'),
             Yii::t('dicr/helper', 'модели'),
             Yii::t('dicr/helper', 'моделей')
+        );
+    }
+
+    /**
+     * Количественная форма отзывов.
+     *
+     * @param $count
+     * @return string
+     */
+    public static function numReviews($count) : string
+    {
+        return self::numDeclension($count,
+            Yii::t('dicr/helper', 'отзыв'),
+            Yii::t('dicr/helper', 'отзыва'),
+            Yii::t('dicr/helper', 'отзывов')
         );
     }
 

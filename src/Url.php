@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 01.08.20 01:40:38
+ * @version 01.08.20 18:37:59
  */
 
 declare(strict_types = 1);
@@ -17,7 +17,6 @@ use function array_diff;
 use function array_filter;
 use function array_keys;
 use function array_map;
-use function array_merge;
 use function array_pop;
 use function array_values;
 use function count;
@@ -138,11 +137,15 @@ class Url extends \yii\helpers\Url
             }
 
             if (is_array($v) || is_object($v)) {
+                /** @noinspection UnnecessaryCastingInspection */
                 $v = (array)$v;
                 if ($v === []) {
                     $parts[] = $key . '[]';
                 } else {
-                    $parts = array_merge($parts, self::internalBuildQuery($v, $key));
+                    // вместо медленного array_merge
+                    foreach (self::internalBuildQuery($v, $key) as $p) {
+                        $parts[] = $p;
+                    }
                 }
             } else {
                 $parts[] = ((string)$v === '') ? $key : $key . '=' . urlencode((string)$v);
