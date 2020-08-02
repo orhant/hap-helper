@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 01.08.20 18:30:43
+ * @version 03.08.20 01:56:12
  */
 
 declare(strict_types = 1);
@@ -467,6 +467,13 @@ class Inflector extends \yii\helpers\Inflector
      */
     public static function replaceVars($string, array $vars = [], array $opts = []) : string
     {
+        // пропускаем пустые строки и если не нужно ничего заменять и очищать
+        $string = (string)$string;
+        if ($string === '' || (empty($vars) && empty($opts))) {
+            return $string;
+        }
+
+        // поддерживаемые фильтры
         $filters = [
             'trim' => static function(string $string) {
                 return trim($string);
@@ -487,12 +494,6 @@ class Inflector extends \yii\helpers\Inflector
                 return StringHelper::mb_lcfirst($string);
             }
         ];
-
-        // пропускаем пустые строки
-        $string = (string)$string;
-        if ($string === '') {
-            return '';
-        }
 
         // регулярное выражение
         $regex = '~\$\{([^\}]+)\}~um';
