@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 27.07.20 05:03:05
+ * @version 05.08.20 03:33:39
  */
 
 declare(strict_types = 1);
@@ -247,20 +247,17 @@ class Html extends \yii\bootstrap4\Html
     /**
      * Самозакрывающийся тэг XML.
      *
-     * @param $name
-     * @param string $content
+     * @param string $name
+     * @param string|null $content
      * @param array $options
      * @return string
      */
-    public static function xml($name, $content = '', $options = []) : string
+    public static function xml(string $name, ?string $content = '', array $options = []) : string
     {
-        if ($name === null || $name === false) {
-            return $content;
-        }
-
         $name = strtolower($name);
+        $content = (string)$content;
 
-        $html = "<$name" . static::renderTagAttributes($options);
-        return $html . ($content === '' ? '/>' : '>' . $content . "</$name>");
+        return '<' . $name . static::renderTagAttributes($options) .
+            ($content === '' ? '/>' : '>' . $content . '</' . $name . '>');
     }
 }
