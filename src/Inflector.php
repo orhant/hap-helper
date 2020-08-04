@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 03.08.20 01:56:12
+ * @version 04.08.20 22:40:43
  */
 
 declare(strict_types = 1);
@@ -548,6 +548,9 @@ class Inflector extends \yii\helpers\Inflector
 
         // заменяем несколько пробелов одним
         $string = (string)preg_replace('~[\h\t]+~uim', ' ', $string);
+
+        // удаляем пробелы перед знаками препинания
+        $string = (string)preg_replace('~\s+([\,\;\.\!])~um', '$1', $string);
 
         return $string;
     }
