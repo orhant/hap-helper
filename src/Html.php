@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 05.08.20 03:33:39
+ * @version 06.08.20 04:40:26
  */
 
 declare(strict_types = 1);
@@ -59,7 +59,7 @@ class Html extends \yii\bootstrap4\Html
      */
     public static function hasText($html) : bool
     {
-        return self::toText((string)$html) !== '';
+        return static::toText((string)$html) !== '';
     }
 
     /**
@@ -85,7 +85,7 @@ class Html extends \yii\bootstrap4\Html
         ob_start();
 
         foreach ($values as $key => $val) {
-            echo self::meta([
+            echo static::meta([
                 $type => $key,
                 'content' => $val
             ]);
@@ -102,7 +102,7 @@ class Html extends \yii\bootstrap4\Html
      */
     public static function meta(array $options) : string
     {
-        return self::tag('meta', '', $options);
+        return static::tag('meta', '', $options);
     }
 
     /**
@@ -131,7 +131,7 @@ class Html extends \yii\bootstrap4\Html
      */
     public static function link(array $options) : string
     {
-        return self::tag('link', '', $options);
+        return static::tag('link', '', $options);
     }
 
     /**
@@ -159,7 +159,7 @@ class Html extends \yii\bootstrap4\Html
      */
     public static function jsLink(string $src) : string
     {
-        return self::tag('script', '', ['src' => $src]);
+        return static::tag('script', '', ['src' => $src]);
     }
 
     /**
@@ -239,7 +239,7 @@ class Html extends \yii\bootstrap4\Html
      */
     public static function plugin(string $target, string $name, array $options = []) : string
     {
-        return self::script('$(function() {
+        return static::script('$(function() {
             $("' . $target . '").' . $name . '(' . Json::encode($options) . ');
         });');
     }

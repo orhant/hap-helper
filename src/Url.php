@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 06.08.20 04:36:19
+ * @version 06.08.20 04:40:02
  */
 
 declare(strict_types = 1);
@@ -142,7 +142,7 @@ class Url extends \yii\helpers\Url
                     $parts[] = $key . '[]';
                 } else {
                     // вместо медленного array_merge
-                    foreach (self::internalBuildQuery($v, $key) as $p) {
+                    foreach (static::internalBuildQuery($v, $key) as $p) {
                         $parts[] = $p;
                     }
                 }
@@ -166,7 +166,7 @@ class Url extends \yii\helpers\Url
             $query = '';
         } elseif (is_array($query) || is_object($query)) {
             //$query = preg_replace(['~%5B~i', '~%5D~i', '~\[\d+\]~'], ['[', ']', '[]'], http_build_query($query));
-            $parts = self::internalBuildQuery((array)$query);
+            $parts = static::internalBuildQuery((array)$query);
             $query = implode('&', $parts);
         }
 
@@ -181,13 +181,18 @@ class Url extends \yii\helpers\Url
      */
     public static function filterQuery($query) : array
     {
-        return array_filter(static::parseQuery($query), static function($v) {
+        $query = static::parseQuery($query);
+        if (empty($query)) {
+            return [];
+        }
+
+        return array_filter($query, static function($v) {
             if ($v === null || $v === '' || $v === []) {
                 return false;
             }
 
             if (is_array($v)) {
-                $v = self::filterQuery($v);
+                $v = static::filterQuery($v);
                 if (empty($v)) {
                     return false;
                 }
@@ -207,10 +212,14 @@ class Url extends \yii\helpers\Url
     public static function normalizeQuery($query) : array
     {
         $query = static::parseQuery($query);
+        if (empty($query)) {
+            return [];
+        }
+
         ksort($query);
 
         return array_map(static function($v) {
-            return is_array($v) ? self::normalizeQuery($v) : (string)$v;
+            return is_array($v) ? static::normalizeQuery($v) : (string)$v;
         }, $query);
     }
 
@@ -225,12 +234,12 @@ class Url extends \yii\helpers\Url
      */
     public static function diffQuery($query1, $query2) : array
     {
-        $query1 = self::parseQuery($query1);
+        $query1 = static::parseQuery($query1);
         if (empty($query1)) {
             return [];
         }
 
-        $query2 = self::parseQuery($query2);
+        $query2 = static::parseQuery($query2);
         if (empty($query2)) {
             return $query1;
         }
@@ -253,7 +262,7 @@ class Url extends \yii\helpers\Url
             return [];
         }
 
-        $query = self::buildQuery($query);
+        $query = static::buildQuery($query);
 
         // разбиваем на компоненты по &
         $query = (array)explode('&', $query);
@@ -514,7 +523,7 @@ class Url extends \yii\helpers\Url
      */
     public static function redirectIfNeed($url) : void
     {
-        $url = self::to($url);
+        $url = static::to($url);
 
         if (Yii::$app->request->url !== $url) {
             try {

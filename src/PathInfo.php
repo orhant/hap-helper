@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 01.08.20 18:33:21
+ * @version 06.08.20 04:42:00
  */
 
 declare(strict_types = 1);
@@ -139,10 +139,10 @@ class PathInfo extends BaseObject
             return $path;
         }
 
-        $isAbsolute = self::isAbsolute($path);
+        $isAbsolute = static::isAbsolute($path);
 
         /** @var string[] $parts */
-        $parts = preg_split('~/~um', self::normalize($path), - 1, PREG_SPLIT_NO_EMPTY);
+        $parts = preg_split('~/~um', static::normalize($path), - 1, PREG_SPLIT_NO_EMPTY);
         $partsEnd = end($parts);
 
         if (empty($parts)) {
@@ -222,7 +222,7 @@ class PathInfo extends BaseObject
      */
     public function getIsAbsolute() : bool
     {
-        return self::isAbsolute($this->_path);
+        return static::isAbsolute($this->_path);
     }
 
     /**
@@ -232,7 +232,7 @@ class PathInfo extends BaseObject
      */
     public function getAbsolute() : ?string
     {
-        return self::absolute($this->_path);
+        return static::absolute($this->_path);
     }
 
     /**
@@ -244,7 +244,7 @@ class PathInfo extends BaseObject
     public function getParent(int $levels = 1) : string
     {
         if (! isset($this->_parent)) {
-            $this->_parent = self::parent($this->_path, $levels);
+            $this->_parent = static::parent($this->_path, $levels);
         }
 
         return $this->_parent;
@@ -258,7 +258,7 @@ class PathInfo extends BaseObject
      */
     public function getChild(string $relative) : string
     {
-        return self::child($this->_path, $relative);
+        return static::child($this->_path, $relative);
     }
 
     /**
@@ -269,7 +269,7 @@ class PathInfo extends BaseObject
     public function getFile() : string
     {
         if (! isset($this->_file)) {
-            $this->_file = self::file($this->_path);
+            $this->_file = static::file($this->_path);
         }
 
         return $this->_file;
@@ -283,7 +283,7 @@ class PathInfo extends BaseObject
     public function getName() : string
     {
         if (! isset($this->_name)) {
-            $this->_name = self::name($this->_path);
+            $this->_name = static::name($this->_path);
         }
 
         return $this->_name;
@@ -297,7 +297,7 @@ class PathInfo extends BaseObject
     public function getExt() : string
     {
         if (! isset($this->_ext)) {
-            $this->_ext = self::ext($this->_path);
+            $this->_ext = static::ext($this->_path);
         }
 
         return $this->_ext;

@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 04.08.20 22:40:43
+ * @version 06.08.20 04:41:31
  */
 
 declare(strict_types = 1);
@@ -141,7 +141,7 @@ class Inflector extends \yii\helpers\Inflector
      */
     public static function numProds($count) : string
     {
-        return self::numDeclension($count,
+        return static::numDeclension($count,
             Yii::t('dicr/helper', 'товар'),
             Yii::t('dicr/helper', 'товара'),
             Yii::t('dicr/helper', 'товаров')
@@ -156,7 +156,7 @@ class Inflector extends \yii\helpers\Inflector
      */
     public static function numModels($count) : string
     {
-        return self::numDeclension($count,
+        return static::numDeclension($count,
             Yii::t('dicr/helper', 'модель'),
             Yii::t('dicr/helper', 'модели'),
             Yii::t('dicr/helper', 'моделей')
@@ -171,7 +171,7 @@ class Inflector extends \yii\helpers\Inflector
      */
     public static function numReviews($count) : string
     {
-        return self::numDeclension($count,
+        return static::numDeclension($count,
             Yii::t('dicr/helper', 'отзыв'),
             Yii::t('dicr/helper', 'отзыва'),
             Yii::t('dicr/helper', 'отзывов')
@@ -186,7 +186,7 @@ class Inflector extends \yii\helpers\Inflector
      */
     public static function numMinutes($count) : string
     {
-        return self::numDeclension($count,
+        return static::numDeclension($count,
             Yii::t('dicr/helper', 'минута'),
             Yii::t('dicr/helper', 'минуты'),
             Yii::t('dicr/helper', 'минут')
@@ -201,7 +201,7 @@ class Inflector extends \yii\helpers\Inflector
      */
     public static function numHours($count) : string
     {
-        return self::numDeclension($count,
+        return static::numDeclension($count,
             Yii::t('dicr/helper', 'час'),
             Yii::t('dicr/helper', 'часа'),
             Yii::t('dicr/helper', 'часов')
@@ -216,7 +216,7 @@ class Inflector extends \yii\helpers\Inflector
      */
     public static function numDays($count) : string
     {
-        return self::numDeclension($count,
+        return static::numDeclension($count,
             Yii::t('dicr/helper', 'день'),
             Yii::t('dicr/helper', 'дня'),
             Yii::t('dicr/helper', 'дней')
@@ -231,7 +231,7 @@ class Inflector extends \yii\helpers\Inflector
      */
     public static function numWeeks($count) : string
     {
-        return self::numDeclension($count,
+        return static::numDeclension($count,
             Yii::t('dicr/helper', 'неделя'),
             Yii::t('dicr/helper', 'недели'),
             Yii::t('dicr/helper', 'недель')
@@ -246,7 +246,7 @@ class Inflector extends \yii\helpers\Inflector
      */
     public static function numMonthes($count) : string
     {
-        return self::numDeclension($count,
+        return static::numDeclension($count,
             Yii::t('dicr/helper', 'месяц'),
             Yii::t('dicr/helper', 'месяца'),
             Yii::t('dicr/helper', 'месяцев')
@@ -261,7 +261,7 @@ class Inflector extends \yii\helpers\Inflector
      */
     public static function numYears($count) : string
     {
-        return self::numDeclension($count,
+        return static::numDeclension($count,
             Yii::t('dicr/helper', 'год'),
             Yii::t('dicr/helper', 'года'),
             Yii::t('dicr/helper', 'лет')
@@ -314,7 +314,7 @@ class Inflector extends \yii\helpers\Inflector
 
         if ($days <= 30) {
             return Yii::t('dicr/helper', 'через') . ' ' . $days . ' ' .
-                self::numDays($days);
+                static::numDays($days);
         }
 
         $time = time() + 86400 * $days;
