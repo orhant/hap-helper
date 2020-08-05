@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 01.08.20 18:37:59
+ * @version 06.08.20 04:36:19
  */
 
 declare(strict_types = 1);
@@ -35,7 +35,6 @@ use function preg_split;
 use function range;
 use function sprintf;
 use function trim;
-use function urldecode;
 use function urlencode;
 use const FILTER_VALIDATE_INT;
 use const PHP_URL_HOST;
@@ -256,13 +255,19 @@ class Url extends \yii\helpers\Url
 
         $query = self::buildQuery($query);
 
-        // разбиваем по разделителю параметров "&" и декодируем значения параметры
-        //$flatQuery = array_map('urldecode', $flatQuery);
-        return array_map(static function($item) {
+        // разбиваем на компоненты по &
+        $query = (array)explode('&', $query);
+
+        /*
+        // декодируем значения
+        $query = array_map(function($item) {
             $matches = null;
             return preg_match('~^([^=]+=)(.+)$~um', $item, $matches) ?
                 $matches[1] . urldecode($matches[2]) : $item;
-        }, (array)explode('&', $query));
+        }, $query);
+        */
+
+        return $query;
     }
 
     /**
@@ -277,15 +282,16 @@ class Url extends \yii\helpers\Url
             return [];
         }
 
-        // кодируем параметры
-        //$flatQuery = array_map('urlencode', $flatQuery);
+        /*
+        // кодируем значения
         $flatQuery = array_map(static function($item) {
             $matches = null;
             return preg_match('~^([^=]+=)(.+)$~um', $item, $matches) ?
                 $matches[1] . urlencode($matches[2]) : $item;
         }, $flatQuery);
+        */
 
-        // объединяем и парсим строку параметров
+        // объединяем компоненты по &
         return static::parseQuery(implode('&', $flatQuery));
     }
 
