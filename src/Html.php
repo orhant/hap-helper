@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 06.08.20 04:40:26
+ * @version 07.08.20 01:36:42
  */
 
 declare(strict_types = 1);
@@ -13,7 +13,10 @@ namespace dicr\helper;
 use yii\base\Model;
 use yii\helpers\Json;
 use function array_merge;
+use function html_entity_decode;
 use function strtolower;
+use const ENT_HTML5;
+use const ENT_QUOTES;
 
 /**
  * Html helper.
@@ -23,7 +26,7 @@ class Html extends \yii\bootstrap4\Html
     /**
      * Синоним encode.
      *
-     * @param string|null $str
+     * @param string|int|float|null $str
      * @return string
      */
     public static function esc($str) : string
@@ -32,9 +35,20 @@ class Html extends \yii\bootstrap4\Html
     }
 
     /**
+     * Де-экранирует из html.
+     *
+     * @param string|float|null $str
+     * @return string
+     */
+    public static function decode($str) : string
+    {
+        return html_entity_decode(html_entity_decode((string)$str, ENT_QUOTES | ENT_HTML5, 'utf-8'));
+    }
+
+    /**
      * Конвертирует html в текст для XML.
      *
-     * @param string $html
+     * @param string|float|null $html
      * @return string plain-текст
      */
     public static function toText($html) : string
@@ -54,23 +68,12 @@ class Html extends \yii\bootstrap4\Html
     /**
      * Проверяет содержит ли html текст, кроме пустых тегов.
      *
-     * @param $html
+     * @param string|float|null $html
      * @return bool
      */
     public static function hasText($html) : bool
     {
         return static::toText((string)$html) !== '';
-    }
-
-    /**
-     * Де-экранирует из html.
-     *
-     * @param string $str
-     * @return string
-     */
-    public static function decode($str) : string
-    {
-        return html_entity_decode(html_entity_decode((string)$str, ENT_QUOTES | ENT_HTML5, 'utf-8'));
     }
 
     /**
@@ -248,11 +251,11 @@ class Html extends \yii\bootstrap4\Html
      * Самозакрывающийся тэг XML.
      *
      * @param string $name
-     * @param string|null $content
+     * @param string|int|float|null $content
      * @param array $options
      * @return string
      */
-    public static function xml(string $name, ?string $content = '', array $options = []) : string
+    public static function xml(string $name, $content = '', array $options = []) : string
     {
         $name = strtolower($name);
         $content = (string)$content;
