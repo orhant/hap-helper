@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 07.08.20 05:30:42
+ * @version 07.08.20 15:28:34
  */
 
 declare(strict_types = 1);
@@ -171,6 +171,19 @@ class Html extends \yii\bootstrap4\Html
     public static function jsLink(string $src, array $options = []) : string
     {
         return static::tag('script', '', ['src' => $src] + $options);
+    }
+
+    /**
+     * Разметка schema.org LD+JSON
+     *
+     * @param array $schema
+     * @return string
+     */
+    public static function schema(array $schema)
+    {
+        return static::tag('script', Html::esc(Json::encode($schema)), [
+            'type' => 'application/ld+json'
+        ]);
     }
 
     /**
