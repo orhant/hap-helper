@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 07.08.20 15:28:34
+ * @version 07.08.20 16:00:58
  */
 
 declare(strict_types = 1);
@@ -12,6 +12,7 @@ namespace dicr\helper;
 
 use yii\base\Model;
 use yii\helpers\Json;
+use function array_filter;
 use function html_entity_decode;
 use function strtolower;
 use const ENT_HTML5;
@@ -181,9 +182,13 @@ class Html extends \yii\bootstrap4\Html
      */
     public static function schema(array $schema)
     {
-        return static::tag('script', Html::esc(Json::encode($schema)), [
+        $schema = array_filter($schema, static function($val) {
+            return $val !== null && $val !== '' && $val !== [];
+        });
+
+        return ! empty($schema) ? static::tag('script', static::esc(Json::encode($schema)), [
             'type' => 'application/ld+json'
-        ]);
+        ]) : '';
     }
 
     /**
