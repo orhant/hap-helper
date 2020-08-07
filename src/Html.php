@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 07.08.20 01:36:42
+ * @version 07.08.20 05:30:42
  */
 
 declare(strict_types = 1);
@@ -12,7 +12,6 @@ namespace dicr\helper;
 
 use yii\base\Model;
 use yii\helpers\Json;
-use function array_merge;
 use function html_entity_decode;
 use function strtolower;
 use const ENT_HTML5;
@@ -31,7 +30,8 @@ class Html extends \yii\bootstrap4\Html
      */
     public static function esc($str) : string
     {
-        return static::encode((string)$str);
+        $str = (string)$str;
+        return $str === '' ? '' : static::encode($str);
     }
 
     /**
@@ -42,7 +42,10 @@ class Html extends \yii\bootstrap4\Html
      */
     public static function decode($str) : string
     {
-        return html_entity_decode(html_entity_decode((string)$str, ENT_QUOTES | ENT_HTML5, 'utf-8'));
+        $str = (string)$str;
+
+        return $str === '' ? '' :
+            html_entity_decode(html_entity_decode($str, ENT_QUOTES | ENT_HTML5, 'utf-8'));
     }
 
     /**
@@ -53,8 +56,13 @@ class Html extends \yii\bootstrap4\Html
      */
     public static function toText($html) : string
     {
+        $html = (string)$html;
+        if ($html === '') {
+            return '';
+        }
+
         // декодируем html-символы &entity;
-        $text = static::decode((string)$html);
+        $text = static::decode($html);
 
         // убираем теги
         $text = strip_tags($text);
@@ -73,7 +81,8 @@ class Html extends \yii\bootstrap4\Html
      */
     public static function hasText($html) : bool
     {
-        return static::toText((string)$html) !== '';
+        $html = (string)$html;
+        return $html !== '' && static::toText($html) !== '';
     }
 
     /**
@@ -121,9 +130,7 @@ class Html extends \yii\bootstrap4\Html
             $options['rel'] = 'stylesheet';
         }
 
-        return static::link(array_merge($options, [
-            'href' => $href
-        ]));
+        return static::link(['href' => $href] + $options);
     }
 
     /**
@@ -158,24 +165,25 @@ class Html extends \yii\bootstrap4\Html
      * Подключение скрипта.
      *
      * @param string $src
+     * @param array $options
      * @return string
      */
-    public static function jsLink(string $src) : string
+    public static function jsLink(string $src, array $options = []) : string
     {
-        return static::tag('script', '', ['src' => $src]);
+        return static::tag('script', '', ['src' => $src] + $options);
     }
 
     /**
      * Рендерит булево значение флага.
      *
      * @param mixed $value
+     * @param array $options
      * @return string
      */
-    public static function flag($value) : string
+    public static function flag($value, array $options = []) : string
     {
-        return static::tag('i', '', [
-            'class' => [$value ? 'fas' : 'far', 'fa-star']
-        ]);
+        static::addCssClass($options, [$value ? 'fas' : 'far', 'fa-star']);
+        return static::tag('i', '', $options);
     }
 
     /**
@@ -183,11 +191,12 @@ class Html extends \yii\bootstrap4\Html
      *
      * @param Model $model
      * @param string $attribute
+     * @param array $options
      * @return string
      */
-    public static function activeFlag(Model $model, string $attribute) : string
+    public static function activeFlag(Model $model, string $attribute, array $options = []) : string
     {
-        return static::flag($model->{$attribute});
+        return static::flag($model->{$attribute}, $options);
     }
 
     /**
@@ -199,9 +208,8 @@ class Html extends \yii\bootstrap4\Html
      */
     public static function fa(string $name, array $options = []) : string
     {
-        return static::tag('i', '', array_merge($options, [
-            'class' => 'fa fa-' . $name
-        ]));
+        static::addCssClass($options, 'fa fa-' . $name);
+        return static::tag('i', '', $options);
     }
 
     /**
@@ -213,9 +221,8 @@ class Html extends \yii\bootstrap4\Html
      */
     public static function fas(string $name, array $options = []) : string
     {
-        return static::tag('i', '', array_merge($options, [
-            'class' => 'fas fa-' . $name
-        ]));
+        static::addCssClass($options, 'fas fa-' . $name);
+        return static::tag('i', '', $options);
     }
 
     /**
@@ -227,9 +234,8 @@ class Html extends \yii\bootstrap4\Html
      */
     public static function far(string $name, array $options = []) : string
     {
-        return static::tag('i', '', array_merge($options, [
-            'class' => 'far fa-' . $name
-        ]));
+        static::addCssClass($options, 'far fa-' . $name);
+        return static::tag('i', '', $options);
     }
 
     /**
@@ -237,13 +243,13 @@ class Html extends \yii\bootstrap4\Html
      *
      * @param string $target
      * @param string $name плагин
-     * @param array $options опции плагина
+     * @param array $clientOptions опции плагина
      * @return string html
      */
-    public static function plugin(string $target, string $name, array $options = []) : string
+    public static function plugin(string $target, string $name, array $clientOptions = []) : string
     {
         return static::script('$(function() {
-            $("' . $target . '").' . $name . '(' . Json::encode($options) . ');
+            $("' . $target . '").' . $name . '(' . Json::encode($clientOptions) . ');
         });');
     }
 
