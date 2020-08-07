@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 07.08.20 16:00:58
+ * @version 07.08.20 16:28:40
  */
 
 declare(strict_types = 1);
@@ -186,7 +186,7 @@ class Html extends \yii\bootstrap4\Html
             return $val !== null && $val !== '' && $val !== [];
         });
 
-        return ! empty($schema) ? static::tag('script', static::esc(Json::encode($schema)), [
+        return ! empty($schema) ? static::tag('script', Json::encode($schema), [
             'type' => 'application/ld+json'
         ]) : '';
     }
