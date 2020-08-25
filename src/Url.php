@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 06.08.20 04:40:02
+ * @version 25.08.20 21:59:45
  */
 
 declare(strict_types = 1);
@@ -13,10 +13,9 @@ use InvalidArgumentException;
 use RuntimeException;
 use Yii;
 use yii\base\ExitException;
+
 use function array_diff;
-use function array_filter;
 use function array_keys;
-use function array_map;
 use function array_pop;
 use function array_values;
 use function count;
@@ -36,6 +35,7 @@ use function range;
 use function sprintf;
 use function trim;
 use function urlencode;
+
 use const FILTER_VALIDATE_INT;
 use const PHP_URL_HOST;
 use const PREG_SPLIT_NO_EMPTY;
@@ -51,7 +51,7 @@ class Url extends \yii\helpers\Url
      * @param string|array $query
      * @return array параметры в виде массива
      */
-    public static function parseQuery($query) : array
+    public static function parseQuery($query): array
     {
         if ($query === null || $query === '' || $query === []) {
             $query = [];
@@ -79,7 +79,7 @@ class Url extends \yii\helpers\Url
     private static function internalBuildQuery(array $query, string $parentKey = '')
     {
         // удаляет из параметров некорректные ключи и null-значения
-        $filterParams = static function($params) use (&$filterParams) {
+        $filterParams = static function ($params) use (&$filterParams) {
             $filtered = [];
 
             // преобразуем query, удаляя некорректные ключи и null-значения
@@ -107,19 +107,18 @@ class Url extends \yii\helpers\Url
         };
 
         // проверяет является ли массив индексным списком параметров
-        $isIndexed = static function($params) {
+        $isIndexed = static function ($params) {
             $params = (array)$params;
             if (empty($params)) {
                 return true;
             }
 
-            $keys = array_map(static function($key) {
-                return filter_var($key, FILTER_VALIDATE_INT, [
-                    'options' => [
-                        'min_range' => 0
-                    ]
+            $keys = [];
+            foreach (array_keys($params) as $key) {
+                $keys[] = filter_var($key, FILTER_VALIDATE_INT, [
+                    'options' => ['min_range' => 0]
                 ]);
-            }, array_keys($params));
+            }
 
             return $keys === range(0, count($params) - 1);
         };
@@ -160,7 +159,7 @@ class Url extends \yii\helpers\Url
      * @param array|object|string $query
      * @return string
      */
-    public static function buildQuery($query) : string
+    public static function buildQuery($query): string
     {
         if ($query === null || $query === '' || $query === []) {
             $query = '';
@@ -179,27 +178,21 @@ class Url extends \yii\helpers\Url
      * @param array|string $query
      * @return array
      */
-    public static function filterQuery($query) : array
+    public static function filterQuery($query): array
     {
         $query = static::parseQuery($query);
-        if (empty($query)) {
-            return [];
-        }
 
-        return array_filter($query, static function($v) {
-            if ($v === null || $v === '' || $v === []) {
-                return false;
-            }
-
+        foreach ($query as $k => &$v) {
             if (is_array($v)) {
                 $v = static::filterQuery($v);
-                if (empty($v)) {
-                    return false;
-                }
             }
 
-            return true;
-        });
+            if ($v === null || $v === '' || $v === []) {
+                unset($query[$k]);
+            }
+        }
+
+        return $query;
     }
 
     /**
@@ -209,18 +202,17 @@ class Url extends \yii\helpers\Url
      * @param array|string $query
      * @return array
      */
-    public static function normalizeQuery($query) : array
+    public static function normalizeQuery($query): array
     {
         $query = static::parseQuery($query);
-        if (empty($query)) {
-            return [];
-        }
 
         ksort($query);
 
-        return array_map(static function($v) {
-            return is_array($v) ? static::normalizeQuery($v) : (string)$v;
-        }, $query);
+        foreach ($query as &$v) {
+            $v = is_array($v) ? static::normalizeQuery($v) : (string)$v;
+        }
+
+        return $query;
     }
 
     /**
@@ -232,7 +224,7 @@ class Url extends \yii\helpers\Url
      * @param array|string $query2
      * @return array $query1 - $query2
      */
-    public static function diffQuery($query1, $query2) : array
+    public static function diffQuery($query1, $query2): array
     {
         $query1 = static::parseQuery($query1);
         if (empty($query1)) {
@@ -256,7 +248,7 @@ class Url extends \yii\helpers\Url
      * @param array|string $query парамеры запроса
      * @return string[] одномерный массив параметров в виде ["id=1", "a[]=2", "b[3][4]=5"]
      */
-    public static function flatQuery($query) : array
+    public static function flatQuery($query): array
     {
         if ($query === null || $query === '' || $query === []) {
             return [];
@@ -267,15 +259,6 @@ class Url extends \yii\helpers\Url
         // разбиваем на компоненты по &
         $query = (array)explode('&', $query);
 
-        /*
-        // декодируем значения
-        $query = array_map(function($item) {
-            $matches = null;
-            return preg_match('~^([^=]+=)(.+)$~um', $item, $matches) ?
-                $matches[1] . urldecode($matches[2]) : $item;
-        }, $query);
-        */
-
         return $query;
     }
 
@@ -285,20 +268,11 @@ class Url extends \yii\helpers\Url
      * @param array $flatQuery
      * @return array
      */
-    public static function unflatQuery(array $flatQuery) : array
+    public static function unflatQuery(array $flatQuery): array
     {
         if ($flatQuery === null || $flatQuery === '' || $flatQuery === []) {
             return [];
         }
-
-        /*
-        // кодируем значения
-        $flatQuery = array_map(static function($item) {
-            $matches = null;
-            return preg_match('~^([^=]+=)(.+)$~um', $item, $matches) ?
-                $matches[1] . urlencode($matches[2]) : $item;
-        }, $flatQuery);
-        */
 
         // объединяем компоненты по &
         return static::parseQuery(implode('&', $flatQuery));
@@ -310,7 +284,7 @@ class Url extends \yii\helpers\Url
      * @param string $domain
      * @return string
      */
-    public static function idnToAscii(string $domain) : string
+    public static function idnToAscii(string $domain): string
     {
         $domain = trim($domain);
         if ($domain === '') {
@@ -327,7 +301,7 @@ class Url extends \yii\helpers\Url
      * @param string $path
      * @return string
      */
-    public static function normalizePath(string $path) : string
+    public static function normalizePath(string $path): string
     {
         $path = trim($path);
         if ($path === '') {
@@ -336,10 +310,10 @@ class Url extends \yii\helpers\Url
 
         // сохраняем начальный и конечный слэши
         $startSlash = (mb_strpos($path, '/') === 0);
-        $endSlash = (mb_substr($path, - 1, 1) === '/');
+        $endSlash = (mb_substr($path, -1, 1) === '/');
 
         // разбиваем путь на компоненты
-        $path = array_values(preg_split('~/+~um', $path, - 1, PREG_SPLIT_NO_EMPTY) ?: []);
+        $path = array_values(preg_split('~/+~um', $path, -1, PREG_SPLIT_NO_EMPTY) ?: []);
 
         $newPath = [];
         foreach ($path as $p) {
@@ -374,7 +348,7 @@ class Url extends \yii\helpers\Url
      * @param string $dom2 домен
      * @return bool true, если $dom1 == $dom2 или один из них является поддоменом другого
      */
-    public static function isDomainsRelated(string $dom1, string $dom2) : bool
+    public static function isDomainsRelated(string $dom1, string $dom2): bool
     {
         $dom1 = static::normalizeHost($dom1);
         if (empty($dom1)) {
@@ -415,7 +389,7 @@ class Url extends \yii\helpers\Url
      * @return string
      * @throws InvalidArgumentException
      */
-    public static function normalizeHost(string $name) : string
+    public static function normalizeHost(string $name): string
     {
         // убираем все пробельные символы
         $name = preg_replace('~[\s\h\t\v\r\n]+~uim', '', trim($name));
@@ -438,7 +412,7 @@ class Url extends \yii\helpers\Url
         $name = mb_strtolower(static::idnToUtf8($name));
 
         // разбиваем домен на компоненты
-        $parts = preg_split('~\.+~um', $name, - 1, PREG_SPLIT_NO_EMPTY);
+        $parts = preg_split('~\.+~um', $name, -1, PREG_SPLIT_NO_EMPTY);
         if (empty($parts)) {
             throw new InvalidArgumentException('domain name');
         }
@@ -452,7 +426,7 @@ class Url extends \yii\helpers\Url
      * @param string $domain
      * @return string
      */
-    public static function idnToUtf8(string $domain) : string
+    public static function idnToUtf8(string $domain): string
     {
         $domain = trim($domain);
         if ($domain === '') {
@@ -470,7 +444,7 @@ class Url extends \yii\helpers\Url
      * @return bool
      * @throws InvalidArgumentException
      */
-    public static function isSubdomain(string $domain, string $parent) : bool
+    public static function isSubdomain(string $domain, string $parent): bool
     {
         $domain = static::normalizeHost($domain);
         if (empty($domain)) {
@@ -496,7 +470,7 @@ class Url extends \yii\helpers\Url
      * @param string $parent родительский
      * @return string|null string - имя поддомена, null - если $domain не является поддоменом родительского
      */
-    public static function getSubdomain(string $domain, string $parent) : ?string
+    public static function getSubdomain(string $domain, string $parent): ?string
     {
         $domain = static::normalizeHost($domain);
         if (empty($domain)) {
@@ -521,7 +495,7 @@ class Url extends \yii\helpers\Url
      *
      * @param array|string $url
      */
-    public static function redirectIfNeed($url) : void
+    public static function redirectIfNeed($url): void
     {
         $url = static::to($url);
 
