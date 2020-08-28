@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 25.08.20 21:45:18
+ * @version 29.08.20 03:52:41
  */
 
 declare(strict_types = 1);
@@ -11,10 +11,12 @@ declare(strict_types = 1);
 namespace dicr\helper;
 
 use RuntimeException;
+use yii\base\Exception;
 use yii\base\Model;
 
 use function array_search;
 use function array_shift;
+use function in_array;
 use function is_array;
 use function is_callable;
 use function is_string;
@@ -113,6 +115,7 @@ abstract class JsonEntity extends Model
      * @param string $attribute название аттрибута
      * @param mixed $data данные
      * @return mixed
+     * @throws Exception
      */
     public function data2value(string $attribute, $data)
     {
@@ -158,11 +161,16 @@ abstract class JsonEntity extends Model
      * Конфигурация объекта из данных JSON.
      *
      * @param array $json данные конфигурации
+     * @param bool $skipUnknown пропускать неизвестные аттрибуты (иначе exception)
+     * @throws Exception
      */
-    public function setJson(array $json)
+    public function setJson(array $json, bool $skipUnknown = true)
     {
         // карта соответствия полей данных аттрибутам
         $map = $this->attributeFields();
+        $attributes = $this->attributes();
+
+        $data = [];
 
         // обходим все данные
         foreach ($json as $field => $d) {
@@ -170,7 +178,14 @@ abstract class JsonEntity extends Model
             $attribute = (string)(array_search($field, $map, true) ?: $field);
 
             // конвертируем и устанавливаем значение
-            $this->{$attribute} = $this->data2value($attribute, $d);
+            $data[$attribute] = $this->data2value($attribute, $d);
+            if (! $skipUnknown && ! in_array($attribute, $attributes, true)) {
+                throw new Exception('Неизвестный аттрибут: ' . $attribute);
+            }
+        }
+
+        if (! empty($data)) {
+            $this->setAttributes($data);
         }
     }
 

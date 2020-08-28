@@ -1,7 +1,9 @@
 <?php
-/**
+/*
+ * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
- * @version 20.07.20 05:42:38
+ * @license proprietary
+ * @version 29.08.20 03:51:13
  */
 
 declare(strict_types = 1);
@@ -23,6 +25,7 @@ class ArrayHelper extends \yii\helpers\ArrayHelper
      * @param string|array $path ключ для удаления. Может быть строкой с путем ключа, разделенным "." или массивом.
      * @param mixed $default
      * @return mixed
+     * @noinspection PhpMissingParamTypeInspection
      */
     public static function remove(&$array, $path, $default = null)
     {

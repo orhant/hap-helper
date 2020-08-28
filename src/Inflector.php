@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 06.08.20 04:41:31
+ * @version 29.08.20 03:52:41
  */
 
 declare(strict_types = 1);
@@ -12,6 +12,7 @@ namespace dicr\helper;
 
 use Yii;
 use yii\base\InvalidArgumentException;
+
 use function array_key_exists;
 use function array_keys;
 use function array_values;
@@ -71,6 +72,7 @@ class Inflector extends \yii\helpers\Inflector
      * @param string $replacement
      * @param bool $lowercase
      * @return string
+     * @noinspection PhpMissingParamTypeInspection
      */
     public static function slug($string, $replacement = '-', $lowercase = true) : string
     {
@@ -379,7 +381,7 @@ class Inflector extends \yii\helpers\Inflector
     /**
      * Конвертирует график работы в короткий формат.
      *
-     * @param array $schedule график работы в формате:
+     * @param ?array $schedule график работы в формате:
      *   [
      *     0 => ['09:00', '18:00'],
      *     1 => ['09:00', '18:00'],
@@ -395,7 +397,7 @@ class Inflector extends \yii\helpers\Inflector
      *     'Вс' => 'выходной'
      *   ]
      */
-    public static function shortSchedule($schedule) : array
+    public static function shortSchedule(?array $schedule): array
     {
         if (empty($schedule)) {
             return [];
@@ -458,14 +460,14 @@ class Inflector extends \yii\helpers\Inflector
      * ]);
      * ```
      *
-     * @param string|null $string строка с переменными
+     * @param ?string $string строка с переменными
      * @param array $vars значения для подмены (многомерный массив объектов)
      * @param array $opts опции
      * - bool $cleanVars - удалять ненайденные переменные
      * - bool $cleanText - удалять весь текст, если есть ненайденные переменные
      * @return string
      */
-    public static function replaceVars($string, array $vars = [], array $opts = []) : string
+    public static function replaceVars(?string $string, array $vars = [], array $opts = []): string
     {
         // пропускаем пустые строки и если не нужно ничего заменять и очищать
         $string = (string)$string;
@@ -475,7 +477,7 @@ class Inflector extends \yii\helpers\Inflector
 
         // поддерживаемые фильтры
         $filters = [
-            'trim' => static function(string $string) {
+            'trim' => static function (string $string) {
                 return trim($string);
             },
             'esc' => static function(string $string) {
