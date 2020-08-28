@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 29.08.20 03:52:41
+ * @version 29.08.20 04:01:30
  */
 
 declare(strict_types = 1);
@@ -179,13 +179,14 @@ abstract class JsonEntity extends Model
 
             // конвертируем и устанавливаем значение
             $data[$attribute] = $this->data2value($attribute, $d);
+
             if (! $skipUnknown && ! in_array($attribute, $attributes, true)) {
                 throw new Exception('Неизвестный аттрибут: ' . $attribute);
             }
         }
 
         if (! empty($data)) {
-            $this->setAttributes($data);
+            $this->setAttributes($data, false);
         }
     }
 
