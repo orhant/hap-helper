@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 30.07.20 15:11:47
+ * @version 04.09.20 18:01:06
  */
 
 declare(strict_types = 1);
@@ -168,6 +168,43 @@ class UrlTest extends TestCase
                 $test['out'],
                 Url::buildQuery($test['in']),
                 'Ошибка теста запросов №: ' . $i
+            );
+        }
+    }
+
+    /**
+     * @noinspection PhpMethodMayBeStaticInspection
+     */
+    public function testDiffQuery()
+    {
+        $tests = [
+            1 => [
+                'a' => '',
+                'b' => ['a' => 1],
+                'c' => []
+            ],
+            2 => [
+                'a' => 'a=1',
+                'b' => '',
+                'c' => ['a' => '1']
+            ],
+            3 => [
+                'a' => 'a=Master',
+                'b' => 'a=master',
+                'c' => []
+            ],
+            4 => [
+                'a' => ['a' => ['Val1', 'Val2']],
+                'b' => ['a' => ['val2'], 'b' => 3],
+                'c' => ['a' => ['Val1']]
+            ]
+        ];
+
+        foreach ($tests as $n => $test) {
+            self::assertSame(
+                $test['c'],
+                Url::diffQuery($test['a'], $test['b'], ['noCase' => true]),
+                'Test №' . $n
             );
         }
     }

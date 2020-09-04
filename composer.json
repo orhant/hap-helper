@@ -2,9 +2,12 @@
     "name": "dicr/yii2-helper",
     "type": "yii2-extension",
     "license": "MIT",
-    "homepage": "https://gitlab.com/dicr/yii2-helper",
-    "description": "Набор вспомогательных утилит для Yii2",
     "keywords": ["dicr", "yii2", "helper"],
+    "description": "Набор вспомогательных утилит для Yii2",
+    "homepage": "https://gitlab.com/dicr/yii2-helper",
+    "support": {
+        "source": "https://gitlab.com/dicr/yii2-helper.git"
+    },
     "authors": [
         {
             "name": "Igor Tarasov",
@@ -13,9 +16,6 @@
             "role": "developer"
         }
     ],
-    "support": {
-        "source": "https://gitlab.com/dicr/yii2-helper.git"
-    },
     "autoload": {
         "psr-4": {
             "dicr\\helper\\": "src/"
