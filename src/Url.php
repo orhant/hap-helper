@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 04.09.20 18:00:53
+ * @version 05.09.20 07:58:02
  */
 
 declare(strict_types = 1);
@@ -13,6 +13,7 @@ use InvalidArgumentException;
 use RuntimeException;
 use Yii;
 use yii\base\ExitException;
+
 use function array_keys;
 use function array_pop;
 use function array_udiff;
@@ -35,6 +36,7 @@ use function range;
 use function sprintf;
 use function trim;
 use function urlencode;
+
 use const FILTER_VALIDATE_INT;
 use const PHP_URL_HOST;
 use const PREG_SPLIT_NO_EMPTY;
@@ -248,7 +250,7 @@ class Url extends \yii\helpers\Url
         $diff = array_udiff($query1, $query2, static function($v1, $v2) use ($noCase) {
             return $noCase ?
                 mb_strtolower((string)$v1) <=> mb_strtolower((string)$v2) :
-                (string)$v1 === (string)$v2;
+                (string)$v1 <=> (string)$v2;
         });
 
         // конвертируем в обычный формат и возвращаем
