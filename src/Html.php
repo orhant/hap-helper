@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 06.09.20 22:39:45
+ * @version 06.09.20 22:41:14
  */
 
 declare(strict_types = 1);
@@ -319,6 +319,25 @@ class Html extends \yii\bootstrap4\Html
     }
 
     /**
+     * Возвращает параметры запроса в meta-тегах:
+     * - meta property="route"
+     * - meta property="params"
+     *
+     * @param ?array $url
+     * @return string
+     */
+    public static function request(?array $url = null) : string
+    {
+        $params = Url::buildQuery(Url::normalizeQuery(Url::filterQuery(
+            [0 => null] + ($url ?? Yii::$app->request->queryParams)
+        )));
+
+        return
+            static::meta(['property' => 'route', 'content' => $url[0] ?? Yii::$app->controller->route]) .
+            static::meta(['property' => 'params', 'content' => $params]);
+    }
+
+    /**
      * link rel="canonical"
      *
      * @param string|array|null $url
@@ -341,26 +360,5 @@ class Html extends \yii\bootstrap4\Html
             'rel' => 'canonical',
             'href' => Url::to($url, true)
         ]);
-    }
-
-    /**
-     * Возвращает параметры запроса в meta-тегах:
-     * - meta property="route"
-     * - meta property="params"
-     *
-     * @param ?array $url
-     * @return string
-     */
-    public static function request(?array $url = null) : string
-    {
-        $params = Url::buildQuery(
-            Url::normalizeQuery(
-                Url::filterQuery([0 => null] + ($url ?? Yii::$app->request->queryParams))
-            )
-        );
-
-        return
-            static::meta(['property' => 'route', 'content' => $url[0] ?? Yii::$app->controller->route]) .
-            static::meta(['property' => 'params', 'content' => $params]);
     }
 }
