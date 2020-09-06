@@ -3,13 +3,14 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 07.08.20 16:28:40
+ * @version 06.09.20 22:31:09
  */
 
 declare(strict_types = 1);
 
 namespace dicr\helper;
 
+use Yii;
 use yii\base\Model;
 use yii\helpers\Json;
 use function array_filter;
@@ -286,5 +287,69 @@ class Html extends \yii\bootstrap4\Html
 
         return '<' . $name . static::renderTagAttributes($options) .
             ($content === '' ? '/>' : '>' . $content . '</' . $name . '>');
+    }
+
+    /**
+     * Ссылка tel:
+     *
+     * @param string $text текст ссылки
+     * @param ?string $tel телефон
+     * @param array $options
+     * @return string
+     */
+    public static function tel(string $text, ?string $tel = null, array $options = []) : string
+    {
+        return static::a(
+            static::esc($text),
+            'tel:' . preg_replace('~[\D]+~', '', $tel ?: $text),
+            $options
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public static function mailto($text, $email = null, $options = [])
+    {
+        return static::a(
+            static::esc($text),
+            'mailto:' . static::esc($email ?: $text),
+            $options
+        );
+    }
+
+    /**
+     * link rel="canonical"
+     *
+     * @param string|array $url
+     * @return string
+     */
+    public static function canonical($url) : string
+    {
+        return static::link([
+            'rel' => 'canonical',
+            'href' => Url::to($url, true)
+        ]);
+    }
+
+    /**
+     * Возвращает параметры запроса в meta-тегах:
+     * - meta property="route"
+     * - meta property="params"
+     *
+     * @param ?array $url
+     * @return string
+     */
+    public static function request(?array $url = null) : string
+    {
+        $params = Url::buildQuery(
+            Url::normalizeQuery(
+                Url::filterQuery([0 => null] + ($url ?? Yii::$app->request->queryParams))
+            )
+        );
+
+        return
+            static::meta(['property' => 'route', 'content' => $url[0] ?? Yii::$app->controller->route]) .
+            static::meta(['property' => 'params', 'content' => $params]);
     }
 }
