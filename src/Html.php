@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 06.09.20 22:31:09
+ * @version 06.09.20 22:39:45
  */
 
 declare(strict_types = 1);
@@ -321,11 +321,22 @@ class Html extends \yii\bootstrap4\Html
     /**
      * link rel="canonical"
      *
-     * @param string|array $url
+     * @param string|array|null $url
      * @return string
      */
-    public static function canonical($url) : string
+    public static function canonical($url = null) : string
     {
+        if ($url === null) {
+            $url = Url::normalizeQuery(Url::filterQuery(
+                [
+                    0 => '/' . Yii::$app->controller->route,
+                    'sort' => null,
+                    'page' => null,
+                    'limit' => null
+                ] + Yii::$app->request->queryParams
+            ));
+        }
+
         return static::link([
             'rel' => 'canonical',
             'href' => Url::to($url, true)
