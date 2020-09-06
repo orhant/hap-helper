@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 06.09.20 22:41:14
+ * @version 06.09.20 22:45:31
  */
 
 declare(strict_types = 1);
@@ -333,7 +333,7 @@ class Html extends \yii\bootstrap4\Html
         )));
 
         return
-            static::meta(['property' => 'route', 'content' => $url[0] ?? Yii::$app->controller->route]) .
+            static::meta(['property' => 'route', 'content' => $url[0] ?? (Yii::$app->controller->route ?? '')]) .
             static::meta(['property' => 'params', 'content' => $params]);
     }
 
@@ -348,7 +348,7 @@ class Html extends \yii\bootstrap4\Html
         if ($url === null) {
             $url = Url::normalizeQuery(Url::filterQuery(
                 [
-                    0 => '/' . Yii::$app->controller->route,
+                    0 => '/' . (Yii::$app->controller->route ?? ''),
                     'sort' => null,
                     'page' => null,
                     'limit' => null
