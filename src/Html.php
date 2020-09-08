@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 06.09.20 22:45:31
+ * @version 08.09.20 22:23:49
  */
 
 declare(strict_types = 1);
@@ -13,9 +13,10 @@ namespace dicr\helper;
 use Yii;
 use yii\base\Model;
 use yii\helpers\Json;
+
 use function array_filter;
 use function html_entity_decode;
-use function strtolower;
+
 use const ENT_HTML5;
 use const ENT_QUOTES;
 
@@ -282,7 +283,6 @@ class Html extends \yii\bootstrap4\Html
      */
     public static function xml(string $name, $content = '', array $options = []) : string
     {
-        $name = strtolower($name);
         $content = (string)$content;
 
         return '<' . $name . static::renderTagAttributes($options) .
