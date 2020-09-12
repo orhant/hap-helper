@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 08.09.20 22:23:49
+ * @version 12.09.20 22:00:14
  */
 
 declare(strict_types = 1);
@@ -34,6 +34,7 @@ class Html extends \yii\bootstrap4\Html
     public static function esc($str) : string
     {
         $str = (string)$str;
+
         return $str === '' ? '' : static::encode($str);
     }
 
@@ -85,6 +86,7 @@ class Html extends \yii\bootstrap4\Html
     public static function hasText($html) : bool
     {
         $html = (string)$html;
+
         return $html !== '' && static::toText($html) !== '';
     }
 
@@ -182,9 +184,9 @@ class Html extends \yii\bootstrap4\Html
      * @param array $schema
      * @return string
      */
-    public static function schema(array $schema)
+    public static function schema(array $schema) : string
     {
-        $schema = array_filter($schema, static function($val) {
+        $schema = array_filter($schema, static function ($val) {
             return $val !== null && $val !== '' && $val !== [];
         });
 
@@ -203,6 +205,7 @@ class Html extends \yii\bootstrap4\Html
     public static function flag($value, array $options = []) : string
     {
         static::addCssClass($options, [$value ? 'fas' : 'far', 'fa-star']);
+
         return static::tag('i', '', $options);
     }
 
@@ -229,6 +232,7 @@ class Html extends \yii\bootstrap4\Html
     public static function fa(string $name, array $options = []) : string
     {
         static::addCssClass($options, 'fa fa-' . $name);
+
         return static::tag('i', '', $options);
     }
 
@@ -242,6 +246,7 @@ class Html extends \yii\bootstrap4\Html
     public static function fas(string $name, array $options = []) : string
     {
         static::addCssClass($options, 'fas fa-' . $name);
+
         return static::tag('i', '', $options);
     }
 
@@ -255,6 +260,7 @@ class Html extends \yii\bootstrap4\Html
     public static function far(string $name, array $options = []) : string
     {
         static::addCssClass($options, 'far fa-' . $name);
+
         return static::tag('i', '', $options);
     }
 
@@ -309,7 +315,7 @@ class Html extends \yii\bootstrap4\Html
     /**
      * @inheritDoc
      */
-    public static function mailto($text, $email = null, $options = [])
+    public static function mailto($text, $email = null, $options = []) : string
     {
         return static::a(
             static::esc($text),

@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 05.09.20 07:58:02
+ * @version 12.09.20 22:02:46
  */
 
 declare(strict_types = 1);
@@ -77,10 +77,10 @@ class Url extends \yii\helpers\Url
      * @param string $parentKey
      * @return string[]
      */
-    private static function internalBuildQuery(array $query, string $parentKey = '')
+    private static function internalBuildQuery(array $query, string $parentKey = '') : array
     {
         // удаляет из параметров некорректные ключи и null-значения
-        $filterParams = static function($params) use (&$filterParams) {
+        $filterParams = static function ($params) use (&$filterParams) {
             $filtered = [];
 
             // преобразуем query, удаляя некорректные ключи и null-значения

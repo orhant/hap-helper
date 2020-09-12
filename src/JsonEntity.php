@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 29.08.20 04:01:30
+ * @version 12.09.20 21:55:58
  */
 
 declare(strict_types = 1);
@@ -164,7 +164,7 @@ abstract class JsonEntity extends Model
      * @param bool $skipUnknown пропускать неизвестные аттрибуты (иначе exception)
      * @throws Exception
      */
-    public function setJson(array $json, bool $skipUnknown = true)
+    public function setJson(array $json, bool $skipUnknown = true) : void
     {
         // карта соответствия полей данных аттрибутам
         $map = $this->attributeFields();

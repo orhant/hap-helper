@@ -2,8 +2,8 @@
     "name": "dicr/yii2-helper",
     "type": "yii2-extension",
     "license": "MIT",
-    "keywords": ["dicr", "yii2", "helper"],
     "description": "Набор вспомогательных утилит для Yii2",
+    "keywords": ["dicr", "yii2", "helper"],
     "homepage": "https://gitlab.com/dicr/yii2-helper",
     "support": {
         "source": "https://gitlab.com/dicr/yii2-helper.git"
