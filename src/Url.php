@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 12.09.20 22:02:46
+ * @version 14.09.20 15:14:00
  */
 
 declare(strict_types = 1);
@@ -108,7 +108,7 @@ class Url extends \yii\helpers\Url
         };
 
         // проверяет является ли массив индексным списком параметров
-        $isIndexed = static function($params) {
+        $isIndexed = static function ($params) {
             $params = (array)$params;
             if (empty($params)) {
                 return true;
@@ -247,7 +247,7 @@ class Url extends \yii\helpers\Url
         // сравнение с регистром или без
         $noCase = ! empty($options['noCase']);
 
-        $diff = array_udiff($query1, $query2, static function($v1, $v2) use ($noCase) {
+        $diff = array_udiff($query1, $query2, static function ($v1, $v2) use ($noCase) {
             return $noCase ?
                 mb_strtolower((string)$v1) <=> mb_strtolower((string)$v2) :
                 (string)$v1 <=> (string)$v2;
@@ -325,10 +325,10 @@ class Url extends \yii\helpers\Url
 
         // сохраняем начальный и конечный слэши
         $startSlash = (mb_strpos($path, '/') === 0);
-        $endSlash = (mb_substr($path, - 1, 1) === '/');
+        $endSlash = (mb_substr($path, -1, 1) === '/');
 
         // разбиваем путь на компоненты
-        $path = array_values(preg_split('~/+~um', $path, - 1, PREG_SPLIT_NO_EMPTY) ?: []);
+        $path = array_values(preg_split('~/+~um', $path, -1, PREG_SPLIT_NO_EMPTY) ?: []);
 
         $newPath = [];
         foreach ($path as $p) {
@@ -427,7 +427,7 @@ class Url extends \yii\helpers\Url
         $name = mb_strtolower(static::idnToUtf8($name));
 
         // разбиваем домен на компоненты
-        $parts = preg_split('~\.+~um', $name, - 1, PREG_SPLIT_NO_EMPTY);
+        $parts = preg_split('~\.+~um', $name, -1, PREG_SPLIT_NO_EMPTY);
         if (empty($parts)) {
             throw new InvalidArgumentException('domain name');
         }
@@ -508,13 +508,20 @@ class Url extends \yii\helpers\Url
     /**
      * Редиректит на правильный URL страницы, если текущий не совпадает.
      *
-     * @param array|string $url
+     * @param array $url
      */
-    public static function redirectIfNeed($url) : void
+    public static function redirectIfNeed(array $url) : void
     {
-        $url = static::to($url);
+        // добавляем в URL utm- и roistat- параметры
+        foreach (Yii::$app->request->queryParams as $name => $val) {
+            if (preg_match('~^(utm_|roistat)~', $name)) {
+                $url[$name] = $val;
+            }
+        }
 
-        if (Yii::$app->request->url !== $url) {
+        $canonicalUrl = static::to($url);
+
+        if (Yii::$app->request->url !== $canonicalUrl) {
             try {
                 Yii::$app->end(0, Yii::$app->response->redirect($url, 301));
             } catch (ExitException $ex) {
