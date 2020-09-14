@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 14.09.20 15:14:00
+ * @version 14.09.20 21:23:07
  */
 
 declare(strict_types = 1);
@@ -514,7 +514,7 @@ class Url extends \yii\helpers\Url
     {
         // добавляем в URL utm- и roistat- параметры
         foreach (Yii::$app->request->queryParams as $name => $val) {
-            if (preg_match('~^(utm_|roistat)~', $name)) {
+            if (preg_match('~^(utm_|roistat)~', (string)$name)) {
                 $url[$name] = $val;
             }
         }
