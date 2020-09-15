@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 15.09.20 10:02:52
+ * @version 15.09.20 10:03:19
  */
 
 declare(strict_types = 1);
@@ -524,7 +524,7 @@ class Url extends \yii\helpers\Url
         if (Yii::$app->request->url !== $canonicalUrl) {
             try {
                 Yii::$app->end(0,
-                    Yii::$app->response->redirect(Url::to($canonicalUrl, true), 301)
+                    Yii::$app->response->redirect(static::to($canonicalUrl, true), 301)
                 );
             } catch (ExitException $ex) {
                 throw new RuntimeException($ex->getMessage(), $ex->getCode(), $ex);
