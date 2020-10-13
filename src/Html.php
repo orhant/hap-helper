@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 12.09.20 22:00:14
+ * @version 13.10.20 14:19:00
  */
 
 declare(strict_types = 1);
@@ -16,6 +16,7 @@ use yii\helpers\Json;
 
 use function array_filter;
 use function html_entity_decode;
+use function preg_replace;
 
 use const ENT_HTML5;
 use const ENT_QUOTES;
@@ -35,7 +36,8 @@ class Html extends \yii\bootstrap4\Html
     {
         $str = (string)$str;
 
-        return $str === '' ? '' : static::encode($str);
+        return $str === '' ? '' :
+            (string)preg_replace('~[[:cntrl:]]+~uim', ' ', static::encode($str));
     }
 
     /**
@@ -186,7 +188,7 @@ class Html extends \yii\bootstrap4\Html
      */
     public static function schema(array $schema) : string
     {
-        $schema = array_filter($schema, static function ($val) {
+        $schema = array_filter($schema, static function ($val) : bool {
             return $val !== null && $val !== '' && $val !== [];
         });
 

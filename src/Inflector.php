@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 29.08.20 03:52:41
+ * @version 13.10.20 14:17:49
  */
 
 declare(strict_types = 1);
@@ -397,7 +397,7 @@ class Inflector extends \yii\helpers\Inflector
      *     'Вс' => 'выходной'
      *   ]
      */
-    public static function shortSchedule(?array $schedule): array
+    public static function shortSchedule(?array $schedule) : array
     {
         if (empty($schedule)) {
             return [];
@@ -410,7 +410,7 @@ class Inflector extends \yii\helpers\Inflector
         $holidays = [];
 
         // форматируем время работы всех дней
-        for ($i = 0; $i < 7; $i ++) {
+        for ($i = 0; $i < 7; $i++) {
             $workTime = $schedule[$i] ?? null;
 
             // выходной день
@@ -467,7 +467,7 @@ class Inflector extends \yii\helpers\Inflector
      * - bool $cleanText - удалять весь текст, если есть ненайденные переменные
      * @return string
      */
-    public static function replaceVars(?string $string, array $vars = [], array $opts = []): string
+    public static function replaceVars(?string $string, array $vars = [], array $opts = []) : string
     {
         // пропускаем пустые строки и если не нужно ничего заменять и очищать
         $string = (string)$string;
@@ -477,22 +477,22 @@ class Inflector extends \yii\helpers\Inflector
 
         // поддерживаемые фильтры
         $filters = [
-            'trim' => static function (string $string) {
+            'trim' => static function (string $string) : string {
                 return trim($string);
             },
-            'esc' => static function(string $string) {
+            'esc' => static function (string $string) : string {
                 return Html::esc($string);
             },
-            'lower' => static function(string $string) {
+            'lower' => static function (string $string) : string {
                 return mb_strtolower($string);
             },
-            'upper' => static function(string $string) {
+            'upper' => static function (string $string) : string {
                 return mb_strtoupper($string);
             },
-            'ucfirst' => static function(string $string) {
+            'ucfirst' => static function (string $string) : string {
                 return StringHelper::mb_ucfirst($string);
             },
-            'lcfirst' => static function(string $string) {
+            'lcfirst' => static function (string $string) : string {
                 return StringHelper::mb_lcfirst($string);
             }
         ];
@@ -501,7 +501,7 @@ class Inflector extends \yii\helpers\Inflector
         $regex = '~\$\{([^\}]+)\}~um';
 
         // находим и заменяем шаблон переменной
-        $string = preg_replace_callback($regex, static function(array $matches) use ($vars, $filters) {
+        $string = preg_replace_callback($regex, static function (array $matches) use ($vars, $filters) : string {
             // получаем ключи
             $keys = explode('|', $matches[1]);
 

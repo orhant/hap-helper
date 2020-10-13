@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 15.09.20 10:03:19
+ * @version 13.10.20 14:18:08
  */
 
 declare(strict_types = 1);
@@ -80,7 +80,7 @@ class Url extends \yii\helpers\Url
     private static function internalBuildQuery(array $query, string $parentKey = '') : array
     {
         // удаляет из параметров некорректные ключи и null-значения
-        $filterParams = static function ($params) use (&$filterParams) {
+        $filterParams = static function ($params) use (&$filterParams) : array {
             $filtered = [];
 
             // преобразуем query, удаляя некорректные ключи и null-значения
@@ -108,7 +108,7 @@ class Url extends \yii\helpers\Url
         };
 
         // проверяет является ли массив индексным списком параметров
-        $isIndexed = static function ($params) {
+        $isIndexed = static function ($params) : bool {
             $params = (array)$params;
             if (empty($params)) {
                 return true;
@@ -247,7 +247,7 @@ class Url extends \yii\helpers\Url
         // сравнение с регистром или без
         $noCase = ! empty($options['noCase']);
 
-        $diff = array_udiff($query1, $query2, static function ($v1, $v2) use ($noCase) {
+        $diff = array_udiff($query1, $query2, static function ($v1, $v2) use ($noCase) : int {
             return $noCase ?
                 mb_strtolower((string)$v1) <=> mb_strtolower((string)$v2) :
                 (string)$v1 <=> (string)$v2;

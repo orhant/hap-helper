@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 25.08.20 21:42:55
+ * @version 13.10.20 14:15:43
  */
 
 /** @noinspection PhpMethodMayBeStaticInspection */
@@ -20,7 +20,7 @@ class JsonEntityTest extends TestCase
     /**
      *
      */
-    public function testAttributeFields()
+    public function testAttributeFields() : void
     {
         $sampleFields = TestJsonEntity::sampleAttributeFields();
         $actualFields = (new TestJsonEntity())->attributeFields();
@@ -31,7 +31,7 @@ class JsonEntityTest extends TestCase
     /**
      *
      */
-    public function testGetJson()
+    public function testGetJson() : void
     {
         $sampleJson = TestJsonEntity::sampleJson();
         unset($sampleJson['ids']);
@@ -44,7 +44,7 @@ class JsonEntityTest extends TestCase
     /**
      *
      */
-    public function testSetJson()
+    public function testSetJson() : void
     {
         $sampleEntity = TestJsonEntity::sampleEntity();
         $sampleEntity->ids = null;

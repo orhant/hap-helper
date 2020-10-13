@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 04.07.20 11:35:11
+ * @version 13.10.20 14:15:43
  */
 
 declare(strict_types = 1);
@@ -22,7 +22,7 @@ class ArrayHelperTest extends TestCase
      *
      * @noinspection PhpMethodMayBeStaticInspection
      */
-    public function testRemove()
+    public function testRemove() : void
     {
         $arr = [
             'a' => 1,

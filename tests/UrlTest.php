@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 04.09.20 18:01:06
+ * @version 13.10.20 14:15:43
  */
 
 declare(strict_types = 1);
@@ -161,7 +161,7 @@ class UrlTest extends TestCase
     /**
      * @noinspection PhpMethodMayBeStaticInspection
      */
-    public function testBuildQuery()
+    public function testBuildQuery() : void
     {
         foreach (self::BUILD_QUERY_TESTS as $i => $test) {
             self::assertSame(
@@ -175,7 +175,7 @@ class UrlTest extends TestCase
     /**
      * @noinspection PhpMethodMayBeStaticInspection
      */
-    public function testDiffQuery()
+    public function testDiffQuery() : void
     {
         $tests = [
             1 => [

@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 12.09.20 21:55:58
+ * @version 13.10.20 14:17:49
  */
 
 declare(strict_types = 1);
@@ -116,6 +116,7 @@ abstract class JsonEntity extends Model
      * @param mixed $data данные
      * @return mixed
      * @throws Exception
+     * @noinspection PhpMissingReturnTypeInspection
      */
     public function data2value(string $attribute, $data)
     {

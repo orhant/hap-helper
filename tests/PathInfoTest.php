@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 27.07.20 05:48:50
+ * @version 13.10.20 14:15:43
  */
 
 declare(strict_types = 1);
@@ -58,7 +58,7 @@ class PathInfoTest extends TestCase
      *
      * @noinspection PhpMethodMayBeStaticInspection
      */
-    public function testNormalizePath()
+    public function testNormalizePath() : void
     {
         foreach (self::TEST_NORMALIZE as $path => $res) {
             self::assertSame($res, PathInfo::normalize($path), 'path: ' . $path);
@@ -89,7 +89,7 @@ class PathInfoTest extends TestCase
     /**
      * @noinspection PhpMethodMayBeStaticInspection
      */
-    public function testParent()
+    public function testParent() : void
     {
         foreach (self::TEST_PARENT as $path => $res) {
             self::assertSame($res, PathInfo::parent($path), 'parent: ' . $path);
