@@ -3,18 +3,18 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 13.10.20 14:18:08
+ * @version 19.11.20 07:56:03
  */
 
 declare(strict_types = 1);
 namespace dicr\helper;
 
 use InvalidArgumentException;
-use RuntimeException;
 use Yii;
 use yii\base\ExitException;
 
 use function array_keys;
+use function array_merge;
 use function array_pop;
 use function array_udiff;
 use function array_values;
@@ -212,6 +212,41 @@ class Url extends \yii\helpers\Url
         foreach ($query as &$v) {
             $v = is_array($v) ? static::normalizeQuery($v) : (string)$v;
         }
+
+        return $query;
+    }
+
+    /**
+     * Выделяет из параметров utm- и roistat-метки.
+     *
+     * @param string|array $query параметры запроса
+     * @return array метки
+     */
+    public static function extractUtm(&$query) : array
+    {
+        $query = self::parseQuery($query);
+        $extra = [];
+
+        foreach ($query as $key => $val) {
+            if (preg_match('~^(utm_|roistat)~ui', (string)$key)) {
+                $extra[$key] = $val;
+                unset($query[$key]);
+            }
+        }
+
+        return $extra;
+    }
+
+    /**
+     * Удаляет из параметров utm- и roistat-метки.
+     *
+     * @param string|array $query
+     * @return array параметры без меток
+     */
+    public static function clearUtm($query) : array
+    {
+        $query = self::parseQuery($query);
+        self::extractUtm($query);
 
         return $query;
     }
@@ -512,22 +547,31 @@ class Url extends \yii\helpers\Url
      */
     public static function redirectIfNeed(array $url) : void
     {
-        // добавляем в URL utm- и roistat- параметры
-        foreach (Yii::$app->request->queryParams as $name => $val) {
-            if (preg_match('~^(utm_|roistat)~', (string)$name)) {
-                $url[$name] = $val;
-            }
+        // канонический url
+        $canonicalUrl = self::to(self::clearUtm($url));
+
+        // пересобираем текущий url запроса
+        $currentUrl = '/' . ltrim(Yii::$app->request->pathInfo, '/');
+
+        // параметры запроса (нельзя брать в $_GET или в queryParams, потому как там добавлены параметры акции)
+        $queryParams = $_SERVER['QUERY_STRING'];
+
+        // добавляем параметры запроса без UTM
+        $extra = self::extractUtm($queryParams);
+        if (! empty($queryParams)) {
+            $currentUrl .= '?' . self::buildQuery($queryParams);
         }
 
-        $canonicalUrl = static::to($url);
+        // сравниваем получившиеся URL и переадресуем
+        if ($currentUrl !== $canonicalUrl) {
+            // добавляем utm-метки каноническому url
+            $canonicalUrl = self::to(array_merge($url, $extra), true);
 
-        if (Yii::$app->request->url !== $canonicalUrl) {
             try {
-                Yii::$app->end(0,
-                    Yii::$app->response->redirect(static::to($canonicalUrl, true), 301)
-                );
+                Yii::$app->end(0, Yii::$app->response->redirect($canonicalUrl));
             } catch (ExitException $ex) {
-                throw new RuntimeException($ex->getMessage(), $ex->getCode(), $ex);
+                Yii::error($ex, __METHOD__);
+                exit;
             }
         }
     }
