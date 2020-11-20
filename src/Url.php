@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 19.11.20 07:56:03
+ * @version 20.11.20 15:28:50
  */
 
 declare(strict_types = 1);
@@ -217,18 +217,18 @@ class Url extends \yii\helpers\Url
     }
 
     /**
-     * Выделяет из параметров utm- и roistat-метки.
+     * Выделяет из параметров utm- gclid, fbclid и roistat-метки.
      *
      * @param string|array $query параметры запроса
      * @return array метки
      */
-    public static function extractUtm(&$query) : array
+    public static function extractTracking(&$query) : array
     {
         $query = self::parseQuery($query);
         $extra = [];
 
         foreach ($query as $key => $val) {
-            if (preg_match('~^(utm_|roistat)~ui', (string)$key)) {
+            if (preg_match('~^(utm_|roistat|gclid|fbclid)~ui', (string)$key)) {
                 $extra[$key] = $val;
                 unset($query[$key]);
             }
@@ -238,15 +238,15 @@ class Url extends \yii\helpers\Url
     }
 
     /**
-     * Удаляет из параметров utm- и roistat-метки.
+     * Удаляет из параметров utm-, gclid, fbclid и roistat-метки.
      *
      * @param string|array $query
      * @return array параметры без меток
      */
-    public static function clearUtm($query) : array
+    public static function clearTracking($query) : array
     {
         $query = self::parseQuery($query);
-        self::extractUtm($query);
+        self::extractTracking($query);
 
         return $query;
     }
@@ -548,7 +548,7 @@ class Url extends \yii\helpers\Url
     public static function redirectIfNeed(array $url) : void
     {
         // канонический url
-        $canonicalUrl = self::to(self::clearUtm($url));
+        $canonicalUrl = self::to(self::clearTracking($url));
 
         // пересобираем текущий url запроса
         $currentUrl = '/' . ltrim(Yii::$app->request->pathInfo, '/');
@@ -557,7 +557,7 @@ class Url extends \yii\helpers\Url
         $queryParams = $_SERVER['QUERY_STRING'];
 
         // добавляем параметры запроса без UTM
-        $extra = self::extractUtm($queryParams);
+        $extra = self::extractTracking($queryParams);
         if (! empty($queryParams)) {
             $currentUrl .= '?' . self::buildQuery($queryParams);
         }
