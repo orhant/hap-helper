@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 29.08.20 03:51:13
+ * @version 14.12.20 23:56:46
  */
 
 declare(strict_types = 1);
@@ -22,28 +22,29 @@ class ArrayHelper extends \yii\helpers\ArrayHelper
      * В отличие от оригинала поддерживает комплексный ключ.
      *
      * @param array $array исходный массив
-     * @param string|array $path ключ для удаления. Может быть строкой с путем ключа, разделенным "." или массивом.
+     * @param string|array $key ключ для удаления. Может быть строкой с путем ключа, разделенным "." или массивом.
      * @param mixed $default
      * @return mixed
      * @noinspection PhpMissingParamTypeInspection
      */
-    public static function remove(&$array, $path, $default = null)
+    public static function remove(&$array, $key, $default = null)
     {
-        if (! is_array($path)) {
-            $path = explode('.', $path);
+        if (! is_array($key)) {
+            $key = explode('.', $key);
         }
 
-        while (count($path) > 1) {
-            $key = array_shift($path);
-            if (! isset($array[$key]) || ! is_array($array[$key])) {
+        while (count($key) > 1) {
+            $index = array_shift($key);
+            if (! isset($array[$index]) || ! is_array($array[$index])) {
                 return $default;
             }
-            $array = &$array[$key];
+
+            $array = &$array[$index];
         }
 
-        $key = array_shift($path);
-        $ret = $array[$key] ?? $default;
-        unset($array[$key]);
+        $index = array_shift($key);
+        $ret = $array[$index] ?? $default;
+        unset($array[$index]);
 
         return $ret;
     }

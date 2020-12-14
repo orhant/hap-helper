@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 13.10.20 14:19:00
+ * @version 14.12.20 23:57:00
  */
 
 declare(strict_types = 1);
@@ -43,15 +43,15 @@ class Html extends \yii\bootstrap4\Html
     /**
      * Де-экранирует из html.
      *
-     * @param string|float|null $str
+     * @param string|float|null $content
      * @return string
      */
-    public static function decode($str) : string
+    public static function decode($content) : string
     {
-        $str = (string)$str;
+        $content = (string)$content;
 
-        return $str === '' ? '' :
-            html_entity_decode(html_entity_decode($str, ENT_QUOTES | ENT_HTML5, 'utf-8'));
+        return $content === '' ? '' :
+            html_entity_decode(html_entity_decode($content, ENT_QUOTES | ENT_HTML5, 'utf-8'));
     }
 
     /**

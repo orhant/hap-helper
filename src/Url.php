@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 20.11.20 15:28:50
+ * @version 14.12.20 23:54:59
  */
 
 declare(strict_types = 1);
@@ -25,6 +25,7 @@ use function implode;
 use function is_array;
 use function is_object;
 use function ksort;
+use function ltrim;
 use function mb_strtolower;
 use function parse_str;
 use function parse_url;
@@ -39,6 +40,7 @@ use function urlencode;
 
 use const FILTER_VALIDATE_INT;
 use const PHP_URL_HOST;
+use const PHP_URL_PATH;
 use const PREG_SPLIT_NO_EMPTY;
 
 /**
@@ -136,7 +138,6 @@ class Url extends \yii\helpers\Url
             }
 
             if (is_array($v) || is_object($v)) {
-                /** @noinspection UnnecessaryCastingInspection */
                 $v = (array)$v;
                 if ($v === []) {
                     $parts[] = $key . '[]';
@@ -341,7 +342,7 @@ class Url extends \yii\helpers\Url
             return '';
         }
 
-        return idn_to_ascii($domain, IDNA_DEFAULT, INTL_IDNA_VARIANT_UTS46);
+        return idn_to_ascii($domain, IDNA_DEFAULT);
     }
 
     /**
@@ -483,7 +484,7 @@ class Url extends \yii\helpers\Url
             return '';
         }
 
-        return idn_to_utf8($domain, IDNA_DEFAULT, INTL_IDNA_VARIANT_UTS46);
+        return idn_to_utf8($domain, IDNA_DEFAULT);
     }
 
     /**
@@ -550,8 +551,8 @@ class Url extends \yii\helpers\Url
         // канонический url
         $canonicalUrl = self::to(self::clearTracking($url));
 
-        // пересобираем текущий url запроса
-        $currentUrl = '/' . ltrim(Yii::$app->request->pathInfo, '/');
+        // пересобираем текущий url запроса (не используем Request::pathInfo из-за глюка с urlencode)
+        $currentUrl = '/' . ltrim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
 
         // параметры запроса (нельзя брать в $_GET или в queryParams, потому как там добавлены параметры акции)
         $queryParams = $_SERVER['QUERY_STRING'];
