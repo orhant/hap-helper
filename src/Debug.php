@@ -1,16 +1,19 @@
 <?php
-/**
+/*
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 27.07.20 04:59:41
+ * @version 19.12.20 18:05:28
  */
 
 /** @noinspection ForgottenDebugOutputInspection */
 declare(strict_types = 1);
 namespace dicr\helper;
 
+use function debug_backtrace;
 use function var_dump;
+
+use const DEBUG_BACKTRACE_IGNORE_ARGS;
 use const YII_DEBUG;
 
 /**
@@ -49,6 +52,9 @@ class Debug
             foreach ($vars as $var) {
                 var_dump($var);
             }
+
+            $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1);
+            echo '░' . $trace[0]['file'] . ':' . $trace[0]['line'] . "░\n";
 
             exit;
         }
