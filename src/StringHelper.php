@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 27.07.20 05:48:20
+ * @version 25.12.20 04:16:34
  */
 
 declare(strict_types = 1);
@@ -23,6 +23,7 @@ class StringHelper extends \yii\helpers\StringHelper
      * @param $string
      * @param string $encoding
      * @return string
+     * @noinspection PhpMethodNamingConventionInspection
      */
     public static function mb_lcfirst($string, $encoding = 'UTF-8') : string
     {

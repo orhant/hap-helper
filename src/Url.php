@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 14.12.20 23:54:59
+ * @version 25.12.20 04:14:46
  */
 
 declare(strict_types = 1);
@@ -220,16 +220,17 @@ class Url extends \yii\helpers\Url
     /**
      * Выделяет из параметров utm- gclid, fbclid и roistat-метки.
      *
-     * @param string|array $query параметры запроса
-     * @return array метки
+     * @param array $query параметры, из которых удаляется
+     * @return array удаленные параметры
      */
-    public static function extractTracking(&$query) : array
+    public static function extractTracking(array &$query) : array
     {
-        $query = self::parseQuery($query);
+        $query = static::parseQuery($query);
         $extra = [];
 
         foreach ($query as $key => $val) {
-            if (preg_match('~^(utm_|roistat|gclid|fbclid)~ui', (string)$key)) {
+            /** @noinspection SpellCheckingInspection */
+            if (preg_match('~^(utm_|roistat|(g|y|fb)clid)~ui', (string)$key)) {
                 $extra[$key] = $val;
                 unset($query[$key]);
             }
@@ -239,14 +240,33 @@ class Url extends \yii\helpers\Url
     }
 
     /**
-     * Удаляет из параметров utm-, gclid, fbclid и roistat-метки.
+     * Выделяет общие (не ЧПУ) параметры
      *
-     * @param string|array $query
-     * @return array параметры без меток
+     * @param array $query параметры, из которых удаляется
+     * @return array выделенные параметры
      */
-    public static function clearTracking($query) : array
+    public static function extractCommonParams(array &$query) : array
     {
-        $query = self::parseQuery($query);
+        $extra = static::extractTracking($query);
+
+        foreach ($query as $key => $val) {
+            if (preg_match('~^(sort|page|limit)$~ui', (string)$key)) {
+                $extra[$key] = $val;
+                unset($query[$key]);
+            }
+        }
+
+        return $extra;
+    }
+
+    /**
+     * Удаляет общие (не ЧПУ) параметры.
+     *
+     * @param array $query
+     * @return array
+     */
+    public static function removeCommonPrams(array $query) : array
+    {
         self::extractTracking($query);
 
         return $query;
@@ -549,7 +569,7 @@ class Url extends \yii\helpers\Url
     public static function redirectIfNeed(array $url) : void
     {
         // канонический url
-        $canonicalUrl = self::to(self::clearTracking($url));
+        $canonicalUrl = static::to(static::removeCommonPrams($url));
 
         // пересобираем текущий url запроса (не используем Request::pathInfo из-за глюка с urlencode)
         $currentUrl = '/' . ltrim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
@@ -558,7 +578,7 @@ class Url extends \yii\helpers\Url
         $queryParams = $_SERVER['QUERY_STRING'];
 
         // добавляем параметры запроса без UTM
-        $extra = self::extractTracking($queryParams);
+        $extra = static::extractCommonParams($queryParams);
         if (! empty($queryParams)) {
             $currentUrl .= '?' . self::buildQuery($queryParams);
         }
