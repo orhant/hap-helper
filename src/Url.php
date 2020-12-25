@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 25.12.20 05:16:52
+ * @version 25.12.20 05:31:07
  */
 
 declare(strict_types = 1);
@@ -223,7 +223,7 @@ class Url extends \yii\helpers\Url
      * @param array $query параметры, из которых удаляется
      * @return array удаленные параметры
      */
-    public static function extractTracking(array &$query) : array
+    public static function extractTrackingParams(array &$query) : array
     {
         $query = static::parseQuery($query);
         $extra = [];
@@ -240,6 +240,19 @@ class Url extends \yii\helpers\Url
     }
 
     /**
+     * Удаляет tracking-параметры известных систем.
+     *
+     * @param array $query
+     * @return array
+     */
+    public static function removeTrackingParams(array $query) : array
+    {
+        static::extractTrackingParams($query);
+
+        return $query;
+    }
+
+    /**
      * Выделяет общие (не ЧПУ) параметры
      *
      * @param array $query параметры, из которых удаляется
@@ -247,7 +260,7 @@ class Url extends \yii\helpers\Url
      */
     public static function extractCommonParams(array &$query) : array
     {
-        $extra = static::extractTracking($query);
+        $extra = static::extractTrackingParams($query);
 
         foreach ($query as $key => $val) {
             if (preg_match('~^(sort|page|limit)$~ui', (string)$key)) {
@@ -265,7 +278,7 @@ class Url extends \yii\helpers\Url
      * @param array $query
      * @return array
      */
-    public static function removeCommonPrams(array &$query) : array
+    public static function removeCommonPrams(array $query) : array
     {
         static::extractCommonParams($query);
 
@@ -569,7 +582,7 @@ class Url extends \yii\helpers\Url
     public static function redirectIfNeed(array $url) : void
     {
         // канонический url
-        $canonicalUrl = static::to(static::removeCommonPrams($url));
+        $redirectUrl = static::to(static::removeCommonPrams($url));
 
         // пересобираем текущий url запроса (не используем Request::pathInfo из-за глюка с urlencode)
         $currentUrl = '/' . ltrim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
@@ -584,12 +597,12 @@ class Url extends \yii\helpers\Url
         }
 
         // сравниваем получившиеся URL и переадресуем
-        if ($currentUrl !== $canonicalUrl) {
+        if ($currentUrl !== $redirectUrl) {
             // добавляем utm-метки каноническому url
-            $canonicalUrl = static::to(array_merge($url, $extra), true);
+            $redirectUrl = static::to(array_merge($url, $extra), true);
 
             try {
-                Yii::$app->end(0, Yii::$app->response->redirect($canonicalUrl));
+                Yii::$app->end(0, Yii::$app->response->redirect($redirectUrl));
             } catch (ExitException $ex) {
                 Yii::error($ex, __METHOD__);
                 exit;
