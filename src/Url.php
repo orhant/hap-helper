@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 25.12.20 04:14:46
+ * @version 25.12.20 05:08:31
  */
 
 declare(strict_types = 1);
@@ -267,7 +267,7 @@ class Url extends \yii\helpers\Url
      */
     public static function removeCommonPrams(array $query) : array
     {
-        self::extractTracking($query);
+        static::extractTracking($query);
 
         return $query;
     }
@@ -575,18 +575,18 @@ class Url extends \yii\helpers\Url
         $currentUrl = '/' . ltrim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
 
         // параметры запроса (нельзя брать в $_GET или в queryParams, потому как там добавлены параметры акции)
-        $queryParams = $_SERVER['QUERY_STRING'];
+        $queryParams = static::parseQuery($_SERVER['QUERY_STRING']);
 
         // добавляем параметры запроса без UTM
         $extra = static::extractCommonParams($queryParams);
         if (! empty($queryParams)) {
-            $currentUrl .= '?' . self::buildQuery($queryParams);
+            $currentUrl .= '?' . static::buildQuery($queryParams);
         }
 
         // сравниваем получившиеся URL и переадресуем
         if ($currentUrl !== $canonicalUrl) {
             // добавляем utm-метки каноническому url
-            $canonicalUrl = self::to(array_merge($url, $extra), true);
+            $canonicalUrl = static::to(array_merge($url, $extra), true);
 
             try {
                 Yii::$app->end(0, Yii::$app->response->redirect($canonicalUrl));
