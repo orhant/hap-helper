@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 25.12.20 05:31:07
+ * @version 25.12.20 05:32:32
  */
 
 declare(strict_types = 1);
@@ -582,7 +582,7 @@ class Url extends \yii\helpers\Url
     public static function redirectIfNeed(array $url) : void
     {
         // канонический url
-        $redirectUrl = static::to(static::removeCommonPrams($url));
+        $redirectUrl = static::to(static::removeTrackingParams($url));
 
         // пересобираем текущий url запроса (не используем Request::pathInfo из-за глюка с urlencode)
         $currentUrl = '/' . ltrim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
@@ -591,7 +591,7 @@ class Url extends \yii\helpers\Url
         $queryParams = static::parseQuery($_SERVER['QUERY_STRING']);
 
         // добавляем параметры запроса без UTM
-        $extra = static::extractCommonParams($queryParams);
+        $extra = static::removeTrackingParams($queryParams);
         if (! empty($queryParams)) {
             $currentUrl .= '?' . static::buildQuery($queryParams);
         }
