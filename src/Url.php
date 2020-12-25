@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 25.12.20 05:08:31
+ * @version 25.12.20 05:16:52
  */
 
 declare(strict_types = 1);
@@ -265,9 +265,9 @@ class Url extends \yii\helpers\Url
      * @param array $query
      * @return array
      */
-    public static function removeCommonPrams(array $query) : array
+    public static function removeCommonPrams(array &$query) : array
     {
-        static::extractTracking($query);
+        static::extractCommonParams($query);
 
         return $query;
     }
