@@ -3,7 +3,7 @@
  * @copyright 2019-2020 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 25.12.20 05:40:33
+ * @version 26.12.20 07:30:05
  */
 
 declare(strict_types = 1);
@@ -21,6 +21,7 @@ use function array_values;
 use function count;
 use function explode;
 use function filter_var;
+use function http_build_query;
 use function implode;
 use function is_array;
 use function is_object;
@@ -592,9 +593,9 @@ class Url extends \yii\helpers\Url
 
         // добавляем параметры запроса без UTM
         $extra = static::extractTrackingParams($queryParams);
-
         if (! empty($queryParams)) {
-            $currentUrl .= '?' . static::buildQuery($queryParams);
+            // используем http_build_query, также как и Url::to
+            $currentUrl .= '?' . http_build_query($queryParams);
         }
 
         // сравниваем получившиеся URL и переадресуем
