@@ -1,9 +1,9 @@
 <?php
 /*
- * @copyright 2019-2020 Dicr http://dicr.org
+ * @copyright 2019-2021 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 13.10.20 14:19:03
+ * @version 22.01.21 16:19:53
  */
 
 declare(strict_types = 1);
@@ -72,12 +72,8 @@ class Filter
     {
         $ids = (array)($ids ?: []);
 
-        $ids = array_filter($ids, static function ($id) : bool {
-            return is_numeric($id) && $id > 0;
-        });
-
+        $ids = array_filter($ids, static fn($id): bool => is_numeric($id) && $id > 0);
         $ids = array_map('\intval', $ids);
-
         $ids = array_unique($ids);
 
         sort($ids);

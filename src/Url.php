@@ -1,9 +1,9 @@
 <?php
 /*
- * @copyright 2019-2020 Dicr http://dicr.org
+ * @copyright 2019-2021 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 26.12.20 07:30:05
+ * @version 22.01.21 16:19:18
  */
 
 declare(strict_types = 1);
@@ -55,7 +55,7 @@ class Url extends \yii\helpers\Url
      * @param string|array $query
      * @return array параметры в виде массива
      */
-    public static function parseQuery($query) : array
+    public static function parseQuery($query): array
     {
         if ($query === null || $query === '' || $query === []) {
             $query = [];
@@ -80,10 +80,10 @@ class Url extends \yii\helpers\Url
      * @param string $parentKey
      * @return string[]
      */
-    private static function internalBuildQuery(array $query, string $parentKey = '') : array
+    private static function internalBuildQuery(array $query, string $parentKey = ''): array
     {
         // удаляет из параметров некорректные ключи и null-значения
-        $filterParams = static function ($params) use (&$filterParams) : array {
+        $filterParams = static function($params) use (&$filterParams): array {
             $filtered = [];
 
             // преобразуем query, удаляя некорректные ключи и null-значения
@@ -111,7 +111,7 @@ class Url extends \yii\helpers\Url
         };
 
         // проверяет является ли массив индексным списком параметров
-        $isIndexed = static function ($params) : bool {
+        $isIndexed = static function($params): bool {
             $params = (array)$params;
             if (empty($params)) {
                 return true;
@@ -162,7 +162,7 @@ class Url extends \yii\helpers\Url
      * @param array|object|string $query
      * @return string
      */
-    public static function buildQuery($query) : string
+    public static function buildQuery($query): string
     {
         if ($query === null || $query === '' || $query === []) {
             $query = '';
@@ -181,7 +181,7 @@ class Url extends \yii\helpers\Url
      * @param array|string $query
      * @return array
      */
-    public static function filterQuery($query) : array
+    public static function filterQuery($query): array
     {
         $query = static::parseQuery($query);
 
@@ -205,7 +205,7 @@ class Url extends \yii\helpers\Url
      * @param array|string $query
      * @return array
      */
-    public static function normalizeQuery($query) : array
+    public static function normalizeQuery($query): array
     {
         $query = static::parseQuery($query);
 
@@ -224,7 +224,7 @@ class Url extends \yii\helpers\Url
      * @param array $query параметры, из которых удаляется
      * @return array удаленные параметры
      */
-    public static function extractTrackingParams(array &$query) : array
+    public static function extractTrackingParams(array &$query): array
     {
         $query = static::parseQuery($query);
         $extra = [];
@@ -246,7 +246,7 @@ class Url extends \yii\helpers\Url
      * @param array $query
      * @return array
      */
-    public static function removeTrackingParams(array $query) : array
+    public static function removeTrackingParams(array $query): array
     {
         static::extractTrackingParams($query);
 
@@ -259,7 +259,7 @@ class Url extends \yii\helpers\Url
      * @param array $query параметры, из которых удаляется
      * @return array выделенные параметры
      */
-    public static function extractCommonParams(array &$query) : array
+    public static function extractCommonParams(array &$query): array
     {
         $extra = static::extractTrackingParams($query);
 
@@ -279,7 +279,7 @@ class Url extends \yii\helpers\Url
      * @param array $query
      * @return array
      */
-    public static function removeCommonPrams(array $query) : array
+    public static function removeCommonPrams(array $query): array
     {
         static::extractCommonParams($query);
 
@@ -296,7 +296,7 @@ class Url extends \yii\helpers\Url
      * - bool $noCase - игнорировать регистр при сравнении значений
      * @return array $query1 - $query2
      */
-    public static function diffQuery($query1, $query2, array $options = []) : array
+    public static function diffQuery($query1, $query2, array $options = []): array
     {
         // если уменьшаемое пустое, то результат пустой
         $query1 = static::parseQuery($query1);
@@ -317,11 +317,12 @@ class Url extends \yii\helpers\Url
         // сравнение с регистром или без
         $noCase = ! empty($options['noCase']);
 
-        $diff = array_udiff($query1, $query2, static function ($v1, $v2) use ($noCase) : int {
-            return $noCase ?
-                mb_strtolower((string)$v1) <=> mb_strtolower((string)$v2) :
-                (string)$v1 <=> (string)$v2;
-        });
+        $diff = array_udiff(
+            $query1,
+            $query2,
+            static fn($v1, $v2): int => $noCase ?
+                mb_strtolower((string)$v1) <=> mb_strtolower((string)$v2) : (string)$v1 <=> (string)$v2
+        );
 
         // конвертируем в обычный формат и возвращаем
         return static::unflatQuery($diff);
@@ -333,7 +334,7 @@ class Url extends \yii\helpers\Url
      * @param array|string $query парамеры запроса
      * @return string[] одномерный массив параметров в виде ["id=1", "a[]=2", "b[3][4]=5"]
      */
-    public static function flatQuery($query) : array
+    public static function flatQuery($query): array
     {
         if ($query === null || $query === '' || $query === []) {
             return [];
@@ -353,7 +354,7 @@ class Url extends \yii\helpers\Url
      * @param array $flatQuery
      * @return array
      */
-    public static function unflatQuery(array $flatQuery) : array
+    public static function unflatQuery(array $flatQuery): array
     {
         if ($flatQuery === null || $flatQuery === '' || $flatQuery === []) {
             return [];
@@ -369,7 +370,7 @@ class Url extends \yii\helpers\Url
      * @param string $domain
      * @return string
      */
-    public static function idnToAscii(string $domain) : string
+    public static function idnToAscii(string $domain): string
     {
         $domain = trim($domain);
         if ($domain === '') {
@@ -386,7 +387,7 @@ class Url extends \yii\helpers\Url
      * @param string $path
      * @return string
      */
-    public static function normalizePath(string $path) : string
+    public static function normalizePath(string $path): string
     {
         $path = trim($path);
         if ($path === '') {
@@ -433,7 +434,7 @@ class Url extends \yii\helpers\Url
      * @param string $dom2 домен
      * @return bool true, если $dom1 == $dom2 или один из них является поддоменом другого
      */
-    public static function isDomainsRelated(string $dom1, string $dom2) : bool
+    public static function isDomainsRelated(string $dom1, string $dom2): bool
     {
         $dom1 = static::normalizeHost($dom1);
         if (empty($dom1)) {
@@ -474,7 +475,7 @@ class Url extends \yii\helpers\Url
      * @return string
      * @throws InvalidArgumentException
      */
-    public static function normalizeHost(string $name) : string
+    public static function normalizeHost(string $name): string
     {
         // убираем все пробельные символы
         $name = preg_replace('~[\s\h\t\v\r\n]+~uim', '', trim($name));
@@ -511,7 +512,7 @@ class Url extends \yii\helpers\Url
      * @param string $domain
      * @return string
      */
-    public static function idnToUtf8(string $domain) : string
+    public static function idnToUtf8(string $domain): string
     {
         $domain = trim($domain);
         if ($domain === '') {
@@ -529,7 +530,7 @@ class Url extends \yii\helpers\Url
      * @return bool
      * @throws InvalidArgumentException
      */
-    public static function isSubdomain(string $domain, string $parent) : bool
+    public static function isSubdomain(string $domain, string $parent): bool
     {
         $domain = static::normalizeHost($domain);
         if (empty($domain)) {
@@ -555,7 +556,7 @@ class Url extends \yii\helpers\Url
      * @param string $parent родительский
      * @return string|null string - имя поддомена, null - если $domain не является поддоменом родительского
      */
-    public static function getSubdomain(string $domain, string $parent) : ?string
+    public static function getSubdomain(string $domain, string $parent): ?string
     {
         $domain = static::normalizeHost($domain);
         if (empty($domain)) {
@@ -580,7 +581,7 @@ class Url extends \yii\helpers\Url
      *
      * @param array $url
      */
-    public static function redirectIfNeed(array $url) : void
+    public static function redirectIfNeed(array $url): void
     {
         // канонический url
         $needUrl = static::to(static::removeTrackingParams($url));

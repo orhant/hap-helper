@@ -3,7 +3,7 @@
  * @copyright 2019-2021 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 05.01.21 19:26:57
+ * @version 22.01.21 16:19:53
  */
 
 declare(strict_types = 1);
@@ -480,24 +480,12 @@ class Inflector extends \yii\helpers\Inflector
 
         // поддерживаемые фильтры
         $filters = [
-            'trim' => static function (string $string) : string {
-                return trim($string);
-            },
-            'esc' => static function (string $string) : string {
-                return Html::esc($string);
-            },
-            'lower' => static function (string $string) : string {
-                return mb_strtolower($string);
-            },
-            'upper' => static function (string $string) : string {
-                return mb_strtoupper($string);
-            },
-            'ucfirst' => static function (string $string) : string {
-                return StringHelper::mb_ucfirst($string);
-            },
-            'lcfirst' => static function (string $string) : string {
-                return StringHelper::mb_lcfirst($string);
-            }
+            'trim' => static fn(string $string): string => trim($string),
+            'esc' => static fn(string $string): string => Html::esc($string),
+            'lower' => static fn(string $string): string => mb_strtolower($string),
+            'upper' => static fn(string $string): string => mb_strtoupper($string),
+            'ucfirst' => static fn(string $string): string => StringHelper::mb_ucfirst($string),
+            'lcfirst' => static fn(string $string): string => StringHelper::mb_lcfirst($string)
         ];
 
         // регулярное выражение

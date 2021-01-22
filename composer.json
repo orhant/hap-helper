@@ -35,7 +35,7 @@
         {"type": "composer", "url": "https://asset-packagist.org"}
     ],
     "require": {
-        "php": "~7.3",
+        "php": "~7.4 || ~8.0.1",
         "ext-mbstring": "*",
         "ext-intl": "*",
         "yiisoft/yii2": "~2.0",

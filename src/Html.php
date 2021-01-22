@@ -1,9 +1,9 @@
 <?php
 /*
- * @copyright 2019-2020 Dicr http://dicr.org
+ * @copyright 2019-2021 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 14.12.20 23:57:00
+ * @version 22.01.21 16:18:06
  */
 
 declare(strict_types = 1);
@@ -32,7 +32,7 @@ class Html extends \yii\bootstrap4\Html
      * @param string|int|float|null $str
      * @return string
      */
-    public static function esc($str) : string
+    public static function esc($str): string
     {
         $str = (string)$str;
 
@@ -46,7 +46,7 @@ class Html extends \yii\bootstrap4\Html
      * @param string|float|null $content
      * @return string
      */
-    public static function decode($content) : string
+    public static function decode($content): string
     {
         $content = (string)$content;
 
@@ -60,7 +60,7 @@ class Html extends \yii\bootstrap4\Html
      * @param string|float|null $html
      * @return string plain-текст
      */
-    public static function toText($html) : string
+    public static function toText($html): string
     {
         $html = (string)$html;
         if ($html === '') {
@@ -85,7 +85,7 @@ class Html extends \yii\bootstrap4\Html
      * @param string|float|null $html
      * @return bool
      */
-    public static function hasText($html) : bool
+    public static function hasText($html): bool
     {
         $html = (string)$html;
 
@@ -99,7 +99,7 @@ class Html extends \yii\bootstrap4\Html
      * @param string[] $values значения key => content
      * @return string
      */
-    public static function metas(string $type, array $values) : string
+    public static function metas(string $type, array $values): string
     {
         ob_start();
 
@@ -119,7 +119,7 @@ class Html extends \yii\bootstrap4\Html
      * @param array $options
      * @return string
      */
-    public static function meta(array $options) : string
+    public static function meta(array $options): string
     {
         return static::tag('meta', '', $options);
     }
@@ -131,7 +131,7 @@ class Html extends \yii\bootstrap4\Html
      * @param array $options
      * @return string
      */
-    public static function cssLink(string $href, array $options = []) : string
+    public static function cssLink(string $href, array $options = []): string
     {
         if (! isset($options['rel'])) {
             $options['rel'] = 'stylesheet';
@@ -146,7 +146,7 @@ class Html extends \yii\bootstrap4\Html
      * @param array $options
      * @return string
      */
-    public static function link(array $options) : string
+    public static function link(array $options): string
     {
         return static::tag('link', '', $options);
     }
@@ -157,7 +157,7 @@ class Html extends \yii\bootstrap4\Html
      * @param string[] $links ассоциативный массив rel => href
      * @return string
      */
-    public static function links(array $links) : string
+    public static function links(array $links): string
     {
         ob_start();
 
@@ -175,7 +175,7 @@ class Html extends \yii\bootstrap4\Html
      * @param array $options
      * @return string
      */
-    public static function jsLink(string $src, array $options = []) : string
+    public static function jsLink(string $src, array $options = []): string
     {
         return static::tag('script', '', ['src' => $src] + $options);
     }
@@ -186,11 +186,11 @@ class Html extends \yii\bootstrap4\Html
      * @param array $schema
      * @return string
      */
-    public static function schema(array $schema) : string
+    public static function schema(array $schema): string
     {
-        $schema = array_filter($schema, static function ($val) : bool {
-            return $val !== null && $val !== '' && $val !== [];
-        });
+        $schema = array_filter(
+            $schema, static fn($val): bool => $val !== null && $val !== '' && $val !== []
+        );
 
         return ! empty($schema) ? static::tag('script', Json::encode($schema), [
             'type' => 'application/ld+json'
@@ -204,7 +204,7 @@ class Html extends \yii\bootstrap4\Html
      * @param array $options
      * @return string
      */
-    public static function flag($value, array $options = []) : string
+    public static function flag($value, array $options = []): string
     {
         static::addCssClass($options, [$value ? 'fas' : 'far', 'fa-star']);
 
@@ -219,7 +219,7 @@ class Html extends \yii\bootstrap4\Html
      * @param array $options
      * @return string
      */
-    public static function activeFlag(Model $model, string $attribute, array $options = []) : string
+    public static function activeFlag(Model $model, string $attribute, array $options = []): string
     {
         return static::flag($model->{$attribute}, $options);
     }
@@ -231,7 +231,7 @@ class Html extends \yii\bootstrap4\Html
      * @param array $options
      * @return string
      */
-    public static function fa(string $name, array $options = []) : string
+    public static function fa(string $name, array $options = []): string
     {
         static::addCssClass($options, 'fa fa-' . $name);
 
@@ -245,7 +245,7 @@ class Html extends \yii\bootstrap4\Html
      * @param array $options
      * @return string
      */
-    public static function fas(string $name, array $options = []) : string
+    public static function fas(string $name, array $options = []): string
     {
         static::addCssClass($options, 'fas fa-' . $name);
 
@@ -259,7 +259,7 @@ class Html extends \yii\bootstrap4\Html
      * @param array $options
      * @return string
      */
-    public static function far(string $name, array $options = []) : string
+    public static function far(string $name, array $options = []): string
     {
         static::addCssClass($options, 'far fa-' . $name);
 
@@ -274,7 +274,7 @@ class Html extends \yii\bootstrap4\Html
      * @param array $clientOptions опции плагина
      * @return string html
      */
-    public static function plugin(string $target, string $name, array $clientOptions = []) : string
+    public static function plugin(string $target, string $name, array $clientOptions = []): string
     {
         return static::script('$(function() {
             $("' . $target . '").' . $name . '(' . Json::encode($clientOptions) . ');
@@ -289,7 +289,7 @@ class Html extends \yii\bootstrap4\Html
      * @param array $options
      * @return string
      */
-    public static function xml(string $name, $content = '', array $options = []) : string
+    public static function xml(string $name, $content = '', array $options = []): string
     {
         $content = (string)$content;
 
@@ -305,7 +305,7 @@ class Html extends \yii\bootstrap4\Html
      * @param array $options
      * @return string
      */
-    public static function tel(string $text, ?string $tel = null, array $options = []) : string
+    public static function tel(string $text, ?string $tel = null, array $options = []): string
     {
         return static::a(
             static::esc($text),
@@ -317,7 +317,7 @@ class Html extends \yii\bootstrap4\Html
     /**
      * @inheritDoc
      */
-    public static function mailto($text, $email = null, $options = []) : string
+    public static function mailto($text, $email = null, $options = []): string
     {
         return static::a(
             static::esc($text),
@@ -334,7 +334,7 @@ class Html extends \yii\bootstrap4\Html
      * @param ?array $url
      * @return string
      */
-    public static function request(?array $url = null) : string
+    public static function request(?array $url = null): string
     {
         $params = Url::buildQuery(Url::normalizeQuery(Url::filterQuery(
             [0 => null] + ($url ?? Yii::$app->request->queryParams)
@@ -351,7 +351,7 @@ class Html extends \yii\bootstrap4\Html
      * @param string|array|null $url
      * @return string
      */
-    public static function canonical($url = null) : string
+    public static function canonical($url = null): string
     {
         if ($url === null) {
             $url = Url::normalizeQuery(Url::filterQuery(
