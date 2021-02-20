@@ -1,9 +1,9 @@
 <?php
 /*
- * @copyright 2019-2020 Dicr http://dicr.org
+ * @copyright 2019-2021 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 13.10.20 14:15:43
+ * @version 20.02.21 21:35:48
  */
 
 declare(strict_types = 1);
@@ -57,6 +57,7 @@ class PathInfoTest extends TestCase
      * Test UrlInfo::normalizePath
      *
      * @noinspection PhpMethodMayBeStaticInspection
+     * @noinspection PhpUnitMissingTargetForTestInspection
      */
     public function testNormalizePath() : void
     {

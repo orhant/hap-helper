@@ -3,7 +3,7 @@
  * @copyright 2019-2021 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 22.01.21 16:18:06
+ * @version 20.02.21 21:34:45
  */
 
 declare(strict_types = 1);
@@ -90,6 +90,18 @@ class Html extends \yii\bootstrap4\Html
         $html = (string)$html;
 
         return $html !== '' && static::toText($html) !== '';
+    }
+
+    /**
+     * Элемент div
+     *
+     * @param string $content
+     * @param array $options
+     * @return string
+     */
+    public static function div(string $content, array $options = []): string
+    {
+        return static::tag('div', $content, $options);
     }
 
     /**
