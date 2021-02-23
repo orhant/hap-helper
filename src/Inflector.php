@@ -3,7 +3,7 @@
  * @copyright 2019-2021 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 22.01.21 16:19:53
+ * @version 23.02.21 11:49:36
  */
 
 declare(strict_types = 1);
@@ -77,7 +77,7 @@ class Inflector extends \yii\helpers\Inflector
      * @return string
      * @noinspection PhpMissingParamTypeInspection
      */
-    public static function slug($string, $replacement = '-', $lowercase = true) : string
+    public static function slug($string, $replacement = '-', $lowercase = true): string
     {
         // очищаем специальные символы и пробелы
         $string = trim(preg_replace('~[[:cntrl:]]|[\x00-\x1F\x7F\xA0\s\h\t\v\r\n]+~uim', ' ', $string));
@@ -121,7 +121,7 @@ class Inflector extends \yii\helpers\Inflector
      * @param string $five форма значения 5, например: "товаров"
      * @return string форма для количества $count
      */
-    public static function numDeclension($count, string $one, string $two, string $five) : string
+    public static function numDeclension($count, string $one, string $two, string $five): string
     {
         $count = (int)$count;
         $word = null;
@@ -144,7 +144,7 @@ class Inflector extends \yii\helpers\Inflector
      * @param int|string $count
      * @return string
      */
-    public static function numProds($count) : string
+    public static function numProds($count): string
     {
         return static::numDeclension($count,
             Yii::t('dicr/helper', 'товар'),
@@ -159,7 +159,7 @@ class Inflector extends \yii\helpers\Inflector
      * @param int|string $count количество
      * @return string форма слова
      */
-    public static function numModels($count) : string
+    public static function numModels($count): string
     {
         return static::numDeclension($count,
             Yii::t('dicr/helper', 'модель'),
@@ -174,7 +174,7 @@ class Inflector extends \yii\helpers\Inflector
      * @param $count
      * @return string
      */
-    public static function numReviews($count) : string
+    public static function numReviews($count): string
     {
         return static::numDeclension($count,
             Yii::t('dicr/helper', 'отзыв'),
@@ -184,12 +184,27 @@ class Inflector extends \yii\helpers\Inflector
     }
 
     /**
+     * Количественная форма магазинов.
+     *
+     * @param $count
+     * @return string
+     */
+    public static function numShops($count): string
+    {
+        return static::numDeclension($count,
+            Yii::t('dicr/helper', 'магазин'),
+            Yii::t('dicr/helper', 'магазина'),
+            Yii::t('dicr/helper', 'магазинов')
+        );
+    }
+
+    /**
      * Форма кол-ва минут.
      *
      * @param int|string $count количество
      * @return string форма слова
      */
-    public static function numMinutes($count) : string
+    public static function numMinutes($count): string
     {
         return static::numDeclension($count,
             Yii::t('dicr/helper', 'минута'),
@@ -204,7 +219,7 @@ class Inflector extends \yii\helpers\Inflector
      * @param int|string $count количество
      * @return string форма слова
      */
-    public static function numHours($count) : string
+    public static function numHours($count): string
     {
         return static::numDeclension($count,
             Yii::t('dicr/helper', 'час'),
@@ -219,7 +234,7 @@ class Inflector extends \yii\helpers\Inflector
      * @param int|string $count количество
      * @return string форма слова
      */
-    public static function numDays($count) : string
+    public static function numDays($count): string
     {
         return static::numDeclension($count,
             Yii::t('dicr/helper', 'день'),
@@ -234,7 +249,7 @@ class Inflector extends \yii\helpers\Inflector
      * @param int|string $count количество
      * @return string форма слова
      */
-    public static function numWeeks($count) : string
+    public static function numWeeks($count): string
     {
         return static::numDeclension($count,
             Yii::t('dicr/helper', 'неделя'),
@@ -249,7 +264,7 @@ class Inflector extends \yii\helpers\Inflector
      * @param int|string $count количество
      * @return string форма слова
      */
-    public static function numMonthes($count) : string
+    public static function numMonthes($count): string
     {
         return static::numDeclension($count,
             Yii::t('dicr/helper', 'месяц'),
@@ -264,7 +279,7 @@ class Inflector extends \yii\helpers\Inflector
      * @param int|string $count количество
      * @return string форма слова
      */
-    public static function numYears($count) : string
+    public static function numYears($count): string
     {
         return static::numDeclension($count,
             Yii::t('dicr/helper', 'год'),
@@ -279,7 +294,7 @@ class Inflector extends \yii\helpers\Inflector
      * @param int $days срок дней (0 - сегодня, 1 - завтра)
      * @return string текстовое представление
      */
-    public static function daysTerm(int $days) : string
+    public static function daysTerm(int $days): string
     {
         if ($days < 0) {
             throw new InvalidArgumentException('days');
@@ -340,7 +355,7 @@ class Inflector extends \yii\helpers\Inflector
      * @return string[] группы дней в формате:
      *    ['Пн-Ср', 'Пт', 'Вс']
      */
-    public static function groupDays(array $days) : array
+    public static function groupDays(array $days): array
     {
         $groupDays = [];
         $startDay = null;
@@ -400,7 +415,7 @@ class Inflector extends \yii\helpers\Inflector
      *     'Вс' => 'выходной'
      *   ]
      */
-    public static function shortSchedule(?array $schedule) : array
+    public static function shortSchedule(?array $schedule): array
     {
         if (empty($schedule)) {
             return [];
@@ -470,7 +485,7 @@ class Inflector extends \yii\helpers\Inflector
      * - bool $cleanText - удалять весь текст, если есть ненайденные переменные
      * @return string
      */
-    public static function replaceVars(?string $string, array $vars = [], array $opts = []) : string
+    public static function replaceVars(?string $string, array $vars = [], array $opts = []): string
     {
         // пропускаем пустые строки и если не нужно ничего заменять и очищать
         $string = (string)$string;
@@ -492,7 +507,7 @@ class Inflector extends \yii\helpers\Inflector
         $regex = '~\$\{([^\}]+)\}~um';
 
         // находим и заменяем шаблон переменной
-        $string = preg_replace_callback($regex, static function (array $matches) use ($vars, $filters) : string {
+        $string = preg_replace_callback($regex, static function(array $matches) use ($vars, $filters): string {
             // получаем ключи
             $keys = explode('|', $matches[1]);
 

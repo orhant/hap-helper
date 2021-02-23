@@ -1,9 +1,9 @@
 <?php
 /*
- * @copyright 2019-2020 Dicr http://dicr.org
+ * @copyright 2019-2021 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 01.08.20 18:29:26
+ * @version 23.02.21 11:51:43
  */
 
 /** @noinspection SpellCheckingInspection */
@@ -13,6 +13,10 @@ return [
     'товар' => 'товар',
     'товара' => 'товари',
     'товаров' => 'товарів',
+
+    'магазин' => 'магазин',
+    'магазина' => 'магазини',
+    'магазинов' => 'магазинів',
 
     'модель' => 'модель',
     'модели' => 'моделі',
