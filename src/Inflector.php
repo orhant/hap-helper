@@ -3,7 +3,7 @@
  * @copyright 2019-2021 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 23.02.21 11:49:36
+ * @version 05.03.21 20:24:05
  */
 
 declare(strict_types = 1);
@@ -500,7 +500,12 @@ class Inflector extends \yii\helpers\Inflector
             'lower' => static fn(string $string): string => mb_strtolower($string),
             'upper' => static fn(string $string): string => mb_strtoupper($string),
             'ucfirst' => static fn(string $string): string => StringHelper::mb_ucfirst($string),
-            'lcfirst' => static fn(string $string): string => StringHelper::mb_lcfirst($string)
+            'lcfirst' => static fn(string $string): string => StringHelper::mb_lcfirst($string),
+            'asInteger' => static fn(string $string): string => Yii::$app->formatter->asInteger($string),
+            'asCurrency' => static fn(string $string): string => Yii::$app->formatter->asCurrency($string),
+            'asDate' => static fn(string $string): string => Yii::$app->formatter->asDate($string),
+            'asTime' => static fn(string $string): string => Yii::$app->formatter->asTime($string),
+            'asDatetime' => static fn(string $string): string => Yii::$app->formatter->asDatetime($string),
         ];
 
         // регулярное выражение
