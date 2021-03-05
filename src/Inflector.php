@@ -3,7 +3,7 @@
  * @copyright 2019-2021 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 05.03.21 20:24:05
+ * @version 05.03.21 20:49:16
  */
 
 declare(strict_types = 1);
@@ -495,17 +495,17 @@ class Inflector extends \yii\helpers\Inflector
 
         // поддерживаемые фильтры
         $filters = [
-            'trim' => static fn(string $string): string => trim($string),
-            'esc' => static fn(string $string): string => Html::esc($string),
-            'lower' => static fn(string $string): string => mb_strtolower($string),
-            'upper' => static fn(string $string): string => mb_strtoupper($string),
-            'ucfirst' => static fn(string $string): string => StringHelper::mb_ucfirst($string),
-            'lcfirst' => static fn(string $string): string => StringHelper::mb_lcfirst($string),
-            'asInteger' => static fn(string $string): string => Yii::$app->formatter->asInteger($string),
-            'asCurrency' => static fn(string $string): string => Yii::$app->formatter->asCurrency($string),
-            'asDate' => static fn(string $string): string => Yii::$app->formatter->asDate($string),
-            'asTime' => static fn(string $string): string => Yii::$app->formatter->asTime($string),
-            'asDatetime' => static fn(string $string): string => Yii::$app->formatter->asDatetime($string),
+            'trim' => static fn($val): string => trim((string)$val),
+            'esc' => static fn($val): string => Html::esc((string)$val),
+            'lower' => static fn($val): string => mb_strtolower((string)$val),
+            'upper' => static fn($val): string => mb_strtoupper((string)$val),
+            'ucfirst' => static fn($val): string => StringHelper::mb_ucfirst((string)$val),
+            'lcfirst' => static fn($val): string => StringHelper::mb_lcfirst((string)$val),
+            'asInteger' => static fn($val): string => Yii::$app->formatter->asInteger($val),
+            'asCurrency' => static fn($val): string => Yii::$app->formatter->asCurrency($val),
+            'asDate' => static fn($val): string => Yii::$app->formatter->asDate($val),
+            'asTime' => static fn($val): string => Yii::$app->formatter->asTime($val),
+            'asDatetime' => static fn($val): string => Yii::$app->formatter->asDatetime($val),
         ];
 
         // регулярное выражение
@@ -536,13 +536,13 @@ class Inflector extends \yii\helpers\Inflector
                 }
 
                 // если значение не найдено, то прекращаем поиск
-                if (! isset($value)) {
+                if ($value === null) {
                     break;
                 }
             }
 
             // если значение не найдено, то возвращаем шаблон без изменения
-            if (! isset($value)) {
+            if ($value === null) {
                 return $matches[0];
             }
 
