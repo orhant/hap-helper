@@ -3,7 +3,7 @@
  * @copyright 2019-2021 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 17.03.21 05:57:29
+ * @version 17.03.21 16:00:54
  */
 
 declare(strict_types = 1);
@@ -16,6 +16,7 @@ use yii\helpers\Json;
 
 use function array_filter;
 use function html_entity_decode;
+use function ob_get_clean;
 use function preg_replace;
 
 use const ENT_HTML5;
@@ -380,5 +381,60 @@ class Html extends \yii\bootstrap4\Html
             'rel' => 'canonical',
             'href' => Url::to($url, true)
         ]);
+    }
+
+    /**
+     * Выводит разметку OpenGraph.
+     *
+     * @return string
+     */
+    public static function og(): string
+    {
+        $view = Yii::$app->view;
+
+        ob_start();
+
+        echo static::meta(['property' => 'og:locale', 'content' => 'ru_RU']);
+        echo static::meta(['property' => 'og:type', 'content' => 'website']);
+        echo static::meta(['property' => 'og:title', 'content' => (string)$view->title]);
+
+        if (! empty($view->params['image'])) {
+            echo Html::meta([
+                'property' => 'og:image',
+                'content' => Url::to((string)$view->params['image'], true)
+            ]);
+        }
+
+        echo static::meta([
+            'property' => 'og:url',
+            'content' => ! empty($view->params['canonical']) ?
+                Url::to($view->params['canonical'], true) :
+                (Yii::$app->request->absoluteUrl ?? '')
+        ]);
+
+        return ob_get_clean();
+    }
+
+    /**
+     * Возвращает заголовок для стандартных параметров из View.
+     *
+     * @return string
+     */
+    public static function htmlViewHead(): string
+    {
+        $view = Yii::$app->view;
+
+        ob_start();
+        echo static::tag('title', static::esc((string)$view->title));
+        echo static::meta(['name' => 'description', 'content' => static::esc($view->params['description'] ?? '')]);
+        echo static::meta(['name' => 'robots', 'content' => $view->params['robots'] ?? '']);
+
+        echo static::request();
+        echo static::canonical($view->params['canonical'] ?? null);
+
+        // OpenGraph
+        echo static::og();
+
+        return ob_get_clean();
     }
 }
