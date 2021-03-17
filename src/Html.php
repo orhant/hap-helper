@@ -3,7 +3,7 @@
  * @copyright 2019-2021 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 20.02.21 21:34:45
+ * @version 17.03.21 05:57:29
  */
 
 declare(strict_types = 1);
@@ -142,14 +142,11 @@ class Html extends \yii\bootstrap4\Html
      * @param string $href
      * @param array $options
      * @return string
+     * @deprecated use #cssFile
      */
     public static function cssLink(string $href, array $options = []): string
     {
-        if (! isset($options['rel'])) {
-            $options['rel'] = 'stylesheet';
-        }
-
-        return static::link(['href' => $href] + $options);
+        return parent::cssFile($href, $options);
     }
 
     /**
@@ -186,10 +183,11 @@ class Html extends \yii\bootstrap4\Html
      * @param string $src
      * @param array $options
      * @return string
+     * @deprecated use #jsFile
      */
     public static function jsLink(string $src, array $options = []): string
     {
-        return static::tag('script', '', ['src' => $src] + $options);
+        return parent::jsFile($src, $options);
     }
 
     /**
@@ -348,12 +346,14 @@ class Html extends \yii\bootstrap4\Html
      */
     public static function request(?array $url = null): string
     {
+        $route = $url[0] ?? Yii::$app->controller->route ?? '';
+
         $params = Url::buildQuery(Url::normalizeQuery(Url::filterQuery(
             [0 => null] + ($url ?? Yii::$app->request->queryParams)
         )));
 
         return
-            static::meta(['property' => 'route', 'content' => $url[0] ?? (Yii::$app->controller->route ?? '')]) .
+            static::meta(['property' => 'route', 'content' => $route]) .
             static::meta(['property' => 'params', 'content' => $params]);
     }
 
