@@ -3,13 +3,14 @@
  * @copyright 2019-2021 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 05.03.21 20:49:16
+ * @version 18.03.21 20:44:35
  */
 
 declare(strict_types = 1);
 
 namespace dicr\helper;
 
+use ArrayAccess;
 use Yii;
 use yii\base\InvalidArgumentException;
 
@@ -21,11 +22,13 @@ use function idate;
 use function implode;
 use function is_array;
 use function is_object;
+use function is_scalar;
 use function mb_strtolower;
 use function mb_strtoupper;
 use function preg_match;
 use function preg_replace;
 use function preg_replace_callback;
+use function property_exists;
 use function str_replace;
 use function time;
 use function trim;
@@ -459,38 +462,39 @@ class Inflector extends \yii\helpers\Inflector
     }
 
     /**
-     * Подмена переменных в строке.
+     * Возвращает значение переменной.
      *
-     * Подменяет строки шаблонных переменных вида ${vars|attribute|attribute}.
-     * Значения берутся из массива vars. Пример:
-     *
-     * ```php
-     * Html::replaceVars("Купить ${prod|name}", [
-     *   'prod' => ['name' => "Автомобиль"]
-     * ]);
-     * ```
-     *
-     * Также можно применять фильтры:
+     * Переменные могут быть как простыми, так и сложными типами. Например:
      *
      * ```php
-     * Html::replaceVars("Купить ${title|trim|lower|esc}", [
-     *   'title' => 'Значение строки'
-     * ]);
+     * $vars = [
+     *    'color' => 'red',
+     *    'prod' => [
+     *       'name' => 'Чайник',
+     *       'price' => 256
+     *    ]
+     * ];
      * ```
      *
-     * @param ?string $string строка с переменными
-     * @param array $vars значения для подмены (многомерный массив объектов)
-     * @param array $opts опции
-     * - bool $cleanVars - удалять ненайденные переменные
-     * - bool $cleanText - удалять весь текст, если есть ненайденные переменные
-     * @return string
+     * Путь переменной должен состоять из ключей, разделенных "|" и быть до конца (до скалярного значения):
+     *
+     * Например,
+     *   - 'color' вернет 'red',
+     *   - 'prod|name' вернет 'Чайник',
+     *   - 'prod' вернет null, потому как значение не скалярное
+     *
+     * Также ключи пути могут содержать названия фильтров:
+     *   - 'color|ucfirst' => 'Red',
+     *   - 'prod|name|lower' => 'чайник'
+     *
+     * @param array $vars массив переменных, откуда берутся значения, например ['prod' => ['name' => 'Утюг']]
+     * @param string $path путь значения, например 'prod|name|lower'
+     * @return ?string значение или null если не найдено
      */
-    public static function replaceVars(?string $string, array $vars = [], array $opts = []): string
+    public static function varValue(array $vars, string $path): ?string
     {
-        // пропускаем пустые строки и если не нужно ничего заменять и очищать
-        $string = (string)$string;
-        if ($string === '' || (empty($vars) && empty($opts))) {
-            return $string;
+        if ($path === '' || empty($vars)) {
+            return null;
         }
 
         // поддерживаемые фильтры
@@ -508,62 +512,161 @@ class Inflector extends \yii\helpers\Inflector
             'asDatetime' => static fn($val): string => Yii::$app->formatter->asDatetime($val),
         ];
 
-        // регулярное выражение
-        $regex = '~\$\{([^\}]+)\}~um';
+        // получаем путь ключей
+        $keys = (array)explode('|', $path);
 
-        // находим и заменяем шаблон переменной
-        $string = preg_replace_callback($regex, static function(array $matches) use ($vars, $filters): string {
-            // получаем ключи
-            $keys = explode('|', $matches[1]);
+        /** @var mixed $value текущее значение */
+        $value = $vars;
 
-            /** @var mixed $value текущее значение */
-            $value = $vars;
-
-            // обходим ключи по порядку
-            foreach ($keys as $key) {
-                if (array_key_exists($key, $filters)) {
-                    // если это фильтр, то применяем фильтр значения
-                    $value = $filters[$key]($value);
-                } elseif (is_array($value)) {
+        // обходим ключи по порядку
+        foreach ($keys as $key) {
+            if (array_key_exists($key, $filters)) { // фильтр
+                $value = $filters[$key]($value);
+            } elseif (is_array($value) || $value instanceof ArrayAccess) { // массив
+                if (array_key_exists($key, $value)) {
                     // переходим к следующему значению в дереве массива
-                    $value = $value[$key] ?? null;
-                } elseif (is_object($value)) {
-                    // переходим к следующему значению в дереве объектов
-                    $value = $value->{$key} ?? null;
+                    $value = $value[$key];
                 } else {
-                    // значение не найдено
+                    Log::debug('Не найдено значение массива "' . $key . '" в пути "' . $path . '"');
                     $value = null;
                 }
-
-                // если значение не найдено, то прекращаем поиск
-                if ($value === null) {
-                    break;
+            } elseif (is_object($value)) { // объект
+                if (property_exists($value, $key)) {
+                    // переходим к следующему значению
+                    $value = $value->{$key};
+                } else {
+                    Log::debug('Не найдено значение объекта "' . $key . '" в пути "' . $path . '"');
+                    $value = null;
                 }
+            } else {
+                Log::debug('Значение "' . $key . '" в конце пути "' . $path . '"');
+                $value = null;
             }
+
+            // если значение не найдено, то прекращаем поиск
+            if ($value === null) {
+                break;
+            }
+        }
+
+        // если значение не скалярное, значит путь был не до конца
+        if ($value !== null && ! is_scalar($value)) {
+            Log::debug('Путь "' . $path . '" не до конца, значение не скалярное');
+            $value = null;
+        }
+
+        return $value !== null ? (string)$value : null;
+    }
+
+    /**
+     * Замена переменных в блоке текста.
+     *
+     * Переменные в тексте размечается как ${{путь}}.
+     * Путь это путь переменной в `vars`.
+     *
+     * @see #getVarValue
+     *
+     * Если задан cleanText=true, то блок очищается, если в нем не найдены значения для каких-то переменных.
+     * Если задан cleanVars=true, то ненайденные переменные в тексте заменяются пустой строкой "".
+     *
+     * @param string $text блок текста
+     * @param array $vars значения переменных
+     * @param array $opts опции
+     * - bool $cleanText очищать весь текст, если не имеется ненайденные переменные
+     * - bool $cleanVars очищать ненайденные переменные
+     * @return string
+     */
+    public static function replaceBlockVars(string $text, array $vars = [], array $opts = []): string
+    {
+        // если текст пустой или нет переменных и опций очистки то возвращаем исходный текст без обработки
+        if ($text === '' || (empty($vars) && empty($opts))) {
+            return $text;
+        }
+
+        // регулярное выражение
+        $regex = '~\$\{([^\}]*)\}~um';
+
+        // подменяем переменные в блоке текста
+        $text = preg_replace_callback($regex, static function(array $matches) use ($vars): string {
+            $value = static::varValue($vars, $matches[1]);
 
             // если значение не найдено, то возвращаем шаблон без изменения
-            if ($value === null) {
-                return $matches[0];
-            }
+            return (string)($value ?? $matches[0]);
+        }, $text);
 
-            return (string)$value;
-        }, $string);
-
-        // удаляем весь текст если переменные не есть ненайденные переменные
-        if (! empty($opts['cleanText']) && preg_match($regex, $string)) {
+        // очищаем весь текст если имеются ненайденные переменные
+        if (! empty($opts['cleanText']) && preg_match($regex, $text)) {
             return '';
         }
 
         // удаление ненайденных переменных
         if (! empty($opts['cleanVars'])) {
-            $string = (string)preg_replace($regex, '', $string);
+            $text = (string)preg_replace($regex, '', $text);
         }
 
-        // заменяем несколько пробелов одним
-        $string = (string)preg_replace('~[\h\t]+~uim', ' ', $string);
+        // заменяем несколько горизонтальных пробелов одним
+        $text = (string)preg_replace('~[\h\t]+~uim', ' ', $text);
 
-        // удаляем пробелы перед знаками препинания
-        $string = (string)preg_replace('~\s+([\,\;\.\!])~um', '$1', $string);
+        // удаляем пробелы и переносы перед знаками препинания
+        $text = (string)preg_replace('~[\s\h\t\v\r\n]+([\,\;\.\!\?])~um', '$1', $text);
+
+        // удаляем пробелы перед переносом строки
+        $text = (string)preg_replace('~[\h\t]+([\v\r\n])~um', '$1', $text);
+
+        return $text;
+    }
+
+    /**
+     * Подмена переменных в блоках текста.
+     *
+     * Текст размечается на блоки: {{блок текста}}.
+     * Например: "Купить товар. {{Цвет товара: ${prod|attr|size}}}.
+     * Если в тексте не размечены блоки, то весь текст считается одним блоком.
+     *
+     * ```php
+     * Html::replaceVars("Купить ${prod|name}", [
+     *   'prod' => ['name' => "Автомобиль"]
+     * ]);
+     * ```
+     *
+     * Также можно применять фильтры:
+     *
+     * ```php
+     * Html::replaceVars("Купить ${title|trim|lower|esc}", [
+     *   'title' => 'Значение строки'
+     * ]);
+     * ```
+     *
+     * Начало и конец блока размечается как '{{текст с переменными, например ${prod|name}}}'. Если в тексте не найдена
+     * разметка блоков, то весь текст считается одним блоком.
+     *
+     * @param ?string $string строка с переменными
+     * @param array $vars значения для подмены (многомерный массив объектов)
+     * @param array $opts опции
+     * - bool $cleanText - удалять блок текста, если есть ненайденные переменные
+     * - bool $cleanVars - удалять ненайденные переменные
+     * @return string
+     */
+    public static function replaceVars(?string $string, array $vars = [], array $opts = []): string
+    {
+        // пропускаем пустые строки и если не нужно ничего заменять и очищать
+        $string = (string)$string;
+        if ($string === '' || (empty($vars) && empty($opts))) {
+            return $string;
+        }
+
+        // если в тексте не размечены блоки, то весь текст оборачиваем в один блок
+        if (! preg_match('~{{.*?}}~um', $string)) {
+            $string = '{{' . $string . '}}';
+        }
+
+        // обрабатываем блоки текста
+        $string = preg_replace_callback('~{{(.*?)}}~um', static fn(array $matches) => static::replaceBlockVars(
+            $matches[1], $vars, $opts
+        ), $string);
+
+        // заменяем несколько горизонтальных пробелов одним
+        $string = (string)preg_replace('~[\h\t]+~uim', ' ', $string);
 
         return $string;
     }
