@@ -3,7 +3,7 @@
  * @copyright 2019-2021 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 20.03.21 13:03:55
+ * @version 20.03.21 14:19:13
  */
 
 declare(strict_types = 1);
@@ -654,12 +654,12 @@ class Inflector extends \yii\helpers\Inflector
         }
 
         // если в тексте не размечены блоки, то весь текст оборачиваем в один блок
-        if (! preg_match('~{{.*?}}~um', $string)) {
+        if (! preg_match('~{{.*?}}~usm', $string)) {
             $string = '{{' . $string . '}}';
         }
 
         // обрабатываем блоки текста
-        $string = preg_replace_callback('~{{(.*?)}}~um', static fn(array $matches) => static::replaceBlockVars(
+        $string = preg_replace_callback('~{{(.*?)}}~usm', static fn(array $matches) => static::replaceBlockVars(
             $matches[1], $vars, $opts
         ), $string);
 
