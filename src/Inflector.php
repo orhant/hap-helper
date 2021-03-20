@@ -3,14 +3,13 @@
  * @copyright 2019-2021 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 18.03.21 20:44:35
+ * @version 20.03.21 13:03:55
  */
 
 declare(strict_types = 1);
 
 namespace dicr\helper;
 
-use ArrayAccess;
 use Yii;
 use yii\base\InvalidArgumentException;
 
@@ -28,7 +27,6 @@ use function mb_strtoupper;
 use function preg_match;
 use function preg_replace;
 use function preg_replace_callback;
-use function property_exists;
 use function str_replace;
 use function time;
 use function trim;
@@ -522,7 +520,7 @@ class Inflector extends \yii\helpers\Inflector
         foreach ($keys as $key) {
             if (array_key_exists($key, $filters)) { // фильтр
                 $value = $filters[$key]($value);
-            } elseif (is_array($value) || $value instanceof ArrayAccess) { // массив
+            } elseif (is_array($value)) { // массив
                 if (array_key_exists($key, $value)) {
                     // переходим к следующему значению в дереве массива
                     $value = $value[$key];
@@ -531,7 +529,7 @@ class Inflector extends \yii\helpers\Inflector
                     $value = null;
                 }
             } elseif (is_object($value)) { // объект
-                if (property_exists($value, $key)) {
+                if (isset($value->{$key})) {
                     // переходим к следующему значению
                     $value = $value->{$key};
                 } else {
