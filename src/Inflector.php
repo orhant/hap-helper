@@ -3,7 +3,7 @@
  * @copyright 2019-2021 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 20.03.21 14:19:13
+ * @version 22.03.21 13:04:10
  */
 
 declare(strict_types = 1);
@@ -617,8 +617,8 @@ class Inflector extends \yii\helpers\Inflector
     /**
      * Подмена переменных в блоках текста.
      *
-     * Текст размечается на блоки: {{блок текста}}.
-     * Например: "Купить товар. {{Цвет товара: ${prod|attr|size}}}.
+     * Текст размечается на блоки: [[блок текста]].
+     * Например: "Купить товар. [[Цвет товара: ${prod|attr|size}]].
      * Если в тексте не размечены блоки, то весь текст считается одним блоком.
      *
      * ```php
@@ -635,7 +635,7 @@ class Inflector extends \yii\helpers\Inflector
      * ]);
      * ```
      *
-     * Начало и конец блока размечается как '{{текст с переменными, например ${prod|name}}}'. Если в тексте не найдена
+     * Начало и конец блока размечается как '[[текст с переменными, например ${prod|name}]]'. Если в тексте не найдена
      * разметка блоков, то весь текст считается одним блоком.
      *
      * @param ?string $string строка с переменными
@@ -654,12 +654,12 @@ class Inflector extends \yii\helpers\Inflector
         }
 
         // если в тексте не размечены блоки, то весь текст оборачиваем в один блок
-        if (! preg_match('~{{.*?}}~usm', $string)) {
-            $string = '{{' . $string . '}}';
+        if (! preg_match('~\[\[.*?\]\]~usm', $string)) {
+            $string = '[[' . $string . ']]';
         }
 
         // обрабатываем блоки текста
-        $string = preg_replace_callback('~{{(.*?)}}~usm', static fn(array $matches) => static::replaceBlockVars(
+        $string = preg_replace_callback('~\[\[(.*?)\]\]~usm', static fn(array $matches) => static::replaceBlockVars(
             $matches[1], $vars, $opts
         ), $string);
 
