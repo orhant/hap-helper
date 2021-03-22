@@ -3,7 +3,7 @@
  * @copyright 2019-2021 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 22.03.21 13:04:10
+ * @version 22.03.21 16:13:31
  */
 
 declare(strict_types = 1);
@@ -525,7 +525,7 @@ class Inflector extends \yii\helpers\Inflector
                     // переходим к следующему значению в дереве массива
                     $value = $value[$key];
                 } else {
-                    Log::debug('Не найдено значение массива "' . $key . '" в пути "' . $path . '"');
+                    //Log::debug('Не найдено значение массива "' . $key . '" в пути "' . $path . '"');
                     $value = null;
                 }
             } elseif (is_object($value)) { // объект
@@ -533,11 +533,11 @@ class Inflector extends \yii\helpers\Inflector
                     // переходим к следующему значению
                     $value = $value->{$key};
                 } else {
-                    Log::debug('Не найдено значение объекта "' . $key . '" в пути "' . $path . '"');
+                    //Log::debug('Не найдено значение объекта "' . $key . '" в пути "' . $path . '"');
                     $value = null;
                 }
             } else {
-                Log::debug('Значение "' . $key . '" в конце пути "' . $path . '"');
+                //Log::debug('Значение "' . $key . '" в конце пути "' . $path . '"');
                 $value = null;
             }
 
@@ -549,7 +549,7 @@ class Inflector extends \yii\helpers\Inflector
 
         // если значение не скалярное, значит путь был не до конца
         if ($value !== null && ! is_scalar($value)) {
-            Log::debug('Путь "' . $path . '" не до конца, значение не скалярное');
+            //Log::debug('Путь "' . $path . '" не до конца, значение не скалярное');
             $value = null;
         }
 
