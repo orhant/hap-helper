@@ -3,7 +3,7 @@
  * @copyright 2019-2021 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 22.01.21 16:19:18
+ * @version 23.03.21 18:04:02
  */
 
 declare(strict_types = 1);
@@ -605,7 +605,7 @@ class Url extends \yii\helpers\Url
             $redirectUrl = static::to(array_merge($url, $extra), true);
 
             try {
-                Yii::$app->end(0, Yii::$app->response->redirect($redirectUrl));
+                Yii::$app->end(0, Yii::$app->response->redirect($redirectUrl, 301));
             } catch (ExitException $ex) {
                 Yii::error($ex, __METHOD__);
                 exit;
