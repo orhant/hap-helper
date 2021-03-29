@@ -1,6 +1,7 @@
 <component name="ProjectDictionaryState">
   <dictionary name="dicr">
     <words>
+      <w>alnum</w>
       <w>aswg</w>
       <w>childs</w>
       <w>cntrl</w>
@@ -15,6 +16,7 @@
       <w>mbstring</w>
       <w>monthes</w>
       <w>nonhttp</w>
+      <w>punct</w>
       <w>roave</w>
       <w>roistat</w>
       <w>shch</w>

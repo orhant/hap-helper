@@ -3,7 +3,7 @@
  * @copyright 2019-2021 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 22.03.21 16:13:31
+ * @version 30.03.21 03:49:19
  */
 
 declare(strict_types = 1);
@@ -521,23 +521,10 @@ class Inflector extends \yii\helpers\Inflector
             if (array_key_exists($key, $filters)) { // фильтр
                 $value = $filters[$key]($value);
             } elseif (is_array($value)) { // массив
-                if (array_key_exists($key, $value)) {
-                    // переходим к следующему значению в дереве массива
-                    $value = $value[$key];
-                } else {
-                    //Log::debug('Не найдено значение массива "' . $key . '" в пути "' . $path . '"');
-                    $value = null;
-                }
+                $value = $value[$key] ?? null;
             } elseif (is_object($value)) { // объект
-                if (isset($value->{$key})) {
-                    // переходим к следующему значению
-                    $value = $value->{$key};
-                } else {
-                    //Log::debug('Не найдено значение объекта "' . $key . '" в пути "' . $path . '"');
-                    $value = null;
-                }
+                $value = $value->{$key} ?? null;
             } else {
-                //Log::debug('Значение "' . $key . '" в конце пути "' . $path . '"');
                 $value = null;
             }
 

@@ -3,7 +3,7 @@
  * @copyright 2019-2021 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 17.03.21 16:00:54
+ * @version 30.03.21 03:47:37
  */
 
 declare(strict_types = 1);
@@ -15,9 +15,13 @@ use yii\base\Model;
 use yii\helpers\Json;
 
 use function array_filter;
+use function compact;
 use function html_entity_decode;
 use function ob_get_clean;
+use function ob_start;
 use function preg_replace;
+use function strip_tags;
+use function trim;
 
 use const ENT_HTML5;
 use const ENT_QUOTES;
@@ -38,7 +42,10 @@ class Html extends \yii\bootstrap4\Html
         $str = (string)$str;
 
         return $str === '' ? '' :
-            (string)preg_replace('~[[:cntrl:]]+~uim', ' ', static::encode($str));
+            (string)preg_replace(
+                '~[^\s[:print:][:graph:][[:alnum:][:punct:]]+~u', ' ',
+                static::encode($str)
+            );
     }
 
     /**
@@ -71,11 +78,24 @@ class Html extends \yii\bootstrap4\Html
         // декодируем html-символы &entity;
         $text = static::decode($html);
 
+        // меняем контрольные символы на пробелы (перед тем как добавлять переносы строк)
+        //$text = (string)preg_replace('~[[:cntrl:]]+~u', ' ', $text);
+        $text = (string)preg_replace('~[^\s[:print:][:graph:][[:alnum:][:punct:]]+~u', ' ', $text);
+
+        // добавляем переносы строк после элементов
+        $text = preg_replace('~\<\/(div|h\d|p|li)\>~ui', "$0\n", $text);
+
+        // заменяем <br/>
+        $text = preg_replace('~\<br\/?\>~ui', "\n", $text);
+
         // убираем теги
         $text = strip_tags($text);
 
-        // меняем контрольные символы на пробелы
-        $text = (string)preg_replace('~[[:cntrl:]]+~uim', ' ', $text);
+        // заменяем несколько горизонтальных пробелов одним
+        $text = preg_replace('~\h+~u', ' ', $text);
+
+        // заменяем несколько вертикальных переносов одним
+        $text = preg_replace('~\v+~u', "\n", $text);
 
         return trim($text);
     }
@@ -399,7 +419,7 @@ class Html extends \yii\bootstrap4\Html
         echo static::meta(['property' => 'og:title', 'content' => (string)$view->title]);
 
         if (! empty($view->params['image'])) {
-            echo Html::meta([
+            echo static::meta([
                 'property' => 'og:image',
                 'content' => Url::to((string)$view->params['image'], true)
             ]);
