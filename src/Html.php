@@ -3,7 +3,7 @@
  * @copyright 2019-2021 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 30.03.21 03:47:37
+ * @version 08.04.21 18:44:32
  */
 
 declare(strict_types = 1);
@@ -381,11 +381,15 @@ class Html extends \yii\bootstrap4\Html
     /**
      * link rel="canonical"
      *
-     * @param string|array|null $url
+     * @param string|array|false|null $url
      * @return string
      */
     public static function canonical($url = null): string
     {
+        if ($url === false) {
+            return '';
+        }
+
         if ($url === null) {
             $url = Url::normalizeQuery(Url::filterQuery(
                 [
