@@ -1,9 +1,9 @@
 <?php
 /*
- * @copyright 2019-2020 Dicr http://dicr.org
+ * @copyright 2019-2021 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 06.08.20 04:42:00
+ * @version 14.05.21 03:48:39
  */
 
 declare(strict_types = 1);
@@ -11,6 +11,7 @@ namespace dicr\helper;
 
 use InvalidArgumentException;
 use yii\base\BaseObject;
+
 use function array_slice;
 use function count;
 
@@ -147,7 +148,7 @@ class PathInfo extends BaseObject
 
         if (empty($parts)) {
             if (! $isAbsolute) {
-                $parts = array_fill(count($parts), $levels, '..');
+                $parts = array_fill(0, $levels, '..');
             }
         } elseif ($partsEnd === '..' || $partsEnd === '.') {
             $parts = array_merge($parts, array_fill(count($parts), $levels, '..'));

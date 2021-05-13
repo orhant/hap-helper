@@ -3,7 +3,7 @@
  * @copyright 2019-2021 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 23.03.21 18:04:02
+ * @version 14.05.21 03:47:18
  */
 
 declare(strict_types = 1);
@@ -343,9 +343,7 @@ class Url extends \yii\helpers\Url
         $query = static::buildQuery($query);
 
         // разбиваем на компоненты по &
-        $query = (array)explode('&', $query);
-
-        return $query;
+        return (array)explode('&', $query);
     }
 
     /**
@@ -356,12 +354,8 @@ class Url extends \yii\helpers\Url
      */
     public static function unflatQuery(array $flatQuery): array
     {
-        if ($flatQuery === null || $flatQuery === '' || $flatQuery === []) {
-            return [];
-        }
-
         // объединяем компоненты по &
-        return static::parseQuery(implode('&', $flatQuery));
+        return empty($flatQuery) ? [] : static::parseQuery(implode('&', $flatQuery));
     }
 
     /**
@@ -452,15 +446,8 @@ class Url extends \yii\helpers\Url
 
         $regex = '~.+?\.%s$~uism';
 
-        if (preg_match(sprintf($regex, preg_quote($dom1, '~')), $dom2)) {
-            return true;
-        }
-
-        if (preg_match(sprintf($regex, preg_quote($dom2, '~')), $dom1)) {
-            return true;
-        }
-
-        return false;
+        return preg_match(sprintf($regex, preg_quote($dom1, '~')), $dom2) ||
+            preg_match(sprintf($regex, preg_quote($dom2, '~')), $dom1);
     }
 
     /**

@@ -3,7 +3,7 @@
  * @copyright 2019-2021 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 30.03.21 03:49:19
+ * @version 14.05.21 03:47:44
  */
 
 declare(strict_types = 1);
@@ -76,7 +76,6 @@ class Inflector extends \yii\helpers\Inflector
      * @param string $replacement
      * @param bool $lowercase
      * @return string
-     * @noinspection PhpMissingParamTypeInspection
      */
     public static function slug($string, $replacement = '-', $lowercase = true): string
     {
@@ -596,9 +595,7 @@ class Inflector extends \yii\helpers\Inflector
         $text = (string)preg_replace('~[\s\h\t\v\r\n]+([\,\;\.\!\?])~um', '$1', $text);
 
         // удаляем пробелы перед переносом строки
-        $text = (string)preg_replace('~[\h\t]+([\v\r\n])~um', '$1', $text);
-
-        return $text;
+        return (string)preg_replace('~[\h\t]+([\v\r\n])~um', '$1', $text);
     }
 
     /**
@@ -651,8 +648,6 @@ class Inflector extends \yii\helpers\Inflector
         ), $string);
 
         // заменяем несколько горизонтальных пробелов одним
-        $string = (string)preg_replace('~[\h\t]+~uim', ' ', $string);
-
-        return $string;
+        return (string)preg_replace('~[\h\t]+~uim', ' ', $string);
     }
 }
