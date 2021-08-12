@@ -3,7 +3,7 @@
  * @copyright 2019-2021 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 08.04.21 18:44:32
+ * @version 12.08.21 21:52:40
  */
 
 declare(strict_types = 1);
@@ -29,7 +29,7 @@ use const ENT_QUOTES;
 /**
  * Html helper.
  */
-class Html extends \yii\bootstrap4\Html
+class Html extends \yii\bootstrap5\Html
 {
     /**
      * Синоним encode.

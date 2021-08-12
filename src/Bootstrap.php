@@ -1,9 +1,9 @@
 <?php
-/**
- * @copyright 2019-2020 Dicr http://dicr.org
+/*
+ * @copyright 2019-2021 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 27.07.20 04:59:26
+ * @version 12.08.21 21:52:40
  */
 
 declare(strict_types = 1);
@@ -21,7 +21,7 @@ class Bootstrap implements BootstrapInterface
     /**
      * @inheritDoc
      */
-    public function bootstrap($app) : void
+    public function bootstrap($app): void
     {
         // Трансляция
         $app->i18n->translations['dicr/helper'] = [
@@ -32,7 +32,8 @@ class Bootstrap implements BootstrapInterface
 
         // заменя классов
         Yii::$container->set(\yii\helpers\ArrayHelper::class, ArrayHelper::class);
-        Yii::$container->set(\yii\bootstrap4\Html::class, Html::class);
+        Yii::$container->set(\yii\bootstrap5\Html::class, Html::class);
+        Yii::$container->set(\yii\helpers\Inflector::class, Inflector::class);
         Yii::$container->set(\yii\helpers\StringHelper::class, StringHelper::class);
         Yii::$container->set(\yii\helpers\Url::class, Url::class);
     }
