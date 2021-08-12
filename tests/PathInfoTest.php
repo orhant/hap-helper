@@ -3,7 +3,7 @@
  * @copyright 2019-2021 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 20.02.21 21:35:48
+ * @version 12.08.21 21:47:25
  */
 
 declare(strict_types = 1);
@@ -88,6 +88,8 @@ class PathInfoTest extends TestCase
     ];
 
     /**
+     * Test.
+     *
      * @noinspection PhpMethodMayBeStaticInspection
      */
     public function testParent() : void

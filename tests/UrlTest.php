@@ -1,9 +1,9 @@
 <?php
 /*
- * @copyright 2019-2020 Dicr http://dicr.org
+ * @copyright 2019-2021 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 13.10.20 14:15:43
+ * @version 12.08.21 21:48:47
  */
 
 declare(strict_types = 1);
@@ -159,6 +159,8 @@ class UrlTest extends TestCase
     ];
 
     /**
+     * Test.
+     *
      * @noinspection PhpMethodMayBeStaticInspection
      */
     public function testBuildQuery() : void
@@ -173,6 +175,8 @@ class UrlTest extends TestCase
     }
 
     /**
+     * Test.
+     *
      * @noinspection PhpMethodMayBeStaticInspection
      */
     public function testDiffQuery() : void
