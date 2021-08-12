@@ -45,5 +45,8 @@
     "require-dev": {
         "roave/security-advisories": "dev-latest",
         "phpunit/phpunit": "~9.5"
+    },
+    "conflict": {
+        "yiisot/yii2-bootstrap4": "*"
     }
 }
