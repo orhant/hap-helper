@@ -3,7 +3,7 @@
  * @copyright 2019-2021 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 31.10.21 22:56:31
+ * @version 01.11.21 00:07:48
  */
 
 declare(strict_types = 1);
@@ -25,7 +25,6 @@ use function http_build_query;
 use function implode;
 use function is_array;
 use function is_object;
-use function ksort;
 use function ltrim;
 use function mb_strtolower;
 use function parse_str;
@@ -127,15 +126,18 @@ class Url extends \yii\helpers\Url
             return $keys === range(0, count($params) - 1);
         };
 
+        // кодирует ключ
+        $urlEncodeKey = static fn(string $key): string => $key === '#' ? $key : urlencode($key);
+
         $query = $filterParams($query);
         $isIndexed = $parentKey !== '' && $isIndexed($query);
         $parts = [];
 
         foreach ($query as $k => $v) {
             if ($parentKey === '') {
-                $key = urlencode((string)$k);
+                $key = $urlEncodeKey((string)$k);
             } else {
-                $key = $isIndexed ? $parentKey . '[]' : $parentKey . '[' . urlencode((string)$k) . ']';
+                $key = $isIndexed ? $parentKey . '[]' : $parentKey . '[' . $urlEncodeKey((string)$k) . ']';
             }
 
             if (is_array($v) || is_object($v)) {
@@ -209,7 +211,17 @@ class Url extends \yii\helpers\Url
     {
         $query = static::parseQuery($query);
 
-        ksort($query);
+        uksort($query, static function($k1, $k2) {
+            if ($k1 === '#') {
+                return 1;
+            }
+
+            if ($k2 === '#') {
+                return -1;
+            }
+
+            return (string)$k1 <=> (string)$k2;
+        });
 
         foreach ($query as &$v) {
             $v = is_array($v) ? static::normalizeQuery($v) : (string)$v;
