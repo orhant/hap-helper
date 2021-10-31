@@ -3,7 +3,7 @@
  * @copyright 2019-2021 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 14.05.21 03:47:18
+ * @version 31.10.21 22:29:28
  */
 
 declare(strict_types = 1);
@@ -190,7 +190,7 @@ class Url extends \yii\helpers\Url
                 $v = static::filterQuery($v);
             }
 
-            if ($v === null || $v === '' || $v === []) {
+            if ($v === null || (($v === [] || $v === '') && substr($k . 0, 1) !== '#')) {
                 unset($query[$k]);
             }
         }
