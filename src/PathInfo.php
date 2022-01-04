@@ -1,9 +1,9 @@
 <?php
 /*
- * @copyright 2019-2021 Dicr http://dicr.org
+ * @copyright 2019-2022 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 31.10.21 22:55:34
+ * @version 04.01.22 18:56:42
  */
 
 declare(strict_types = 1);
@@ -28,20 +28,17 @@ use function count;
  */
 class PathInfo extends BaseObject
 {
-    /** @var string */
-    private $_path;
+    private string $_path;
 
-    /** @var string */
-    private $_parent;
+    private string $_parent;
 
-    /** @var string */
-    private $_file;
+    private string $_file;
 
     /** @var string имя файла без расширения */
-    private $_name;
+    private string $_name;
 
     /** @var string расширение */
-    private $_ext;
+    private string $_ext;
 
     /**
      * Конструктор
@@ -51,6 +48,7 @@ class PathInfo extends BaseObject
     public function __construct(string $path)
     {
         $this->_path = self::normalize($path);
+
         parent::__construct();
     }
 
@@ -68,7 +66,7 @@ class PathInfo extends BaseObject
         }
 
         $parts = [];
-        $isAbsolute = mb_strpos($path, DIRECTORY_SEPARATOR) === 0;
+        $isAbsolute = str_starts_with($path, DIRECTORY_SEPARATOR);
 
         foreach (preg_split('~/~um', $path, - 1, PREG_SPLIT_NO_EMPTY) as $part) {
             $partsEnd = end($parts);
@@ -108,7 +106,7 @@ class PathInfo extends BaseObject
             return false;
         }
 
-        return mb_strpos($path, '/') === 0;
+        return str_starts_with($path, '/');
     }
 
     /**

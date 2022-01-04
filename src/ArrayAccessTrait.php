@@ -1,9 +1,9 @@
 <?php
-/**
- * @copyright 2019-2020 Dicr http://dicr.org
+/*
+ * @copyright 2019-2022 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 27.07.20 05:49:15
+ * @version 04.01.22 19:03:47
  */
 
 declare(strict_types = 1);
@@ -17,40 +17,40 @@ use ArrayAccess;
 trait ArrayAccessTrait
 {
     /**
-     * @param string|int $offset
+     * @param int|string $offset
      * @return bool
      * @see ArrayAccess::offsetExists()
      */
-    public function offsetExists($offset) : bool
+    public function offsetExists(int|string $offset): bool
     {
         return isset($this->{$offset});
     }
 
     /**
-     * @param string|int $offset
+     * @param int|string $offset
      * @return mixed
      * @see \ArrayAccess::offsetGet()
      */
-    public function offsetGet($offset)
+    public function offsetGet(int|string $offset): mixed
     {
         return $this->{$offset};
     }
 
     /**
-     * @param string|int $offset
+     * @param int|string $offset
      * @param mixed $item
      * @see \ArrayAccess::offsetSet()
      */
-    public function offsetSet($offset, $item) : void
+    public function offsetSet(int|string $offset, mixed $item): void
     {
         $this->{$offset} = $item;
     }
 
     /**
-     * @param $offset
+     * @param int|string $offset
      * @see \ArrayAccess::offsetUnset()
      */
-    public function offsetUnset($offset) : void
+    public function offsetUnset(int|string $offset): void
     {
         $this->{$offset} = null;
     }

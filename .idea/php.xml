@@ -60,7 +60,7 @@
       <path value="$PROJECT_DIR$/vendor/yiisoft/yii2-bootstrap5" />
     </include_path>
   </component>
-  <component name="PhpProjectSharedConfiguration" php_language_level="7.4" />
+  <component name="PhpProjectSharedConfiguration" php_language_level="8.0" />
   <component name="PhpRuntimeConfiguration">
     <extensions>
       <extension name="FFI" enabled="true" />

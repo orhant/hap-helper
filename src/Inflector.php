@@ -1,9 +1,9 @@
 <?php
 /*
- * @copyright 2019-2021 Dicr http://dicr.org
+ * @copyright 2019-2022 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 31.10.21 22:55:34
+ * @version 04.01.22 18:48:10
  */
 
 declare(strict_types = 1);
@@ -121,7 +121,7 @@ class Inflector extends \yii\helpers\Inflector
      * @param string $five форма значения 5, например: "товаров"
      * @return string форма для количества $count
      */
-    public static function numDeclension($count, string $one, string $two, string $five): string
+    public static function numDeclension(int|string $count, string $one, string $two, string $five): string
     {
         $count = (int)$count;
         $word = null;
@@ -144,7 +144,7 @@ class Inflector extends \yii\helpers\Inflector
      * @param int|string $count
      * @return string
      */
-    public static function numProds($count): string
+    public static function numProds(int|string $count): string
     {
         return static::numDeclension($count,
             Yii::t('dicr/helper', 'товар'),
@@ -159,7 +159,7 @@ class Inflector extends \yii\helpers\Inflector
      * @param int|string $count количество
      * @return string форма слова
      */
-    public static function numModels($count): string
+    public static function numModels(int|string $count): string
     {
         return static::numDeclension($count,
             Yii::t('dicr/helper', 'модель'),
@@ -171,10 +171,10 @@ class Inflector extends \yii\helpers\Inflector
     /**
      * Количественная форма отзывов.
      *
-     * @param $count
+     * @param int|string $count
      * @return string
      */
-    public static function numReviews($count): string
+    public static function numReviews(int|string $count): string
     {
         return static::numDeclension($count,
             Yii::t('dicr/helper', 'отзыв'),
@@ -186,10 +186,10 @@ class Inflector extends \yii\helpers\Inflector
     /**
      * Количественная форма магазинов.
      *
-     * @param $count
+     * @param int|string $count
      * @return string
      */
-    public static function numShops($count): string
+    public static function numShops(int|string $count): string
     {
         return static::numDeclension($count,
             Yii::t('dicr/helper', 'магазин'),
@@ -204,7 +204,7 @@ class Inflector extends \yii\helpers\Inflector
      * @param int|string $count количество
      * @return string форма слова
      */
-    public static function numMinutes($count): string
+    public static function numMinutes(int|string $count): string
     {
         return static::numDeclension($count,
             Yii::t('dicr/helper', 'минута'),
@@ -219,7 +219,7 @@ class Inflector extends \yii\helpers\Inflector
      * @param int|string $count количество
      * @return string форма слова
      */
-    public static function numHours($count): string
+    public static function numHours(int|string $count): string
     {
         return static::numDeclension($count,
             Yii::t('dicr/helper', 'час'),
@@ -234,7 +234,7 @@ class Inflector extends \yii\helpers\Inflector
      * @param int|string $count количество
      * @return string форма слова
      */
-    public static function numDays($count): string
+    public static function numDays(int|string $count): string
     {
         return static::numDeclension($count,
             Yii::t('dicr/helper', 'день'),
@@ -249,7 +249,7 @@ class Inflector extends \yii\helpers\Inflector
      * @param int|string $count количество
      * @return string форма слова
      */
-    public static function numWeeks($count): string
+    public static function numWeeks(int|string $count): string
     {
         return static::numDeclension($count,
             Yii::t('dicr/helper', 'неделя'),
@@ -264,7 +264,7 @@ class Inflector extends \yii\helpers\Inflector
      * @param int|string $count количество
      * @return string форма слова
      */
-    public static function numMonthes($count): string
+    public static function numMonthes(int|string $count): string
     {
         return static::numDeclension($count,
             Yii::t('dicr/helper', 'месяц'),
@@ -279,7 +279,7 @@ class Inflector extends \yii\helpers\Inflector
      * @param int|string $count количество
      * @return string форма слова
      */
-    public static function numYears($count): string
+    public static function numYears(int|string $count): string
     {
         return static::numDeclension($count,
             Yii::t('dicr/helper', 'год'),
@@ -349,7 +349,7 @@ class Inflector extends \yii\helpers\Inflector
     /**
      * Группирует список дней недели
      *
-     * @param array $days массив дней, в формате:
+     * @param int[] $days массив дней, в формате:
      *    [0, 1, 2, 4, 7]
      *
      * @return string[] группы дней в формате:
@@ -362,8 +362,6 @@ class Inflector extends \yii\helpers\Inflector
         $endDay = null;
 
         foreach ($days as $day) {
-            $day = (int)$day;
-
             // если это первый день, то формируем новый период
             if (! isset($endDay) || $day !== $endDay + 1) {
                 if (isset($startDay)) {
@@ -510,7 +508,7 @@ class Inflector extends \yii\helpers\Inflector
         ];
 
         // получаем путь ключей
-        $keys = (array)explode('|', $path);
+        $keys = explode('|', $path) ?: [];
 
         /** @var mixed $value текущее значение */
         $value = $vars;

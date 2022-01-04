@@ -1,9 +1,9 @@
 <?php
 /*
- * @copyright 2019-2021 Dicr http://dicr.org
+ * @copyright 2019-2022 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 22.01.21 16:19:53
+ * @version 04.01.22 19:03:47
  */
 
 declare(strict_types = 1);
@@ -32,11 +32,11 @@ class Filter
     /**
      * Парсит id
      *
-     * @param mixed $id
+     * @param float|int|string|null $id
      * @return int|null
      * @throws InvalidArgumentException
      */
-    public static function id($id) : ?int
+    public static function id(float|int|string|null $id): ?int
     {
         if (! is_int($id)) {
             $id = trim($id);
@@ -68,7 +68,7 @@ class Filter
      * @param mixed $ids
      * @return int[]
      */
-    public static function ids($ids) : array
+    public static function ids(mixed $ids): array
     {
         $ids = (array)($ids ?: []);
 
@@ -84,10 +84,10 @@ class Filter
     /**
      * Фильтрует массив строк.
      *
-     * @param string|array $strings
+     * @param string|string[]|null $strings
      * @return string[]
      */
-    public static function strings($strings) : array
+    public static function strings(array|string|null $strings): array
     {
         $strings = (array)($strings ?: []);
 

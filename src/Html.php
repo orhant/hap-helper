@@ -1,9 +1,9 @@
 <?php
 /*
- * @copyright 2019-2021 Dicr http://dicr.org
+ * @copyright 2019-2022 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 31.10.21 22:55:34
+ * @version 04.01.22 19:01:12
  */
 
 declare(strict_types = 1);
@@ -34,10 +34,10 @@ class Html extends \yii\bootstrap5\Html
     /**
      * Синоним encode.
      *
-     * @param string|int|float|null $str
+     * @param float|int|string|null $str
      * @return string
      */
-    public static function esc($str): string
+    public static function esc(float|int|string|null $str): string
     {
         $str = (string)$str;
 
@@ -51,7 +51,7 @@ class Html extends \yii\bootstrap5\Html
     /**
      * Де-экранирует из html.
      *
-     * @param string|float|null $content
+     * @param string|float|int|null $content
      * @return string
      */
     public static function decode($content): string
@@ -65,10 +65,10 @@ class Html extends \yii\bootstrap5\Html
     /**
      * Конвертирует html в текст для XML.
      *
-     * @param string|float|null $html
+     * @param float|int|string|null $html
      * @return string plain-текст
      */
-    public static function toText($html): string
+    public static function toText(float|int|string|null $html): string
     {
         $html = (string)$html;
         if ($html === '') {
@@ -103,10 +103,10 @@ class Html extends \yii\bootstrap5\Html
     /**
      * Проверяет содержит ли html текст, кроме пустых тегов.
      *
-     * @param string|float|null $html
+     * @param float|int|string|null $html
      * @return bool
      */
-    public static function hasText($html): bool
+    public static function hasText(float|int|string|null $html): bool
     {
         $html = (string)$html;
 
@@ -235,7 +235,7 @@ class Html extends \yii\bootstrap5\Html
      * @param array $options
      * @return string
      */
-    public static function flag($value, array $options = []): string
+    public static function flag(mixed $value, array $options = []): string
     {
         static::addCssClass($options, [$value ? 'fas' : 'far', 'fa-star']);
 
@@ -316,11 +316,11 @@ class Html extends \yii\bootstrap5\Html
      * Самозакрывающийся тэг XML.
      *
      * @param string $name
-     * @param string|int|float|null $content
+     * @param float|int|string|null $content
      * @param array $options
      * @return string
      */
-    public static function xml(string $name, $content = '', array $options = []): string
+    public static function xml(string $name, float|int|string|null $content = '', array $options = []): string
     {
         $content = (string)$content;
 
@@ -381,10 +381,10 @@ class Html extends \yii\bootstrap5\Html
     /**
      * link rel="canonical"
      *
-     * @param string|array|false|null $url
+     * @param bool|array|string|null $url
      * @return string
      */
-    public static function canonical($url = null): string
+    public static function canonical(bool|array|string|null $url = null): string
     {
         if ($url === false) {
             return '';

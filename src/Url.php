@@ -1,9 +1,9 @@
 <?php
 /*
- * @copyright 2019-2021 Dicr http://dicr.org
+ * @copyright 2019-2022 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 01.11.21 00:07:48
+ * @version 04.01.22 19:03:47
  */
 
 declare(strict_types = 1);
@@ -51,15 +51,15 @@ class Url extends \yii\helpers\Url
     /**
      * Парсит параметры запроса из строки
      *
-     * @param string|array $query
+     * @param array|string|null $query
      * @return array параметры в виде массива
      */
-    public static function parseQuery($query): array
+    public static function parseQuery(array|string|null $query): array
     {
         if ($query === null || $query === '' || $query === []) {
             $query = [];
         } elseif (! is_array($query)) {
-            $query = trim((string)$query, " \t\n\r\0\x0B?");
+            $query = trim($query, " \t\n\r\0\x0B?");
             if ($query === '') {
                 $query = [];
             } else {
@@ -69,7 +69,7 @@ class Url extends \yii\helpers\Url
             }
         }
 
-        return (array)$query;
+        return $query;
     }
 
     /**
@@ -161,10 +161,10 @@ class Url extends \yii\helpers\Url
     /**
      * Конвертирует параметры запроса в строку
      *
-     * @param array|object|string $query
+     * @param object|array|string|null $query
      * @return string
      */
-    public static function buildQuery($query): string
+    public static function buildQuery(object|array|string|null $query): string
     {
         if ($query === null || $query === '' || $query === []) {
             $query = '';
@@ -180,10 +180,10 @@ class Url extends \yii\helpers\Url
     /**
      * Фильтрует парамеры запроса, удаляя ключи с пустыми значениями.
      *
-     * @param array|string $query
+     * @param array|string|null $query
      * @return array
      */
-    public static function filterQuery($query): array
+    public static function filterQuery(array|string|null $query): array
     {
         $query = static::parseQuery($query);
 
@@ -204,14 +204,14 @@ class Url extends \yii\helpers\Url
      * Нормализует параметры запроса.
      * Конвертирует из строки в массив, сортирует по названию параметров.
      *
-     * @param array|string $query
+     * @param array|string|null $query
      * @return array
      */
-    public static function normalizeQuery($query): array
+    public static function normalizeQuery(array|string|null $query): array
     {
         $query = static::parseQuery($query);
 
-        uksort($query, static function($k1, $k2) {
+        uksort($query, static function ($k1, $k2) {
             if ($k1 === '#') {
                 return 1;
             }
@@ -302,13 +302,13 @@ class Url extends \yii\helpers\Url
      * Вычитание параметров рекурсивно.
      * Из параметров args1 вычитаются параметры args2
      *
-     * @param array|string $query1 параметры (уменьшаемое)
-     * @param array|string $query2 параметры (вычитаемое)
+     * @param array|string|null $query1 параметры (уменьшаемое)
+     * @param array|string|null $query2 параметры (вычитаемое)
      * @param array $options опции сравнения
      * - bool $noCase - игнорировать регистр при сравнении значений
      * @return array $query1 - $query2
      */
-    public static function diffQuery($query1, $query2, array $options = []): array
+    public static function diffQuery(array|string|null $query1, array|string|null $query2, array $options = []): array
     {
         // если уменьшаемое пустое, то результат пустой
         $query1 = static::parseQuery($query1);
@@ -343,10 +343,10 @@ class Url extends \yii\helpers\Url
     /**
      * Преобразовывает многомерные данные параметров в плоский массив параметров.
      *
-     * @param array|string $query парамеры запроса
+     * @param array|string|null $query парамеры запроса
      * @return string[] одномерный массив параметров в виде ["id=1", "a[]=2", "b[3][4]=5"]
      */
-    public static function flatQuery($query): array
+    public static function flatQuery(array|string|null $query): array
     {
         if ($query === null || $query === '' || $query === []) {
             return [];
@@ -355,7 +355,7 @@ class Url extends \yii\helpers\Url
         $query = static::buildQuery($query);
 
         // разбиваем на компоненты по &
-        return (array)explode('&', $query);
+        return explode('&', $query) ?: [];
     }
 
     /**
@@ -401,7 +401,7 @@ class Url extends \yii\helpers\Url
         }
 
         // сохраняем начальный и конечный слэши
-        $startSlash = (mb_strpos($path, '/') === 0);
+        $startSlash = str_starts_with($path, '/');
         $endSlash = (mb_substr($path, -1, 1) === '/');
 
         // разбиваем путь на компоненты

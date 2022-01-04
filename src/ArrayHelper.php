@@ -1,9 +1,9 @@
 <?php
 /*
- * @copyright 2019-2021 Dicr http://dicr.org
+ * @copyright 2019-2022 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 31.10.21 22:55:34
+ * @version 04.01.22 19:03:41
  */
 
 declare(strict_types = 1);
@@ -26,7 +26,7 @@ class ArrayHelper extends \yii\helpers\ArrayHelper
      * @param mixed $default
      * @return mixed
      */
-    public static function remove(&$array, $key, $default = null)
+    public static function remove(&$array, $key, $default = null): mixed
     {
         if (! is_array($key)) {
             $key = explode('.', $key);

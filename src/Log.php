@@ -1,9 +1,9 @@
 <?php
 /*
- * @copyright 2019-2021 Dicr http://dicr.org
+ * @copyright 2019-2022 Dicr http://dicr.org
  * @author Igor A Tarasov <develop@dicr.org>
  * @license proprietary
- * @version 11.03.21 18:53:35
+ * @version 04.01.22 19:03:41
  */
 
 declare(strict_types = 1);
@@ -29,7 +29,7 @@ class Log extends BaseObject
      * @param mixed $msg
      * @param ?string $category
      */
-    public static function debug($msg, ?string $category = null): void
+    public static function debug(mixed $msg, ?string $category = null): void
     {
         if ($category === null) {
             $category = self::guessCateg();
@@ -60,7 +60,7 @@ class Log extends BaseObject
      * @param mixed $msg
      * @param ?string $category
      */
-    public static function warn($msg, ?string $category = null): void
+    public static function warn(mixed $msg, ?string $category = null): void
     {
         if ($category === null) {
             $category = self::guessCateg();
@@ -75,7 +75,7 @@ class Log extends BaseObject
      * @param mixed $msg
      * @param ?string $category
      */
-    public static function error($msg, ?string $category = null): void
+    public static function error(mixed $msg, ?string $category = null): void
     {
         if ($category === null) {
             $category = self::guessCateg();
